@@ -3,12 +3,12 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
 	{
-		path: "",
+		path: "/view",
 		component: () => import("@/layouts/default.vue"),
 		redirect: "/view/system/setting",
 		children: [
 			{
-				path: "/view/system",
+				path: "system",
 				name: "",
 				component: () => import("@/views/system/index.vue"),
 				children: [
@@ -33,7 +33,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/view/purchase",
+				path: "purchase",
 				name: "采购",
 				component: () => import("@/views/purchase/index.vue"),
 				children: [
@@ -58,7 +58,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/view/warehouse",
+				path: "warehouse",
 				name: "仓库",
 				component: () => import("@/views/purchase/index.vue"),
 				children: [
@@ -89,7 +89,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/view/sales",
+				path: "sales",
 				name: "销售",
 				component: () => import("@/views/sales/index.vue"),
 				children: [
@@ -114,7 +114,7 @@ const routes = [
 				],
 			},
 			{
-				path: "/view/finance",
+				path: "finance",
 				name: "财务",
 				component: () => import("@/views/sales/index.vue"),
 				children: [
