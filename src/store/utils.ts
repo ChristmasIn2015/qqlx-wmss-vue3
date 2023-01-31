@@ -28,7 +28,7 @@ class Request {
 				const UserStore = useUserStore();
 				UserStore.dialogLogin();
 
-				if (window.document.getElementById("wx-login")) {
+				setTimeout(() => {
 					const WxLogin = window.WxLogin as any;
 					WxLogin &&
 						new WxLogin({
@@ -38,7 +38,7 @@ class Request {
 							redirect_uri: "http://qqlx.tech",
 							state: "LOGIN",
 						});
-				}
+				}, 500);
 			}
 			return response;
 		});

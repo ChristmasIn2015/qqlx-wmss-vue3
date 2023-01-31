@@ -44,7 +44,7 @@ export default defineConfig({
 		port: 3000,
 		proxy: {
 			"/qqlx": {
-				target: "http://192.168.0.100:7001",
+				target: "http://192.168.0.100:3001",
 				changeOrigin: true,
 				rewrite: (path) => path,
 			},
