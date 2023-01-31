@@ -160,7 +160,6 @@
 							</template>
 							<v-list>
 								<v-list-item
-									:disabled="item.isDisabled"
 									@click="
 										() => {
 											LedgerStore.ledgerPicked = cloneDeep(item);

@@ -20,18 +20,7 @@
 							<td>{{ order.timeCreateString }}</td>
 							<td class="text-right">{{ (order.amount / 100).toFixed(2) }}</td>
 							<td>
-								<v-btn
-									color="pink-lighten-1"
-									size="small"
-									@click="
-										() => {
-											let o = cloneDeep(order);
-											o.amount /= 100;
-											OrderStore.orderListPicked.push(o);
-										}
-									"
-									>选择</v-btn
-								>
+								<v-btn color="pink-lighten-1" size="small" @click="orderPick(order)">选择</v-btn>
 							</td>
 						</tr>
 					</tbody>
@@ -68,6 +57,7 @@
 import { onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ENUM_SUBJECT_TYPE, ENUM_SUBJECT_ROLE, ENUM_COUNT_WAY } from "qqlx-core";
+import { Order } from "qqlx-core/wmss/order/entity";
 
 import { debounce, cloneDeep } from "lodash";
 
@@ -86,6 +76,12 @@ const OrderStore = useOrderStore();
 
 const debounceGet = debounce(() => SkuStore.get(), 500);
 const search = () => debounceGet();
+
+const orderPick = (order: Order) => {
+	let o = cloneDeep(order);
+	o.amount /= 100;
+	OrderStore.orderListPicked.push(o);
+};
 
 onMounted(async () => {
 	try {

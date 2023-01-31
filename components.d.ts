@@ -12,7 +12,6 @@ declare module '@vue/runtime-core' {
     CertificationList: typeof import('./src/components/certification-list.vue')['default']
     CertificationUnitInput: typeof import('./src/components/certification-unit-input.vue')['default']
     ContactList: typeof import('./src/components/contact-list.vue')['default']
-    copy: typeof import('./src/components/sku-list copy.vue')['default']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
     OrderListSimple: typeof import('./src/components/order-list-simple.vue')['default']

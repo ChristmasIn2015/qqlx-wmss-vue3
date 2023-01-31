@@ -5,6 +5,12 @@ import { MongodbPage } from "qqlx-core/utils/database";
 import { ResponseREST } from "qqlx-core/utils/interface";
 import { useUserStore } from "@/store/user";
 
+declare global {
+	interface Window {
+		WxLogin: any;
+	}
+}
+
 class Request {
 	private localAxios;
 
@@ -23,7 +29,7 @@ class Request {
 				UserStore.dialogLogin();
 
 				if (window.document.getElementById("wx-login")) {
-					const WxLogin = window["WxLogin"] as any;
+					const WxLogin = window.WxLogin as any;
 					WxLogin &&
 						new WxLogin({
 							id: "wx-login",
