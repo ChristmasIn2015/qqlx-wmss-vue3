@@ -27,7 +27,6 @@ class Request {
 				localStorage.setItem("qqlx-token", "");
 				const UserStore = useUserStore();
 				UserStore.dialogLogin();
-
 				setTimeout(() => {
 					const WxLogin = window.WxLogin as any;
 					WxLogin &&

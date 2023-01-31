@@ -53,13 +53,8 @@
 			<div v-for="container in routes" class="pb-3 pt-2">
 				<v-card-subtitle class="text-grey">{{ container.name }}</v-card-subtitle>
 
-				<router-link v-for="route in container.children" :to="container.path + '/' + route.path" v-slot="{ isActive }">
-					<v-card
-						class="ml-2 mt-2"
-						@click="() => router.push(route.path)"
-						:color="isActive ? 'primary' : 'grey-lighten-5'"
-						:class="isActive ? '' : 'elevation-0'"
-					>
+				<router-link v-for="route in container.children" :to="`/view/${container.path}/${route.path}`" v-slot="{ isActive }">
+					<v-card class="ml-2 mt-2" :color="isActive ? 'primary' : 'grey-lighten-5'" :class="isActive ? '' : 'elevation-0'">
 						<v-card-title class="font-weight-bold text-subtitle-1 px-2 py-1" :class="isActive ? '' : 'text-grey'">
 							<v-icon :icon="(route.meta?.icon as string)" class="mr-2 mt-n1"></v-icon>
 							<span>{{ route.name }}</span>
