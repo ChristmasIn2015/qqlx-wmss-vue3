@@ -5,7 +5,6 @@ const routes = [
 	{
 		path: "/wmss",
 		component: () => import("@/components/layout.vue"),
-		redirect: "/wmss/system/setting",
 		children: [
 			{
 				path: "system",
