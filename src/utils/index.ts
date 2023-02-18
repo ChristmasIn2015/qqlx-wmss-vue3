@@ -28,7 +28,7 @@ class Request {
 			if (response.status === 200 && ["40301", "40302"].includes(response.data?.code)) {
 				setTimeout(() => {
 					localStorage.setItem("qqlx-token", "");
-					window.location.assign("/wmss/login");
+					// window.location.assign("/wmss/login");
 				}, 2000);
 			}
 			return response;
