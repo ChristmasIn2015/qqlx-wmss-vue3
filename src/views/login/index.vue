@@ -70,7 +70,7 @@ onMounted(async () => {
 				id: "wx-login",
 				appid: "wxd0e6ee13822ccb7f",
 				scope: "snsapi_login",
-				redirect_uri: "http://qqlx.tech/",
+				redirect_uri: "http://qqlx.tech/wmss/login",
 				state: "LOGIN",
 			});
 		console.log(WxLogin, document.getElementById("wx-login"));

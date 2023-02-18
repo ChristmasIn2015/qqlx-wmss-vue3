@@ -365,7 +365,7 @@ const openRoleWMSS = () => {
 				id: "wx-login-join",
 				appid: "wxd0e6ee13822ccb7f",
 				scope: "snsapi_login",
-				redirect_uri: "http://qqlx.tech/",
+				redirect_uri: "http://qqlx.tech/wmss/login",
 				state: `JOIN`,
 			});
 	}, 500);
