@@ -18,12 +18,12 @@ const routes = [
 						component: () => import("@/views/system/setting.vue"),
 						meta: { icon: "signal_cellular_alt", color: "", show: true },
 					},
-					{
-						path: "contact",
-						name: "客户分析",
-						component: () => import("@/views/system/contact.vue"),
-						meta: { icon: "people", color: "", show: true },
-					},
+					// {
+					// 	path: "contact",
+					// 	name: "客户分析",
+					// 	component: () => import("@/views/system/contact.vue"),
+					// 	meta: { icon: "people", color: "", show: true },
+					// },
 				],
 			},
 			{
