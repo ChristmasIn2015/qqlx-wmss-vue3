@@ -143,6 +143,7 @@ const routes = [
 ];
 
 const router = createRouter({
+	base: "/wmss",
 	history: createWebHistory(),
 	routes,
 });
