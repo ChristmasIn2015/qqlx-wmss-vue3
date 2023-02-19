@@ -398,6 +398,7 @@ const nowCorps = computed({
 });
 onMounted(async () => {
 	InvoiceStore.setSchema(InvoiceStore.getSchema(ENUM_BOOK_TYPE.YSZK_VAT, ENUM_BOOK_DIRECTION.JIE));
+	BookStore.bookListPicked = [];
 	await InvoiceStore.get(1);
 });
 </script>
