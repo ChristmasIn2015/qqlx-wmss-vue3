@@ -321,17 +321,7 @@
 					</span>
 				</q-td>
 				<q-td key="_id" :props="props" :style="tableStyle">
-					<span
-						v-if="props.row.isDisabled === false"
-						class="cursor-pointer text-teal"
-						@click="
-							() => {
-								BookStore.setSchema(props.row);
-								OrderStore.orderListPicked = cloneDeep(props.row?.joinBookOfOrder?.joinOrder);
-								router.push('/wmss/finance/book-edit');
-							}
-						"
-					>
+					<span v-if="props.row.isDisabled === false" class="cursor-pointer text-teal" @click="toEdit(props.row)">
 						结清{{ BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK ? "销售单" : "采购单" }}
 					</span>
 				</q-td>
@@ -376,6 +366,8 @@ import { useRouter } from "vue-router";
 import { cloneDeep, debounce } from "lodash";
 import * as XLSX from "xlsx";
 import { MongodbSort, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
+import type { BookInView } from "qqlx-core/dto/wmss/book";
+import type { Order } from "qqlx-core/schema/wmss/order";
 
 import { useNotifyStore } from "@/stores/notify";
 import { useBookStore } from "@/stores/book";
@@ -447,6 +439,16 @@ const filePickNext = async (file: File) => {
 		}
 	};
 	reader.readAsBinaryString(file);
+};
+const toEdit = (book: BookInView) => {
+	BookStore.setSchema(book);
+
+	const orders: Order[] = [];
+	book.joinBookOfOrder?.map((e) => {
+		e.joinOrder && orders.push(e.joinOrder);
+	});
+	OrderStore.orderListPicked = cloneDeep(orders);
+	router.push("/wmss/finance/book-edit");
 };
 
 // action
