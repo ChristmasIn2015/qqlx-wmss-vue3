@@ -1,7 +1,7 @@
 <template>
-	<div class="text-center pt-12">
-		<div class="text-h1 pt-12 my-12">找不到对应路径</div>
-		<v-btn color="primary" @click="router.push('/view')">返回主页</v-btn>
+	<div class="text-center q-pt-xl">
+		<div class="text-h1 q-pt-xl q-my-xl">找不到对应路径</div>
+		<q-btn color="primary" @click="router.push('/wmss')">返回主页</q-btn>
 	</div>
 </template>
 

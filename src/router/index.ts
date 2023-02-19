@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
 	{
 		path: "/wmss",
+		redirect: "/wmss/system/setting",
 		component: () => import("@/components/layout.vue"),
 		children: [
 			{
@@ -143,7 +144,6 @@ const routes = [
 ];
 
 const router = createRouter({
-	base: "/wmss",
 	history: createWebHistory(),
 	routes,
 });
