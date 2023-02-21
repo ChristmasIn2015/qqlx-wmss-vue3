@@ -2,7 +2,7 @@
 	<div class="q-pt-md q-pb-lg">
 		<div class="text-h5 text-white text-weight-bold">
 			<q-btn color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
-			创建{{ nowTypeName }}
+			{{ BookStore.bookEditor._id ? "编辑" : "创建" }}{{ nowTypeName }}
 		</div>
 		<div class="text-white q-pt-sm">
 			<div>1.选择订单，点击结清后，即可以在“资金记录”、“订单列表”中看到对应资金情况；</div>
@@ -90,7 +90,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col">您期望的订单结清金额</div>
+						<div class="col">正在结清</div>
 						<div class="col text-right text-pink-6 text-body1 text-weight-bold">
 							{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
 						</div>

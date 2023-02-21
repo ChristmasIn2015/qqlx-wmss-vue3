@@ -1,16 +1,24 @@
 <template>
-	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">{{ nowTypeName }}列表</div>
-		<div class="text-white q-pt-sm">
-			<span>查看此公司的{{ nowTypeName }}据</span>
+	<div class="q-pt-md q-pb-lg text-white">
+		<div class="text-h4 text-weight-bold">内部订单</div>
+		<div class="q-pt-sm">
+			<div>
+				1.内部订单将会影响
+				<span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">货架</span>
+				上统计的商品库存，如发货、入库、领料、加工单
+			</div>
+			<div>* 发货单，将会减少您的商品库存统计</div>
+			<div>* 领料单，需要您手动选择待领料的在库商品，领料后仅将会减少此商品的库存统计</div>
+			<div>* 入库单、加工单，都将会 <span class="text-positive">增加</span> 您的商品库存统计</div>
 		</div>
 	</div>
 
 	<div class="row q-mb-sm">
 		<q-btn-toggle
-			glossy
-			class="q-mr-sm"
+			push
+			square
 			color="white"
+			class="q-mr-sm"
 			text-color="grey"
 			toggle-color="indigo"
 			v-model="OrderStore.orderSearch.type"
@@ -29,8 +37,9 @@
 		</q-btn-toggle>
 
 		<q-btn
+			push
+			square
 			class="q-mr-sm"
-			glossy
 			label="最近删除"
 			:color="OrderStore.orderSearch.isDisabled ? 'indigo' : 'white'"
 			:text-color="OrderStore.orderSearch.isDisabled ? '' : 'grey'"
@@ -44,17 +53,20 @@
 
 		<q-space></q-space>
 		<q-btn
-			color="indigo"
-			glossy
+			push
+			square
+			color="negative"
 			class="text-body1 q-ml-sm"
+			:loading="OrderStore.loadding"
 			@click="
 				() => {
 					OrderStore.setSchema(OrderStore.getSchema(nowType));
 					router.push('/wmss/warehouse/order-create');
 				}
 			"
-			>继续添加</q-btn
 		>
+			继续添加
+		</q-btn>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
 			{{ timePicked.from }} ~ {{ timePicked.to }}
@@ -65,6 +77,7 @@
 	</div>
 
 	<q-table
+		style="min-height: 400px"
 		dense
 		row-key="_id"
 		:columns="[
@@ -96,15 +109,16 @@
 					/>
 				</q-th>
 				<q-th key="contactId" :props="props" style="width: 188px">
-					<q-btn class="q-px-none" flat square color="indigo" @click="contactDialog = true">
+					<q-btn class="q-px-sm" flat square color="indigo" @click="contactDialog = true">
 						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
 					</q-btn>
 					<q-btn
-						v-show="contactPicked._id"
-						class="q-px-sm"
+						v-if="contactPicked._id"
 						flat
+						dense
 						square
 						color="indigo"
+						class="q-px-sm"
 						@click="
 							() => {
 								contactPicked = ContactStore.getSchema();
@@ -184,6 +198,8 @@
 								hide-pagination
 								separator="vertical"
 								:columns="[
+									{ name: 'keyHouse', field: 'keyHouse', label: '产地', align: 'left' },
+									{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
 									{ name: 'name', field: 'name', label: '品名', align: 'left' },
 									{ name: 'norm', field: 'norm', label: '规格', align: 'left' },
 									{ name: 'count', field: 'count', label: '数量', align: 'left' },
@@ -196,6 +212,8 @@
 							>
 								<template v-slot:body="_props">
 									<q-tr>
+										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px"> {{ _props.row.count }} {{ _props.row.unit }}</q-td>
@@ -205,21 +223,21 @@
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">
 											<span v-if="_props.row.type === ENUM_ORDER.GETOUT">
-												<span v-if="_props.row.isConfirmed"> <q-icon name="check" color="positive"></q-icon>已发货 </span>
+												<span v-if="_props.row.isConfirmed" class="text-grey">已发货</span>
 												<span v-else class="text-grey">
 													<span v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" class="text-negative">
-														需要选择库存，单独发货
+														大件商品，需要单独发货
 													</span>
 													<span v-else>待发货</span>
 												</span>
 											</span>
 											<span v-else-if="_props.row.type === ENUM_ORDER.MATERIAL">
 												<span v-if="_props.row.isConfirmed"> <q-icon name="check" color="positive"></q-icon>已扣减</span>
-												<span v-else class="text-negative">需要选择库存，单独扣减</span>
+												<span v-else class="text-negative">领料需要选择库存，单独扣减</span>
 											</span>
-											<span v-else>
-												<span v-if="_props.row.isConfirmed"> <q-icon name="check" color="positive"></q-icon> 已入库</span>
-												<span v-else class="text-grey">待入库</span>
+											<span v-else class="text-grey">
+												<span v-if="_props.row.isConfirmed">已入库</span>
+												<span v-else>待入库</span>
 											</span>
 										</q-td>
 									</q-tr>
@@ -230,15 +248,20 @@
 							<q-card>
 								<q-card-section>
 									<div class="text-body1 text-weight-bold">订单信息</div>
-									<div class="text-body2 text-grey">{{ props.row.joinContact?.name }}</div>
 									<q-separator class="q-mt-md q-mb-sm" />
+									<div class="row">
+										<span class="col-3 text-grey">客户</span>
+										<span class="col-9 text-right">{{ props.row.joinContact?.name || "批量导入" }}</span>
+									</div>
 									<div class="row">
 										<span class="col-3 text-grey">开单人</span>
 										<span class="col-9 text-right">{{ props.row.joinCreator?.nickname }}</span>
 									</div>
 									<div class="row">
-										<span class="col text-grey">
-											来源单据
+										<span class="col text-grey"> 来源单据 </span>
+										<span class="col text-right">
+											{{ props.row.joinParentOrder?.code || "无" }}
+
 											<a
 												v-if="props.row.joinParentOrder"
 												class="cursor-pointer text-primary"
@@ -247,14 +270,15 @@
 												查看
 											</a>
 										</span>
-										<span class="col text-right">{{ props.row.joinParentOrder?.code }}</span>
 									</div>
+
+									<q-separator class="q-mt-md" />
 								</q-card-section>
-								<q-separator class="q-mt-md" />
-								<q-card-actions align="right">
-									<q-btn class="q-ml-sm" text-color="negative" @click="OrderStore.delete(props.row._id)">
+								<q-card-actions class="q-pt-none">
+									<q-btn class="q-ml-sm" flat color="negative" @click="OrderStore.delete(props.row._id)">
 										{{ props.row.isDisabled ? "恢复" : props.row.parentOrderId ? "彻底删除" : "删除" }}
 									</q-btn>
+									<q-space></q-space>
 									<q-btn
 										v-if="!props.row.isDisabled"
 										:disabled="!!props.row.managerId || !!props.row.accounterId"

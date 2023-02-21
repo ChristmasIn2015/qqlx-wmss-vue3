@@ -53,8 +53,8 @@ export const useWarehouseStore = defineStore("Warehouse", {
 				NotifyStore.fail((error as Error).message);
 			}
 		},
-		pick(house: Warehouse) {
-			if (!house) throw new Error(`请选择正确的仓库`);
+		pick(house?: Warehouse) {
+			if (!house) return;
 			this.WarehousePicked = house;
 			NotifyStore.success(`切换 @${this.WarehousePicked.name} 成功`);
 		},

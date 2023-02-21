@@ -14,7 +14,7 @@
 					<div class="col text-right">{{ cabinet.unit }}</div>
 				</div>
 				<div class="row">
-					<div class="col">商品开单</div>
+					<div class="col">性质</div>
 					<div class="col text-right">
 						{{ CabinetStore.getLayoutChinese(cabinet.layout)?.text }}
 

@@ -21,11 +21,14 @@ function getSchema(): RoleWMSS {
 
 export const useRoleWMSSStore = defineStore("RoleWMSS", {
 	state: () => ({
-		MAP_ENUM_ROLE_WMSS: MAP_ENUM_ROLE_WMSS.filter((e) =>
-			[ENUM_ROLE_WMSS.BASE, ENUM_ROLE_WMSS.PURCHASE, ENUM_ROLE_WMSS.WM, ENUM_ROLE_WMSS.FINANCE, ENUM_ROLE_WMSS.SALES].includes(e.value)
-		),
 		OPTION_ENUM_ROLE_WMSS: MAP_ENUM_ROLE_WMSS.filter((e) =>
-			[ENUM_ROLE_WMSS.PURCHASE, ENUM_ROLE_WMSS.WM, ENUM_ROLE_WMSS.FINANCE, ENUM_ROLE_WMSS.SALES].includes(e.value)
+			[
+				//
+				ENUM_ROLE_WMSS.PURCHASE,
+				ENUM_ROLE_WMSS.WM,
+				ENUM_ROLE_WMSS.FINANCE,
+				ENUM_ROLE_WMSS.SALES,
+			].includes(e.value)
 		),
 		RoleWMSSEnumIndexNow: 0,
 		//

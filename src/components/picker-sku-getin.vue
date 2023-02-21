@@ -144,16 +144,6 @@
 					<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
-					key="countFinal"
-					:props="props"
-					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'countFinal' }"
-					@click="SkuGetInStore.sort('countFinal')"
-				>
-					<span>在库数量</span>
-					<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-				</q-th>
-				<q-th
 					key="pounds"
 					:props="props"
 					class="cursor-pointer"
@@ -161,6 +151,16 @@
 					@click="SkuGetInStore.sort('pounds')"
 				>
 					<span>订单中的重量</span>
+					<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+				</q-th>
+				<q-th
+					key="countFinal"
+					:props="props"
+					class="cursor-pointer"
+					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'countFinal' }"
+					@click="SkuGetInStore.sort('countFinal')"
+				>
+					<span>在库数量</span>
 					<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -223,10 +223,10 @@
 				<q-td key="name" :props="props"> {{ props.row.name }} </q-td>
 				<q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
 				<q-td key="count" :props="props" class="text-grey"> {{ props.row.count }} {{ props.row.unit }} </q-td>
+				<q-td key="pounds" :props="props" class="text-grey"> {{ props.row.pounds.toFixed(3) }} 吨 </q-td>
 				<q-td key="countFinal" :props="props" :class="{ 'text-grey': props.row.countFinal <= 0 }">
 					{{ props.row.countFinal }} {{ props.row.unit }}
 				</q-td>
-				<q-td key="pounds" :props="props" class="text-grey"> {{ props.row.pounds.toFixed(3) }} 吨 </q-td>
 				<q-td key="poundsFinal" :props="props" :class="{ 'text-grey': props.row.poundsFinal <= 0 }"> {{ props.row.poundsFinal.toFixed(3) }} 吨 </q-td>
 				<q-td key="price" :props="props" :class="{ 'text-grey': props.row.price <= 0 }"> {{ props.row.price.toFixed(2) }} 元</q-td>
 				<q-td key="remark" :props="props"> {{ props.row.remark }} </q-td>

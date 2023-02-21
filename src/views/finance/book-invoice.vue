@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">财务凭证</div>
+		<div class="text-h4 text-white text-weight-bold">开票明细</div>
 		<div class="text-white q-pt-sm">
 			<div>记录收付款的发票信息。</div>
 		</div>
@@ -9,7 +9,7 @@
 	<div class="q-pb-sm row">
 		<q-btn-group class="q-mr-sm">
 			<q-btn
-				glossy
+				push
 				square
 				label="收款"
 				:color="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.DAI ? 'teal' : 'white'"
@@ -17,14 +17,12 @@
 				@click="
 					() => {
 						BookStore.setSchema(BookStore.getSchema(ENUM_BOOK_TYPE.YSZK, ENUM_BOOK_DIRECTION.DAI));
-						startIndex = -1;
-						endIndex = -1;
 						BookStore.get(1);
 					}
 				"
 			/>
 			<q-btn
-				glossy
+				push
 				square
 				label="付款"
 				:color="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE ? 'teal' : 'white'"
@@ -32,8 +30,6 @@
 				@click="
 					() => {
 						BookStore.setSchema(BookStore.getSchema(ENUM_BOOK_TYPE.YFZK, ENUM_BOOK_DIRECTION.JIE));
-						startIndex = -1;
-						endIndex = -1;
 						BookStore.get(1);
 					}
 				"
@@ -41,7 +37,8 @@
 		</q-btn-group>
 		<q-btn
 			class="q-mr-sm"
-			glossy
+			push
+			square
 			label="最近删除"
 			:color="BookStore.bookSearch.isDisabled ? 'teal' : 'white'"
 			:text-color="BookStore.bookSearch.isDisabled ? '' : 'grey'"
@@ -185,23 +182,7 @@
 			</q-tr>
 		</template>
 		<template v-slot:body="props">
-			<q-tr
-				class="cursor-crosshair"
-				:class="{
-					'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
-				}"
-				@mousedown.capture.stop="
-					() => {
-						endIndex = props.rowIndex;
-						startIndex = props.rowIndex;
-					}
-				"
-				@mouseup.capture.stop="
-					() => {
-						endIndex = props.rowIndex > startIndex ? props.rowIndex : startIndex;
-					}
-				"
-			>
+			<q-tr>
 				<q-td key="type" :style="tableStyle">
 					<span v-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.DAI">收款</span>
 					<span v-else-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE">
@@ -294,50 +275,6 @@ const loadPage = (details: { index: number; from: number; to: number; direction:
 	if (details.index + 19 >= details.to) {
 		debounceGet();
 	}
-};
-
-const swiperIndex = ref(0);
-const startIndex = ref(-1);
-const endIndex = ref(-1);
-const filePicking = ref(null);
-const filePickNext = async (file: File) => {
-	if (!file) return;
-	const reader = new FileReader(); // WebAPI
-	reader.onload = async () => {
-		try {
-			const workbook = XLSX.read(reader.result, { type: "binary" });
-			const sheet = workbook.Sheets["资金导入"];
-			if (!sheet) throw new Error(`找不到表格 [资金导入] !`);
-			const rowJsonList: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet);
-
-			// 1.批量上传客户
-			const uploading = [];
-			for (let i in rowJsonList) {
-				const row = rowJsonList[i];
-				const schema = BookStore.getSchema(BookStore.bookSearch.type, BookStore.bookSearch.direction);
-				schema.keyOrigin = String(row["@客户名称"] || "");
-				schema.keyHouse = String(row["@银行"] || "");
-				schema.amount = Number(row["@金额"] || 0) || 0;
-				schema.remark = String(row["@备注"] || "");
-
-				const date = row["@日期"] || "";
-				if (typeof date === "string") {
-					const _date = new Date(date);
-					schema.timeCreate = _date.getTime();
-					schema.timeCreateString = _date.toLocaleString();
-				} else if (typeof date === "number") {
-					const time = new Date(new Date("1900/1/1 00:00:00").getTime() + (date - 2) * 86400000 + 1000 * 60 * 60);
-					schema.timeCreate = time.getTime();
-					schema.timeCreateString = time.toLocaleString();
-				}
-				uploading.push(schema);
-			}
-			BookStore.bookListExcel = uploading;
-		} catch (error) {
-			NotifyStore.fail((error as Error).message);
-		}
-	};
-	reader.readAsBinaryString(file);
 };
 
 // action

@@ -95,11 +95,11 @@
 						dense
 						square
 						filled
-						label="客户名称"
+						label="票号"
 						color="purple-8"
 						class="q-mb-sm"
 						input-class="text-body1"
-						placeholder="请输入客户名称"
+						placeholder="请输入票号"
 						v-model="InvoiceStore.invoiceEditor.keyOrigin"
 					>
 						<template v-slot:before>

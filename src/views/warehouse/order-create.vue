@@ -1,7 +1,7 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">
-			<q-btn color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
+		<div class="text-h4 text-white text-weight-bold">
+			<q-btn color="white" square push text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
 			创建{{ nowOrderEditorTrans?.text }}
 		</div>
 		<div class="text-white q-pt-sm">
@@ -13,7 +13,7 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" glossy label="批量导入">
+		<q-btn class="q-ml-sm" square push label="批量导入">
 			<q-menu>
 				<q-list>
 					<q-item clickable @click="NotifyStore.download()">
@@ -29,11 +29,10 @@
 		</q-btn>
 		<q-btn
 			v-if="nowOrderEditorTrans"
-			class="q-ml-sm"
-			square
-			glossy
 			push
-			color="indigo"
+			square
+			class="q-ml-sm"
+			color="negative"
 			@click="
 				async () => {
 					await OrderStore.post(SkuStore.skuListPicked, FeeStore.feeListPicked);
@@ -119,11 +118,8 @@ const nowOrderEditorTrans = computed({
 	},
 	set() {},
 });
-onMounted(async () => {
-	try {
-		SkuStore.setSchema();
-	} catch (error) {
-		NotifyStore.fail((error as Error).message);
-	}
+onMounted(() => {
+	if (nowOrderEditorTrans.value?.value === ENUM_ORDER.NONE) router.push("/wmss/warehouse/order-list");
+	else SkuStore.setSchema();
 });
 </script>

@@ -1,16 +1,25 @@
 <template>
 	<div class="full-height color-back-main row justify-center items-center">
-		<div class="text-white column q-mr-xl q-pt-sm" style="height: 430px">
+		<div class="text-white column q-mr-xl q-pt-xs" style="max-width: 600px; height: 430px">
 			<div class="text-h2 text-weight-bold">欢迎使用，开单办公室</div>
 			<div class="q-pt-sm"></div>
-			<div class="text-h5 q-mb-xl">QingQuan Warehouse Management System</div>
+			<div class="text-h5">QingQuan Warehouse Management System</div>
 
-			<div class="text-body1 text-weight-bold q-mt-xl">首次上线时间 2021年 06月01日 08:35:26</div>
-			<div class="text-body1 text-weight-bold">系统已运行 {{ time }}</div>
-			<div class="text-body1 text-weight-bold">@清泉流响-技术工作室</div>
+			<div class="text-body1 q-mt-lg">
+				<div>本产品主要用于钢材贸易、加工型企业</div>
+				<div>* 可统计客户回款、开票信息</div>
+				<div>* 销售时可快速挑选产品进行开单、打印</div>
+				<div>* 支持原材料领料、加工，及其之后的库存自动计算</div>
+				<div>* 支持办公室中多人多角色分配，以确保有效的工作流程和高效的团队合作</div>
+			</div>
+
+			<div class="text-body1 q-mt-lg">
+				<div>@清泉流响 网络工作室</div>
+				<div>系统已运行 {{ time }}</div>
+			</div>
 		</div>
 
-		<div class="te">
+		<div>
 			<q-card class="q-pt-lg text-center w-400">
 				<div id="wx-login"></div>
 			</q-card>

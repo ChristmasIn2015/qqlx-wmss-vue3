@@ -23,11 +23,11 @@
 		<template v-slot:top="props">
 			<q-btn-group class="q-my-sm" style="margin-left: -6px">
 				<q-btn
-					glossy
+					push
 					square
 					v-for="cabinet in CabinetStore.cabinetList"
 					:label="cabinet.name"
-					:color="cabinetPicked._id === cabinet._id ? 'primary' : 'white'"
+					:color="cabinetPicked._id === cabinet._id ? route.meta.color as string : 'white'"
 					:text-color="cabinetPicked._id === cabinet._id ? 'white' : 'grey'"
 					@click="
 						() => {
@@ -40,12 +40,16 @@
 				/>
 			</q-btn-group>
 
-			<q-btn glossy class="q-ml-sm" label="新增" @click="() => CabinetUnitStore.cabinetUnitListExcel.push(CabinetUnitStore.getSchema())" />
+			<q-btn push square class="q-ml-sm" label="新增" @click="() => CabinetUnitStore.cabinetUnitListExcel.push(CabinetUnitStore.getSchema())">
+				<q-tooltip class="text-body1">
+					<div>向货架 "{{ cabinetPicked.name }}" 中添加一行商品</div>
+				</q-tooltip>
+			</q-btn>
 			<span v-if="CabinetUnitStore.cabinetUnitListExcel.length > 0">
-				<q-btn glossy color="primary" class="q-ml-sm" @click="() => CabinetUnitStore.post(cabinetPicked)">
+				<q-btn push square :color="(route.meta?.color as string)" class="q-ml-sm" @click="() => CabinetUnitStore.post(cabinetPicked)">
 					<span>保存</span>
 				</q-btn>
-				<q-btn flat color="primary" label="批量导入">
+				<q-btn flat :color="(route.meta?.color as string)" label="批量导入" class="q-ml-sm">
 					<q-menu>
 						<q-list>
 							<q-item clickable @click="NotifyStore.download()">
@@ -59,7 +63,7 @@
 						</q-list>
 					</q-menu>
 				</q-btn>
-				<q-btn label="清空" flat color="negative" @click="() => (CabinetUnitStore.cabinetUnitListExcel = [])" />
+				<q-btn label="清空" class="q-mx-xs" flat color="negative" @click="() => (CabinetUnitStore.cabinetUnitListExcel = [])" />
 			</span>
 
 			<q-space></q-space>
@@ -73,7 +77,7 @@
 				<q-td>
 					<q-input class="ml-n6" square filled v-model="schema.norm" dense clearable clear-icon="close" placeholder="请输入规格" />
 				</q-td>
-				<q-td class="text-right"></q-td>
+				<q-td class="text-right">保存后自动计算</q-td>
 				<q-td class="text-right">
 					<q-input square filled v-model="schema.price" type="number" dense input-class="text-right" />
 				</q-td>
@@ -84,7 +88,7 @@
 		</template>
 		<template v-slot:header="props">
 			<q-tr :props="props">
-				<q-th key="_id" :props="props">货架 </q-th>
+				<q-th key="_id" :props="props">货架</q-th>
 				<q-th key="name" :props="props" style="width: 188px">
 					<q-input
 						square
@@ -122,8 +126,15 @@
 					class="cursor-pointer"
 					@click="CabinetUnitStore.sort(cabinetPicked, cabinetPicked.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'poundsFinal' : 'countFinal')"
 				>
-					<span>库存</span>
-					<q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+					<span>
+						<q-icon name="help_outlined" size="14px" style="margin-top: -3px"></q-icon>
+						<span>库存</span>
+						<q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'" style="margin-top: -2px"></q-icon>
+						<q-tooltip class="text-body1">
+							<div>当您处理完 仓库->待入库、发货、领料、加工</div>
+							<div>货架中的库存数字将会自动计算</div>
+						</q-tooltip>
+					</span>
 				</q-th>
 				<q-th
 					key="price"
@@ -173,7 +184,7 @@
 					{{ props.row.norm }}
 				</q-td>
 				<q-td key="countFinal" :props="props">
-					<a class="cursor-pointer text-primary" @click="skuGetInDialog = true">
+					<a class="cursor-pointer" :class="`text-${route.meta.color}`" @click="skuGetInDialog = true">
 						<span v-if="cabinetPicked.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"> {{ props.row.poundsFinal }} 吨 </span>
 						<span v-else> {{ props.row.countFinal }} {{ props.row.joinCabinet?.unit }} </span>
 					</a>
@@ -181,7 +192,7 @@
 				<q-td key="price" :props="props" :class="{}"> {{ props.row.price }} 元 </q-td>
 				<q-td key="timeCreateString" :props="props">
 					<div class="row">
-						<a class="text-body1 text-primary cursor-pointer" @click.capture="pushSku(props.row)">开单</a>
+						<a class="text-body1 cursor-pointer" :class="`text-${route.meta.color}`" @click.capture="pushSku(props.row)">开单</a>
 						<q-space></q-space>
 						<span>{{ props.row.timeCreateString }}</span>
 					</div>
@@ -202,7 +213,7 @@
 					>已选择 {{ endIndex - startIndex + 1 }} 项
 
 					<a
-						class="q-ml-sm text-primary cursor-pointer"
+						class="q-ml-sm text-body2 text-weight-bold text-primary cursor-pointer"
 						flat
 						:disable="CabinetUnitStore.cabinetUnitList.length === 0 || !(startIndex > -1 && endIndex - startIndex >= 0)"
 					>
@@ -284,6 +295,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import * as XLSX from "xlsx";
 import { cloneDeep, debounce } from "lodash";
 import { ENUM_LAYOUT_CABINET, MongodbSort } from "qqlx-core";
@@ -296,6 +308,7 @@ import { useCabinetStore } from "@/stores/cabinet";
 import { useCabinetUnitStore } from "@/stores/cabinetUnit";
 import { useSkuStore } from "@/stores/sku";
 
+const route = useRoute();
 const NotifyStore = useNotifyStore();
 const CabinetStore = useCabinetStore();
 const CabinetUnitStore = useCabinetUnitStore();

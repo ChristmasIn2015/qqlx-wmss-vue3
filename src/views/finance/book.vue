@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">资金记录</div>
+		<div class="text-h4 text-white text-weight-bold">资金记录</div>
 		<div class="text-white q-pt-sm">
 			<div>1.您可以根据实际收款情况，对不同公司导入银行的收付款数据；</div>
 			<div>2.对资金记录点击结清，可以将收付款情况对应到订单中；</div>
@@ -10,7 +10,7 @@
 	<div class="q-pb-sm row">
 		<q-btn-group class="q-mr-sm">
 			<q-btn
-				glossy
+				push
 				square
 				label="收款"
 				:color="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.DAI ? 'teal' : 'white'"
@@ -25,7 +25,7 @@
 				"
 			/>
 			<q-btn
-				glossy
+				push
 				square
 				label="付款"
 				:color="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE ? 'teal' : 'white'"
@@ -42,7 +42,8 @@
 		</q-btn-group>
 		<q-btn
 			class="q-mr-sm"
-			glossy
+			push
+			square
 			label="最近删除"
 			:color="BookStore.bookSearch.isDisabled ? 'teal' : 'white'"
 			:text-color="BookStore.bookSearch.isDisabled ? '' : 'grey'"
@@ -56,9 +57,9 @@
 
 		<q-space></q-space>
 		<span v-if="BookStore.bookListExcel.length > 0">
-			<q-btn glossy color="teal" class="q-ml-sm" :loading="BookStore.loadding" label="保存" @click="() => BookStore.post()" />
-			<q-btn glossy label="清空" class="q-ml-sm" color="white" text-color="negative" @click="() => (BookStore.bookListExcel = [])" />
-			<q-btn glossy color="white" class="q-ml-sm" text-color="black" label="批量导入">
+			<q-btn push square color="teal" class="q-ml-sm" :loading="BookStore.loadding" label="保存" @click="() => BookStore.post()" />
+			<q-btn push square label="清空" class="q-ml-sm" color="white" text-color="negative" @click="() => (BookStore.bookListExcel = [])" />
+			<q-btn push square color="white" class="q-ml-sm" text-color="black" label="批量导入">
 				<q-menu>
 					<q-list>
 						<q-item clickable @click="NotifyStore.download()">
@@ -78,7 +79,8 @@
 			class="q-ml-sm"
 			color="teal"
 			:loading="BookStore.loadding"
-			glossy
+			push
+			square
 			label="继续添加"
 			@click="() => BookStore.bookListExcel.push(BookStore.getSchema())"
 		/>
@@ -120,9 +122,9 @@
 			<q-tr v-for="(schema, index) in BookStore.bookListExcel">
 				<q-td :style="tableStyle">
 					<span v-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.DAI">收款</span>
-					<span v-else-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE"
-						>付款</span
-					>
+					<span v-else-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE">
+						付款
+					</span>
 				</q-td>
 				<q-td :style="tableStyle">{{ schema.timeCreateString }}</q-td>
 				<q-td :style="tableStyle">-</q-td>
@@ -245,7 +247,7 @@
 		</template>
 		<template v-slot:body="props">
 			<q-tr
-				class="cursor-crosshair"
+				class="cursor-crosshair select-none"
 				:class="{
 					'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
 				}"
@@ -341,7 +343,7 @@
 					已选择 {{ endIndex - startIndex + 1 }} 项
 
 					<a
-						class="q-ml-sm text-negative cursor-pointer"
+						class="q-ml-sm text-body2 text-weight-bold text-negative cursor-pointer"
 						@click="
 							() => {
 								BookStore.delete(BookStore.bookList.slice(startIndex, endIndex + 1));
@@ -441,11 +443,16 @@ const filePickNext = async (file: File) => {
 	reader.readAsBinaryString(file);
 };
 const toEdit = (book: BookInView) => {
-	BookStore.setSchema(book);
+	const _book = cloneDeep(book);
+	BookStore.setSchema(_book);
 
 	const orders: Order[] = [];
-	book.joinBookOfOrder?.map((e) => {
-		e.joinOrder && orders.push(e.joinOrder);
+	_book.joinBookOfOrder?.map((e) => {
+		const origin = e.joinOrder;
+		if (origin) {
+			origin.amount = e.amount;
+			orders.push(origin);
+		}
 	});
 	OrderStore.orderListPicked = cloneDeep(orders);
 	router.push("/wmss/finance/book-edit");

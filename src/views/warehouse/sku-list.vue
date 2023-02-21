@@ -1,44 +1,54 @@
 <template>
-	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">仓库明细</div>
-		<div class="text-white q-pt-sm">
-			<span>包含入库、发货、领料、加工的商品明细</span>
+	<div class="q-pt-md q-pb-lg text-white">
+		<div class="text-h4 text-weight-bold">仓库明细</div>
+		<div class="q-pt-sm">
+			<div>1.仓库明细包含内部订单中的所有商品记录，如发货、入库、领料、加工等，您可以在这里处理某些内部订单中需要单独处理的商品</div>
+			<div>
+				2. <span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">货架</span>
+				中的库存数字，最终等于 入库 + 加工 - 领料- 发货
+			</div>
 		</div>
 	</div>
 
 	<div class="row q-pb-sm">
+		<q-btn-group class="q-mr-sm">
+			<q-btn
+				v-for="option in [
+					{ label: '发货记录', value: ENUM_ORDER.GETOUT },
+					{ label: '入库记录', value: ENUM_ORDER.GETIN },
+					{ label: '领料记录', value: ENUM_ORDER.MATERIAL },
+					{ label: '加工记录', value: ENUM_ORDER.PROCESS },
+				]"
+				push
+				square
+				:label="option.label"
+				:color="SkuStore.skuSearch.type === option.value ? 'indigo' : 'white'"
+				:text-color="SkuStore.skuSearch.type === option.value ? 'white' : 'grey'"
+				@click="
+					() => {
+						SkuStore.skuSearch.type = option.value;
+						SkuStore.get(1);
+						startIndex = -1;
+						endIndex = -1;
+					}
+				"
+			>
+				<q-badge v-if="AnalysisStore.skuNotConfirmed.find((e) => e.type === option.value)?.count" color="negative" floating>
+					{{ AnalysisStore.skuNotConfirmed.find((e) => e.type === option.value)?.count }}
+				</q-badge>
+			</q-btn>
+		</q-btn-group>
 		<q-btn-toggle
-			glossy
-			class="q-mr-sm"
+			push
+			square
 			color="white"
-			text-color="grey"
-			toggle-color="indigo"
-			v-model="SkuStore.skuSearch.type"
-			:options="[
-				{ label: '发货', value: ENUM_ORDER.GETOUT },
-				{ label: '入库', value: ENUM_ORDER.GETIN },
-				{ label: '领料', value: ENUM_ORDER.MATERIAL },
-				{ label: '加工', value: ENUM_ORDER.PROCESS },
-			]"
-			@update:model-value="
-				() => {
-					SkuStore.get(1);
-					startIndex = -1;
-					endIndex = -1;
-				}
-			"
-		>
-		</q-btn-toggle>
-		<q-btn-toggle
-			glossy
 			class="q-mr-sm"
-			color="white"
 			text-color="grey"
 			toggle-color="indigo"
 			v-model="SkuStore.skuSearch.isConfirmed"
 			:options="[
 				{ label: '已确认', value: true },
-				{ label: '待确认', value: false },
+				{ label: '待处理', value: false },
 			]"
 			@update:model-value="
 				() => {
@@ -48,11 +58,20 @@
 				}
 			"
 		>
+			<q-badge v-if="AnalysisStore.skuNotConfirmed.find((e) => e.type === SkuStore.skuSearch.type)?.count" color="negative" floating>
+				{{ AnalysisStore.skuNotConfirmed.find((e) => e.type === SkuStore.skuSearch.type)?.count }}
+			</q-badge>
 		</q-btn-toggle>
 
 		<q-space></q-space>
 
-		<q-btn glossy color="indigo" class="q-ml-sm" :disabled="endIndex == -1 || endIndex - startIndex < 0" @click="dialogCabinet = true"> 加入货架 </q-btn>
+		<q-btn push square color="indigo" class="q-ml-sm" :disabled="endIndex == -1 || endIndex - startIndex < 0" @click="dialogCabinet = true">
+			加入货架
+			<q-tooltip class="text-body1">
+				<div>当你期望在开单时，在货架上看到某些商品</div>
+				<div>您可以从上到下长按选中它们，并点击这个按钮</div>
+			</q-tooltip>
+		</q-btn>
 
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
@@ -62,11 +81,12 @@
 			</q-menu>
 		</q-btn>
 	</div>
+
 	<q-table
 		dense
 		row-key="_id"
 		separator="vertical"
-		class="my-sticky-header-table"
+		class="my-sticky-header-table select-none"
 		:columns="(SkuStore.columns as any)"
 		:visible-columns="SkuStore.visibleColumns"
 		:loading="SkuStore.loadding"
@@ -196,7 +216,7 @@
 					:class="{ 'text-indigo': SkuStore.sortKey === 'count' }"
 					@click="SkuStore.sort('count')"
 				>
-					<span>订单中的数量</span>
+					<span>单据中的数量</span>
 					<q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -206,7 +226,7 @@
 					:class="{ 'text-indigo': SkuStore.sortKey === 'pounds' }"
 					@click="SkuStore.sort('pounds')"
 				>
-					<span>订单中的重量</span>
+					<span>单据中的重量</span>
 					<q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -426,7 +446,7 @@
 		<q-card>
 			<q-toolbar>
 				<q-toolbar-title>
-					<div>在库库存</div>
+					<div>入库明细</div>
 				</q-toolbar-title>
 				<q-btn dense flat icon="close" v-close-popup></q-btn>
 			</q-toolbar>
@@ -441,8 +461,8 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
-import * as XLSX from "xlsx";
 import { cloneDeep, debounce } from "lodash";
+import { useRouter } from "vue-router";
 import { ENUM_LAYOUT_CABINET, MongodbSort, ENUM_ORDER } from "qqlx-core";
 import type { SkuInView } from "qqlx-core/dto/wmss/sku";
 import type { Cabinet } from "qqlx-core/schema/wmss/cabinet";
@@ -457,12 +477,15 @@ import { useNotifyStore } from "@/stores/notify";
 import { useCabinetStore } from "@/stores/cabinet";
 import { useCabinetUnitStore } from "@/stores/cabinetUnit";
 import { useSkuStore } from "@/stores/sku";
+import { useAnalysisStore } from "@/stores/analysis";
 
-const NotifyStore = useNotifyStore();
+const router = useRouter();
+// const NotifyStore = useNotifyStore();
 const ContactStore = useContactStore();
-const CabinetStore = useCabinetStore();
+// const CabinetStore = useCabinetStore();
 const CabinetUnitStore = useCabinetUnitStore();
 const SkuStore = useSkuStore();
+const AnalysisStore = useAnalysisStore();
 
 const date = new Date();
 const timePicked = ref({ from: `${date.getFullYear()}/01/01`, to: date.toLocaleString().split(" ")[0] });
@@ -504,6 +527,15 @@ const pickCabinet = async (cabinet: Cabinet) => {
 const swiperIndex = ref(0);
 const startIndex = ref(-1);
 const endIndex = ref(-1);
+
+const debounceGet = debounce(() => SkuStore.get(), 200);
+const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
+	if (details.index + 16 >= details.to) {
+		debounceGet();
+	}
+};
+
+// action
 const skuPicking = computed({
 	get() {
 		const calcu = { count: 0, pounds: 0, price: 0 };
@@ -517,15 +549,6 @@ const skuPicking = computed({
 	},
 	set() {},
 });
-
-const debounceGet = debounce(() => SkuStore.get(), 200);
-const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 16 >= details.to) {
-		debounceGet();
-	}
-};
-
-// action
 onMounted(async () => {
 	SkuStore.setSchema(ENUM_ORDER.GETOUT);
 	SkuStore.page = getPage();

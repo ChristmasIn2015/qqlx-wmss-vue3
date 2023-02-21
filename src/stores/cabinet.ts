@@ -36,21 +36,26 @@ function getSchema(): Cabinet {
 const recommand0 = getSchema();
 recommand0.name = "自定义";
 recommand0.unit = "您期望的单位";
+
 const recommand1 = getSchema();
-recommand1.name = "钢卷";
+recommand1.name = "冷轧卷";
 recommand1.unit = "个";
 recommand1.layout = ENUM_LAYOUT_CABINET.INDIVIDUAL;
+
 const recommand2 = getSchema();
-recommand2.name = "板材";
+recommand2.name = "冷轧板";
 recommand2.unit = "张";
 recommand2.formula = ENUM_POUNDS_FORMULA.STEEL_PLATE;
+
+const recommand3 = getSchema();
+recommand3.name = "费用";
 
 export const useCabinetStore = defineStore("Cabinet", {
 	state: () => ({
 		cabinetEditor: getSchema() as Cabinet,
 		cabinetSearch: getSchema() as Cabinet,
 		cabinetList: [] as Cabinet[],
-		cabinetListRecommand: [recommand0, recommand1, recommand2],
+		cabinetListRecommand: [recommand0, recommand3, recommand1, recommand2],
 
 		OPTION_ENUM_POUNDS_FORMULA: MAP_ENUM_POUNDS_FORMULA,
 		OPTION_ENUM_LAYOUT_CABINET: MAP_ENUM_LAYOUT_CABINET,
@@ -66,7 +71,8 @@ export const useCabinetStore = defineStore("Cabinet", {
 				const dto: postCabinetDto = this.cabinetEditor;
 				const res: postCabinetRes = await request.post(PATH_CABINET, { dto });
 				await this.get();
-				this.setSchema();
+
+				if (this.cabinetEditor.name) this.setSchema();
 				NotifyStore.success("创建成功");
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);

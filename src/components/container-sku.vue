@@ -22,7 +22,7 @@
 				<q-th key="count" :props="props">数量</q-th>
 				<q-th key="pounds" :props="props">过磅</q-th>
 				<q-th key="price" :props="props">
-					<span>合计</span>
+					<span>共</span>
 					<span class="q-mx-sm text-body1 text-negative text-weight-bold">{{ skuListPickedPriceTotal }}</span>
 					<span>元</span>
 				</q-th>
@@ -109,7 +109,11 @@
 						placeholder="请输入单价"
 						v-model="props.row.price"
 						:color="(route.meta?.color as string)"
-					/>
+					>
+						<template v-slot:after>
+							<span class="text-body1">元 / {{ props.row.isPriceInPounds ? "吨" : props.row.unit }}</span>
+						</template>
+					</q-input>
 				</q-td>
 				<q-td>
 					<q-input
@@ -133,7 +137,9 @@
 									<q-input
 										dense
 										square
+										filled
 										clearable
+										class="q-mb-sm"
 										clear-icon="close"
 										placeholder="请输入产地/钢厂"
 										input-class="text-body1"
@@ -142,8 +148,10 @@
 									/>
 									<q-input
 										dense
+										filled
 										square
 										clearable
+										class="q-mb-sm"
 										clear-icon="close"
 										placeholder="请输入材质"
 										input-class="text-body1"
@@ -153,7 +161,9 @@
 									<q-input
 										dense
 										square
+										filled
 										clearable
+										class="q-mb-sm"
 										clear-icon="close"
 										placeholder="请输入编号"
 										input-class="text-body1"

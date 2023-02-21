@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">发票</div>
+		<div class="text-h4 text-white text-weight-bold">发票</div>
 		<div class="text-white q-pt-sm">
 			<div>1.您可以根据实际收付款情况，对不同资金记录制作对应发票记录；</div>
 			<div>2.对记录记录点击修改，可以将实际收付款情况对应到资金记录中；</div>
@@ -140,7 +140,7 @@
 						clearable
 						color="purple-8"
 						clear-icon="close"
-						placeholder="搜索系统编"
+						placeholder="搜索系统编号"
 						v-model="InvoiceStore.invoiceSearch.code"
 						@blur="InvoiceStore.get(1)"
 					/>
@@ -222,7 +222,7 @@
 		</template>
 		<template v-slot:body="props">
 			<q-tr
-				class="cursor-crosshair"
+				class="cursor-crosshair select-none"
 				:class="{
 					'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
 				}"
@@ -313,7 +313,7 @@
 					已选择 {{ endIndex - startIndex + 1 }} 项
 
 					<a
-						class="q-ml-sm text-negative cursor-pointer"
+						class="q-ml-sm text-body2 text-weight-bold text-negative cursor-pointer"
 						@click="
 							() => {
 								InvoiceStore.delete(InvoiceStore.invoiceList.slice(startIndex, endIndex + 1));
@@ -378,14 +378,17 @@ const endIndex = ref(-1);
 
 // action
 const toEdit = (invoice: InvoiceInView) => {
+	const _invoice = cloneDeep(invoice);
 	InvoiceStore.setSchema(invoice);
 
 	const books: Book[] = [];
-	console.log(invoice.joinBookOfSelf);
-	invoice?.joinBookOfSelf &&
-		cloneDeep(invoice.joinBookOfSelf).map((e) => {
-			e.joinBook && books.push(e.joinBook);
-		});
+	invoice.joinBookOfSelf.map((e) => {
+		const origin = e.joinBook;
+		if (origin) {
+			origin.amount = e.amount;
+			books.push(origin);
+		}
+	});
 
 	BookStore.bookListPicked = books;
 	router.push("/wmss/finance/invoice-edit");

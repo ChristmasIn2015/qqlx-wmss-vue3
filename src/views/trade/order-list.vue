@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">{{ nowType === ENUM_ORDER.SALES ? "销售" : "采购" }}单列表</div>
+		<div class="text-h4 text-white text-weight-bold">{{ nowType === ENUM_ORDER.SALES ? "销售" : "采购" }}单列表</div>
 		<div class="text-white q-pt-sm">
 			<span>查看此公司的{{ nowType === ENUM_ORDER.SALES ? "销售" : "采购" }}单据</span>
 		</div>
@@ -10,7 +10,8 @@
 		<q-btn-group class="q-mr-sm">
 			<q-btn
 				class="text-body1"
-				glossy
+				push
+				square
 				label="销售单"
 				:color="nowType === ENUM_ORDER.SALES ? 'pink-6' : 'white'"
 				:text-color="nowType === ENUM_ORDER.SALES ? '' : 'black'"
@@ -18,7 +19,8 @@
 			/>
 			<q-btn
 				class="text-body1"
-				glossy
+				push
+				square
 				label="采购单"
 				:color="nowType === ENUM_ORDER.PURCHASE ? 'primary' : 'white'"
 				:text-color="nowType === ENUM_ORDER.PURCHASE ? '' : 'black'"
@@ -28,7 +30,8 @@
 
 		<q-btn
 			class="q-mr-sm text-body1"
-			glossy
+			push
+			square
 			label="最近删除"
 			:color="OrderStore.orderSearch.isDisabled ? 'pink-6' : 'white'"
 			:text-color="OrderStore.orderSearch.isDisabled ? '' : 'black'"
@@ -41,7 +44,8 @@
 		/>
 		<q-btn
 			class="q-mr-sm text-body1"
-			glossy
+			push
+			square
 			label="可复核"
 			:color="OrderStore.managerIdRequired ? 'pink-6' : 'white'"
 			:text-color="OrderStore.managerIdRequired ? '' : 'black'"
@@ -54,7 +58,8 @@
 		/>
 		<q-btn
 			class="q-mr-sm text-body1"
-			glossy
+			push
+			square
 			label="可结清"
 			:color="OrderStore.accounterIdIdRequired ? 'pink-6' : 'white'"
 			:text-color="OrderStore.accounterIdIdRequired ? '' : 'black'"
@@ -289,10 +294,10 @@
 									<q-tr>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
-										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.count }} {{ _props.row.unit }}</q-td>
-										<q-td :_props="_props" style="font-size: 16px"
-											>{{ _props.row.isPriceInPounds ? _props.row.pounds.toFixed(3) : "" }} 吨</q-td
-										>
+										<q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.count }} {{ _props.row.unit }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px" class="text-right">
+											<span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
+										</q-td>
 										<q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
 									</q-tr>
@@ -366,12 +371,16 @@
 								</q-card-section>
 								<q-separator class="q-mt-md" />
 								<q-card-actions align="right">
-									<q-btn class="q-ml-sm" text-color="negative" @click="OrderStore.delete(props.row._id)">{{
-										props.row.isDisabled ? "恢复" : "删除"
-									}}</q-btn>
+									<q-btn
+										class="q-ml-sm"
+										text-color="negative"
+										:disabled="!!props.row.managerId || !!props.row.accounterId || !!props.row.joinChildOrder"
+										@click="OrderStore.delete(props.row._id)"
+										>{{ props.row.isDisabled ? "恢复" : "删除" }}</q-btn
+									>
 									<q-btn
 										v-if="!props.row.isDisabled"
-										:disabled="!!props.row.managerId || !!props.row.accounterId"
+										:disabled="!!props.row.managerId || !!props.row.accounterId || !!props.row.joinChildOrder"
 										class="q-ml-sm"
 										text-color="primary"
 										@click="

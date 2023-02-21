@@ -1,7 +1,7 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">
-			<q-btn color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
+		<div class="text-h4 text-white text-weight-bold">
+			<q-btn dense color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
 			<span> 修改 {{ nowOrderEditorTrans?.text }} {{ OrderStore.orderEditor.code }} </span>
 		</div>
 		<div class="text-white q-pt-sm">
@@ -13,7 +13,7 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" square glossy push color="indigo" @click="putOrder()"> 修改 {{ OrderStore.orderEditor.code }} </q-btn>
+		<q-btn class="q-ml-sm" square push color="negative" @click="putOrder()"> 修改 {{ OrderStore.orderEditor.code }} </q-btn>
 	</div>
 
 	<picker-cabinet-unit />
@@ -59,6 +59,6 @@ const nowOrderEditorTrans = computed({
 onMounted(() => {
 	if (OrderStore.orderEditor._id) {
 		//
-	} else router.push("/wmss/system/setting");
+	} else router.push("/wmss/warehouse/order-list");
 });
 </script>

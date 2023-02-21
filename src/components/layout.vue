@@ -1,34 +1,40 @@
 <template>
 	<q-layout container view="lHh Lpr lff">
-		<q-drawer :width="180" show-if-above>
-			<div class="q-py-sm q-pl-md text-weight-bold text-h5 text-primary">开单办公室</div>
+		<q-drawer side="left" :width="180" show-if-above class="select-none hide-scrollbar bg-blue-grey-1">
+			<div class="q-pt-sm q-pl-md text-weight-bold text-h5" :class="`text-${route.meta?.color}`">开单办公室</div>
 
+			<!-- 导航 -->
+			<!-- 导航 -->
 			<q-list v-for="(container, index) in routes">
-				<div class="text-grey-13 q-px-md q-pt-sm">{{ container.name }}</div>
+				<div class="text-grey-13 q-px-md q-pt-md q-pb-sm">{{ container.name }}</div>
 				<router-link
 					v-for="route in container.children?.filter((e) => e.meta?.show)"
 					:to="`/wmss/${container.path}/${route.path}`"
 					v-slot="{ isActive }"
 				>
-					<q-item clickable :active="isActive" class="text-grey" :class.text-primary="isActive" active-class="bg-grey-11">
+					<q-item clickable :active="isActive" class="text-grey" :class.text-primary="isActive">
 						<q-item-section side class="q-pr-sm">
-							<q-avatar
-								:color="isActive ? (route.meta?.color as string) || 'primary' : ''"
-								:text-color="isActive ? 'white' : ''"
-								size="28px"
-								font-size="20px"
-								rounded
-								:icon="(route.meta?.icon as string)"
-							/>
+							<q-icon :name="(route.meta?.icon as string)" :class="isActive ? `text-${route.meta?.color}` : 'text-grey'"> </q-icon>
 						</q-item-section>
-						<q-item-section class="text-weight-bold text-body1" :class="'text-'+(isActive ? (route.meta?.color as string) || 'primary' : '')">
-							{{ route.name }}
+						<q-item-section class="text-weight-bold text-body1" :class="isActive ? `text-${route.meta?.color}` : 'text-grey'">
+							<span>
+								{{ route.name
+								}}<span
+									v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'"
+									class="bg-negative text-white q-px-xs q-ml-sm text-body2"
+									style="border-radius: 3px"
+									>{{ skuNotConfirmedAll }}</span
+								>
+							</span>
 						</q-item-section>
 					</q-item>
 				</router-link>
 			</q-list>
 
-			<q-list class="absolute-bottom bg-transparent">
+			<!-- 个人中心 -->
+			<!-- 个人中心 -->
+			<div style="height: 200px"></div>
+			<q-list class="absolute-bottom bg-white">
 				<q-item clickable @click="userDialog = true" class="q-pr-xs">
 					<q-item-section avatar>
 						<q-avatar rounded>
@@ -44,76 +50,70 @@
 					</q-item-section>
 				</q-item>
 			</q-list>
+			<q-dialog v-model="userDialog" persistent>
+				<q-card class="w-400">
+					<q-toolbar>
+						<q-toolbar-title>个人信息</q-toolbar-title>
+
+						<q-btn flat dense icon="close" v-close-popup />
+					</q-toolbar>
+
+					<q-separator />
+
+					<q-card-section>
+						<q-input filled label="用户昵称" class="q-mb-sm" v-model="UserStore.userEditor.nickname">
+							<template v-slot:before>
+								<q-icon name="person" />
+							</template>
+						</q-input>
+
+						<q-input filled disable label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
+							<template v-slot:before>
+								<q-icon name="event" />
+							</template>
+						</q-input>
+					</q-card-section>
+
+					<q-card-actions>
+						<q-btn color="negative" flat v-close-popup @click="router.push('/wmss/login')">
+							<q-icon name="logout"></q-icon>
+							<span class="q-ml-xs">退出</span>
+						</q-btn>
+						<q-space></q-space>
+						<q-btn color="primary" v-close-popup @click="UserStore.patch()"> 应用 </q-btn>
+					</q-card-actions>
+				</q-card>
+			</q-dialog>
 		</q-drawer>
 
 		<q-page-container>
-			<q-page>
-				<div class="app-background color-back-main" :class="{ 'color-back-warehouse': route.path.includes('warehouse') }"></div>
-				<div class="q-px-lg q-py-md" style="margin-top: -220px">
+			<q-page class="bg-blue-grey-1">
+				<div class="app-background bg-dark">
+					<q-img
+						style="width: 200px; float: right; top: 20px; right: 20px"
+						class="cursor-pointer select-none"
+						src="@/assets/index.png"
+						fit="cover"
+						@click="openWebTab()"
+					></q-img>
+				</div>
+				<div class="q-px-lg q-py-md" style="margin-top: -210px">
 					<router-view />
 				</div>
 			</q-page>
 		</q-page-container>
 	</q-layout>
-
-	<q-dialog v-model="userDialog" persistent>
-		<q-card class="w-400">
-			<q-toolbar>
-				<q-toolbar-title>个人信息</q-toolbar-title>
-
-				<q-btn flat dense icon="close" v-close-popup />
-			</q-toolbar>
-
-			<q-separator />
-
-			<q-card-section>
-				<q-input filled label="用户昵称" class="q-mb-sm" v-model="UserStore.userEditor.nickname">
-					<template v-slot:before>
-						<q-icon name="person" />
-					</template>
-				</q-input>
-
-				<q-input filled disable label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
-					<template v-slot:before>
-						<q-icon name="event" />
-					</template>
-				</q-input>
-			</q-card-section>
-
-			<q-card-actions>
-				<q-btn color="negative" flat v-close-popup @click="router.push('/wmss/login')">退出登录</q-btn>
-				<q-space></q-space>
-				<q-btn
-					color="primary"
-					push
-					v-close-popup
-					@click="
-						async () => {
-							await UserStore.patch();
-						}
-					"
-				>
-					应用
-				</q-btn>
-			</q-card-actions>
-		</q-card>
-	</q-dialog>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useCorpStore } from "@/stores/corp";
 import { useWarehouseStore } from "@/stores/warehouse";
-
-// import { useSubjectContactStore } from "@/store/subjectContact";
-// import { useSkuStore } from "@/store/sku";
-
-// import contactList from "@/components/contact-list.vue";
-// import skuList from "@/components/sku-list.vue";
+import { useAnalysisStore } from "@/stores/analysis";
 
 const route = useRoute();
 const router = useRouter();
@@ -123,27 +123,32 @@ const NotifyStore = useNotifyStore();
 const UserStore = useUserStore();
 const CorpStore = useCorpStore();
 const WarehouseStore = useWarehouseStore();
-// // const SubjectContactStore = useSubjectContactStore();
-// // const SkuStore = useSkuStore();
+const AnalysisStore = useAnalysisStore();
 
 const userDialog = ref(false);
+const openWebTab = () => window.open("https://qqlx.tech");
+
+// vue
+const skuNotConfirmedAll = computed({
+	get() {
+		let count = 0;
+		AnalysisStore.skuNotConfirmed.map((e) => (count += e.count));
+		return count;
+	},
+	set() {},
+});
 onMounted(async () => {
 	try {
 		await UserStore.setNowUser();
 		await CorpStore.get();
-		CorpStore.pick(CorpStore.corpList.filter((e) => e.isDisabled === false)[0]);
+		CorpStore.pick(CorpStore.corpList.find((e) => e.isDisabled === false));
+		await WarehouseStore.get();
+		WarehouseStore.pick(WarehouseStore.WarehouseList.find((e) => e.isDisabled === false));
+		await AnalysisStore.get();
 	} catch (error) {
 		NotifyStore.fail((error as Error).message);
 	}
 });
 </script>
 
-<style scoped lang="scss">
-.app-background {
-	height: 255px;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	border-bottom-left-radius: 16px;
-	border-bottom-right-radius: 16px;
-}
-</style>
+<style scoped lang="scss"></style>

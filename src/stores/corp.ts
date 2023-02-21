@@ -69,18 +69,15 @@ export const useCorpStore = defineStore("Corp", {
 				NotifyStore.fail((error as Error).message);
 			}
 		},
-		async pick(corp: Corp) {
+		async pick(corp?: Corp) {
 			try {
-				if (!corp) throw new Error(`请选择正确的公司`);
+				if (!corp) return;
 				this.corpPicked = corp;
 				localStorage.setItem("qqlx-corp-id", this.corpPicked._id);
-
-				await RoleWMSSStore.get();
 				NotifyStore.success(`切换 @${this.corpPicked.name} 成功`);
-				document.title = `开单办公室-${corp.name}`;
 
-				await WarehouseStore.get();
-				WarehouseStore.pick(WarehouseStore.WarehouseList.filter((e) => e.isDisabled === false)[0]);
+				// await WarehouseStore.get();
+				// WarehouseStore.pick(WarehouseStore.WarehouseList.filter((e) => e.isDisabled === false)[0]);
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			}

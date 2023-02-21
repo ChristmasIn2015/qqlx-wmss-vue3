@@ -21,12 +21,12 @@ import type { Sku } from "qqlx-core/schema/wmss/sku";
 
 import { getMongodbBase, request, getPage } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
-import { useCabinetUnitStore } from "@/stores/cabinetUnit";
+import { useAnalysisStore } from "@/stores/analysis";
 import { useSkuStore } from "@/stores/sku";
 import { useFeeStore } from "@/stores/fee";
 
 const NotifyStore = useNotifyStore();
-const CabinetUnitStore = useCabinetUnitStore();
+const AnalysisStore = useAnalysisStore();
 const SkuStore = useSkuStore();
 const FeeStore = useFeeStore();
 
@@ -143,6 +143,7 @@ export const useOrderStore = defineStore("Order", {
 
 				SkuStore.setSchema();
 				FeeStore.setSchema();
+				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			} finally {
@@ -160,6 +161,7 @@ export const useOrderStore = defineStore("Order", {
 				code = target.code;
 				this.orderEditor = this.getSchema(this.orderSearch.type);
 				NotifyStore.success("修改成功");
+				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			} finally {
@@ -173,6 +175,7 @@ export const useOrderStore = defineStore("Order", {
 
 				await this.get();
 				NotifyStore.success("操作成功");
+				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			}

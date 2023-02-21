@@ -10,8 +10,10 @@ import type { Sku } from "qqlx-core/schema/wmss/sku";
 
 import { getMongodbBase, request, getPage } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
+import { useAnalysisStore } from "@/stores/analysis";
 
 const NotifyStore = useNotifyStore();
+const AnalysisStore = useAnalysisStore();
 
 function getSchema(): Sku {
 	return {
@@ -48,21 +50,21 @@ function getSchema(): Sku {
 		...getMongodbBase(),
 	};
 }
-
+const cellStyle = { "font-size": "16px" };
 const columns = [
-	{ name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: "font-size: 16px;" },
-	{ name: "timeCreateString", field: "timeCreateString", label: "时间", style: "font-size: 16px; " },
-	{ name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: "font-size: 16px;" },
-	{ name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: "font-size: 16px;" },
-	{ name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: "font-size: 16px;" },
-	{ name: "orderId", field: "orderId", label: "订单编号", align: "left", style: "font-size: 16px;" },
-	{ name: "name", field: "name", label: "品名", align: "left", style: "font-size: 16px;" },
-	{ name: "norm", field: "norm", label: "规格", align: "left", style: "font-size: 16px;" },
-	{ name: "count", field: "count", label: "数量", style: "font-size: 16px;" },
-	{ name: "pounds", field: "pounds", label: "过磅", style: "font-size: 16px;" },
-	{ name: "price", field: "price", label: "单价", style: "font-size: 16px;" },
-	{ name: "remark", field: "remark", label: "备注", style: "font-size: 16px;" },
-	{ name: "_id", field: "_id", label: "操作", align: "left", style: "font-size: 16px; " },
+	{ name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: cellStyle },
+	{ name: "timeCreateString", field: "timeCreateString", label: "时间", style: cellStyle },
+	{ name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: cellStyle },
+	{ name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: cellStyle },
+	{ name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: cellStyle },
+	{ name: "orderId", field: "orderId", label: "订单编号", align: "left", style: cellStyle },
+	{ name: "name", field: "name", label: "品名", align: "left", style: cellStyle },
+	{ name: "norm", field: "norm", label: "规格", align: "left", style: cellStyle },
+	{ name: "count", field: "count", label: "数量", style: cellStyle },
+	{ name: "pounds", field: "pounds", label: "过磅", style: cellStyle },
+	{ name: "price", field: "price", label: "单价", style: cellStyle },
+	{ name: "remark", field: "remark", label: "备注", style: cellStyle },
+	{ name: "_id", field: "_id", label: "操作", align: "left", style: cellStyle },
 ];
 export const useSkuStore = defineStore("Sku", {
 	state: () => ({
@@ -125,6 +127,7 @@ export const useSkuStore = defineStore("Sku", {
 				}
 				await this.get(1);
 				NotifyStore.success("修改成功");
+				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			} finally {

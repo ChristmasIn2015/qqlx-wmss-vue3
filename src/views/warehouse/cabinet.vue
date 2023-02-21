@@ -1,10 +1,9 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">货架</div>
+		<div class="text-h4 text-white text-weight-bold">货架</div>
 		<div class="text-white q-pt-sm">
-			<div>1.您可以根据不同需求，设置不同的货架；如 “钢卷” “板材” “管材” 等您需要的钢材分类；</div>
-			<div>2.您可以在货架中添加商品，它们将用于制定采购计划、销售开单、内部领料、发货编辑等；</div>
-			<div>3.货架中的商品，其库存将会在 “发货” “入库” “领料” “加工” 后，自动计算，您可以点击明细查看详细库存变动情况；</div>
+			<div>1.您可以根据不同需求，设置如 “冷轧卷” “冷轧板” “管材” 等您需要的钢材分类；</div>
+			<div>2.您可以在货架中添加商品，它们将用于内部单据、采购销售开单等；</div>
 		</div>
 	</div>
 
@@ -44,7 +43,7 @@
 					<div class="col text-right">{{ cabinet.unit }}</div>
 				</div>
 				<div class="row">
-					<div class="col">商品开单</div>
+					<div class="col">性质</div>
 					<div class="col text-right" :class="CabinetStore.getLayoutChinese(cabinet.layout)?.tip ? 'text-indigo' : ''">
 						{{ CabinetStore.getLayoutChinese(cabinet.layout)?.text }}
 
@@ -74,9 +73,7 @@
 				>您也可以直接
 				<q-btn
 					push
-					glossy
 					square
-					class="q-mx-sm"
 					color="indigo"
 					@click="
 						() => {
@@ -116,7 +113,7 @@
 					<div class="col text-right">{{ cabinet.unit }}</div>
 				</div>
 				<div class="row">
-					<div class="col">商品开单</div>
+					<div class="col">性质</div>
 					<div class="col text-right">
 						{{ CabinetStore.getLayoutChinese(cabinet.layout)?.text }}
 						<q-tooltip v-if="CabinetStore.getLayoutChinese(cabinet.layout)?.tip" class="text-body1">
@@ -154,28 +151,14 @@
 						<q-icon name="dns" />
 					</template>
 				</q-input>
-				<q-input filled label="商品单位" class="q-mb-sm" v-model="CabinetStore.cabinetEditor.unit">
+				<q-input filled label="单位" class="q-mb-sm" v-model="CabinetStore.cabinetEditor.unit">
 					<template v-slot:before>
 						<q-icon name="" />
 					</template>
 				</q-input>
 				<q-select
 					filled
-					label="商品过磅公式"
-					class="q-mb-sm"
-					v-model="CabinetStore.cabinetEditor.formula"
-					emit-value
-					map-options
-					option-label="text"
-					:options="CabinetStore.OPTION_ENUM_POUNDS_FORMULA"
-				>
-					<template v-slot:before>
-						<q-icon name="" />
-					</template>
-				</q-select>
-				<q-select
-					filled
-					label="商品开单"
+					label="性质"
 					class="q-mb-sm"
 					v-model="CabinetStore.cabinetEditor.layout"
 					emit-value
@@ -187,13 +170,26 @@
 						<q-icon name="" />
 					</template>
 				</q-select>
+				<q-select
+					filled
+					label="过磅公式"
+					class="q-mb-sm"
+					v-model="CabinetStore.cabinetEditor.formula"
+					emit-value
+					map-options
+					option-label="text"
+					:options="CabinetStore.OPTION_ENUM_POUNDS_FORMULA"
+				>
+					<template v-slot:before>
+						<q-icon name="" />
+					</template>
+				</q-select>
 			</q-card-section>
 
 			<q-card-actions align="right">
 				<q-btn
 					color="indigo"
 					push
-					glossy
 					square
 					@click="
 						async () => {

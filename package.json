@@ -17,7 +17,7 @@
 		"lodash": "^4.17.21",
 		"material-icons": "^1.13.1",
 		"pinia": "^2.0.28",
-		"qqlx-core": "^0.1.59",
+		"qqlx-core": "^0.1.64",
 		"quasar": "^2.11.5",
 		"swiper": "^9.0.4",
 		"vue": "^3.2.45",

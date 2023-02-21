@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">采购开单</div>
+		<div class="text-h4 text-white text-weight-bold">采购开单</div>
 		<div class="text-white q-pt-sm">
 			<span>您正在以公司 @{{ CorpStore.corpPicked?.name }} 作为主体开出采购单据</span>
 		</div>
@@ -10,13 +10,10 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" push square glossy color="green-7" @click="contactDialog = true"
-			>{{ contactPicked._id ? contactPicked.name : "选择供应商" }}
-		</q-btn>
+		<q-btn class="q-ml-sm" push square color="green-7" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择供应商" }} </q-btn>
 		<q-btn
 			class="q-ml-sm"
 			square
-			glossy
 			push
 			color="primary"
 			v-if="contactPicked._id"

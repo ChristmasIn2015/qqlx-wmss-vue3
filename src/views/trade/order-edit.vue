@@ -1,6 +1,6 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h5 text-white text-weight-bold">
+		<div class="text-h4 text-white text-weight-bold">
 			<q-btn color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
 			<span> 修改 {{ nowOrderEditorTrans?.text }} {{ OrderStore.orderEditor.code }} </span>
 		</div>
@@ -13,13 +13,13 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" push square glossy color="green-7" @click="contactDialog = true"
+		<q-btn class="q-ml-sm" push square  color="green-7" @click="contactDialog = true"
 			>{{ contactPicked._id ? contactPicked.name : "选择客户" }}
 		</q-btn>
 		<q-btn
 			class="q-ml-sm"
 			square
-			glossy
+			
 			push
 			:color="OrderStore.orderEditor.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
 			v-if="contactPicked._id"

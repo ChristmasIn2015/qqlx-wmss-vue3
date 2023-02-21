@@ -91,12 +91,15 @@ export const useBookStore = defineStore("Book", {
 			try {
 				const excels = cloneDeep(this.bookListExcel);
 				while (excels.length > 0) {
+					excels.forEach((e) => {
+						e.type = this.bookSearch.type;
+						e.direction = this.bookSearch.direction;
+					});
 					const dto: postBookDto = { excels: excels.splice(0, 80) };
 					const res: postBookRes = await request.post(PATH_BOOK, { dto });
 				}
 				await this.get(1);
 
-				this.setSchema();
 				this.bookListExcel = [];
 				NotifyStore.success("添加成功");
 			} catch (error) {

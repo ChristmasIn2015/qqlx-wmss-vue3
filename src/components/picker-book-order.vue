@@ -40,7 +40,7 @@
 						filled
 						dense
 						clearable
-						color="pink-6"
+						:color="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
 						clear-icon="close"
 						placeholder="搜索批次"
 						style="margin-left: -6px"
@@ -49,7 +49,13 @@
 					/>
 				</q-th>
 				<q-th key="contactId" :props="props" style="width: 188px">
-					<q-btn class="q-px-none" flat square color="pink-6" @click="contactDialog = true">
+					<q-btn
+						class="q-px-none"
+						flat
+						square
+						:color="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
+						@click="contactDialog = true"
+					>
 						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
 					</q-btn>
 					<q-btn
@@ -69,21 +75,21 @@
 						<q-icon name="close" style="margin-bottom: -4px"></q-icon>
 					</q-btn>
 				</q-th>
-				<q-th class="text-right cursor-pointer" :class="{ 'text-pink-6': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
+				<q-th class="text-right cursor-pointer" :class="{ 'text-primary': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
 					<span>金额 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
 					class="text-right cursor-pointer"
-					:class="{ 'text-pink-6': OrderStore.sortKey === 'amountBookOfOrder' }"
+					:class="{ 'text-primary': OrderStore.sortKey === 'amountBookOfOrder' }"
 					@click="OrderStore.sort('amountBookOfOrder')"
 				>
-					<span>已收款 </span>
+					<span>{{ OrderStore.orderSearch.type === ENUM_ORDER.SALES ? "已收款" : "已付款" }} </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
 					class="text-left cursor-pointer"
-					:class="{ 'text-pink-6': OrderStore.sortKey === 'amountBookOfOrderRest' }"
+					:class="{ 'text-primary': OrderStore.sortKey === 'amountBookOfOrderRest' }"
 					@click="OrderStore.sort('amountBookOfOrderRest')"
 				>
 					<span>剩余 </span>
@@ -91,7 +97,7 @@
 				</q-th>
 				<q-th class="text-left">操作</q-th>
 				<q-th class="text-left">备注</q-th>
-				<q-th class="text-left cursor-pointer" :class="{ 'text-pink-6': OrderStore.sortKey === 'timeCreate' }" @click="OrderStore.sort('timeCreate')">
+				<q-th class="text-left cursor-pointer" :class="{ 'text-primary': OrderStore.sortKey === 'timeCreate' }" @click="OrderStore.sort('timeCreate')">
 					<span>时间 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
@@ -131,11 +137,13 @@
 				<q-td key="_id" :props="props">
 					<span
 						v-if="OrderStore.orderListPicked.find((e) => e._id === props.row._id) ? false : true"
-						class="cursor-pointer text-pink-6 text-body1"
+						class="cursor-pointer text-body1"
+						:class="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'text-pink-6' : 'text-primary'"
 						@click="pick(props.row)"
 					>
 						选择
 					</span>
+					<span v-else class="text-body1 text-grey"> 已选择 </span>
 				</q-td>
 				<q-td key="remark" :props="props"> {{ props.row.remark || "-" }} </q-td>
 				<q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
