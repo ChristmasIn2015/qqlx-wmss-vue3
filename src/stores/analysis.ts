@@ -21,7 +21,6 @@ export const useAnalysisStore = defineStore("Analysis", {
 			try {
 				const dto: getAnalysisDto = null;
 				const res: getAnalysisRes = await request.get(PATH_ANALYSIS, { dto });
-				console.log(res.skuNotConfirmed);
 				this.skuNotConfirmed = res.skuNotConfirmed;
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);

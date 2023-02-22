@@ -10,7 +10,7 @@
 	<div class="q-pb-sm row">
 		<q-btn-group class="q-mr-sm">
 			<q-btn
-				glossy
+				push
 				square
 				label="销项发票"
 				:color="
@@ -33,7 +33,7 @@
 				"
 			/>
 			<q-btn
-				glossy
+				push
 				square
 				label="进项发票"
 				:color="
@@ -57,9 +57,10 @@
 			/>
 		</q-btn-group>
 		<q-btn
-			class="q-mr-sm"
-			glossy
+			push
+			square
 			label="最近删除"
+			class="q-mr-sm"
 			:color="InvoiceStore.invoiceSearch.isDisabled ? 'purple-8' : 'white'"
 			:text-color="InvoiceStore.invoiceSearch.isDisabled ? '' : 'grey'"
 			@click="
@@ -73,11 +74,12 @@
 		<q-space></q-space>
 
 		<q-btn
+			push
+			square
+			label="继续添加"
 			class="q-ml-sm"
 			color="purple-8"
 			:loading="InvoiceStore.loadding"
-			glossy
-			label="继续添加"
 			@click="
 				() => {
 					InvoiceStore.setSchema(InvoiceStore.getSchema(InvoiceStore.invoiceSearch.type, InvoiceStore.invoiceSearch.direction));
@@ -382,7 +384,7 @@ const toEdit = (invoice: InvoiceInView) => {
 	InvoiceStore.setSchema(invoice);
 
 	const books: Book[] = [];
-	invoice.joinBookOfSelf.map((e) => {
+	invoice.joinBookOfSelf?.map((e) => {
 		const origin = e.joinBook;
 		if (origin) {
 			origin.amount = e.amount;

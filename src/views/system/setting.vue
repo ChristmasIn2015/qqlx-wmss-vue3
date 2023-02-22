@@ -27,9 +27,16 @@
 			</q-btn>
 		</div>
 		<div class="text-white q-mt-md">
-			您的使用数据，如订单信息、库存信息等，都将会保存在
-			<span class="text-weight-bold">@{{ CorpStore.corpPicked?.name }}</span>
-			中。
+			<div>
+				您的使用数据，如订单信息、库存信息等，都将会保存在
+				<span class="text-weight-bold">@{{ CorpStore.corpPicked?.name }}</span>
+				中；
+			</div>
+			<div>
+				当前公司，剩余可用时间
+				<span class="text-weight-bold text-positive">123</span>，
+				<span class="text-weight-bold text-negative cursor-pointer" @click="router.push('/wmss/system/pay')">点击充值</span>；
+			</div>
 		</div>
 	</div>
 
@@ -88,7 +95,7 @@
 	</div>
 
 	<div class="q-pt-md q-pb-lg q-mt-lg">
-		<div class="text-h4 text-weight-bold row items-center">
+		<div class="text-h5 text-weight-bold row items-center">
 			<span>提货仓库</span>
 			<q-btn dense icon="more_vert" class="q-ml-sm" style="margin-bottom: 3px">
 				<q-menu>
@@ -269,6 +276,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useRouter } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { ENUM_ROLE_WMSS, MAP_ENUM_ROLE_WMSS } from "qqlx-core";
 
@@ -278,6 +286,7 @@ import { useCorpStore } from "@/stores/corp";
 import { useWarehouseStore } from "@/stores/warehouse";
 import { useRoleWMSSStore } from "@/stores/role";
 
+const router = useRouter();
 const CorpStore = useCorpStore();
 const WarehouseStore = useWarehouseStore();
 

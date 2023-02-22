@@ -130,6 +130,12 @@ const routes = [
 						component: () => import("@/views/system/role.vue"),
 						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: true },
 					},
+					{
+						path: "pay",
+						name: "支付",
+						component: () => import("@/views/system/pay.vue"),
+						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: false },
+					},
 				],
 			},
 		],
