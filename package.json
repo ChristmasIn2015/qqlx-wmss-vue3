@@ -18,7 +18,7 @@
 		"lodash": "^4.17.21",
 		"material-icons": "^1.13.1",
 		"pinia": "^2.0.28",
-		"qqlx-core": "^0.1.64",
+		"qqlx-core": "^0.1.66",
 		"qrcode": "^1.5.1",
 		"quasar": "^2.11.5",
 		"swiper": "^9.0.4",

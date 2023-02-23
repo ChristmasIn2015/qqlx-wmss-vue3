@@ -10,10 +10,12 @@ import { getMongodbBase, request } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
 import { useWarehouseStore } from "@/stores/warehouse";
 import { useRoleWMSSStore } from "@/stores/role";
+import { useAnalysisStore } from "@/stores/analysis";
 
 const NotifyStore = useNotifyStore();
-const RoleWMSSStore = useRoleWMSSStore();
-const WarehouseStore = useWarehouseStore();
+// const RoleWMSSStore = useRoleWMSSStore();
+// const WarehouseStore = useWarehouseStore();
+const AnalysisStore = useAnalysisStore();
 
 function getSchema(): Corp {
 	return {
@@ -76,8 +78,7 @@ export const useCorpStore = defineStore("Corp", {
 				localStorage.setItem("qqlx-corp-id", this.corpPicked._id);
 				NotifyStore.success(`切换 @${this.corpPicked.name} 成功`);
 
-				// await WarehouseStore.get();
-				// WarehouseStore.pick(WarehouseStore.WarehouseList.filter((e) => e.isDisabled === false)[0]);
+				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			}

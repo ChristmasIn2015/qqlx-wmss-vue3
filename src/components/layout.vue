@@ -18,13 +18,14 @@
 						</q-item-section>
 						<q-item-section class="text-weight-bold text-body1" :class="isActive ? `text-${route.meta?.color}` : 'text-grey'">
 							<span>
-								{{ route.name
-								}}<span
+								{{ route.name }}
+								<span
 									v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'"
 									class="bg-negative text-white q-px-xs q-ml-sm text-body2"
 									style="border-radius: 3px"
-									>{{ skuNotConfirmedAll }}</span
 								>
+									{{ skuNotConfirmedAll }}
+								</span>
 							</span>
 						</q-item-section>
 					</q-item>
@@ -43,9 +44,9 @@
 					</q-item-section>
 					<q-item-section>
 						<q-item-label class="text-weight-bold ellipsis">{{ UserStore.userEditor?.nickname }}</q-item-label>
-						<q-item-label caption>欢迎使用</q-item-label>
+						<q-item-label caption class="ellipsis">{{ scheduleString }}</q-item-label>
 					</q-item-section>
-					<q-item-section side>
+					<q-item-section side style="padding-left: 4px">
 						<q-icon name="unfold_more" />
 					</q-item-section>
 				</q-item>
@@ -72,6 +73,13 @@
 								<q-icon name="event" />
 							</template>
 						</q-input>
+
+						<q-input filled readonly label="当前公司剩余时长" class="q-mb-sm" v-model="scheduleString">
+							<template v-slot:before>
+								<q-icon name="" />
+							</template>
+						</q-input>
+						<span v-close-popup class="q-ml-lg q-pl-md cursor-pointer text-negative" @click="router.push('/wmss/system/pay')">点击充值</span>
 					</q-card-section>
 
 					<q-card-actions>
@@ -109,6 +117,7 @@
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
+import { getTimeGap } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useCorpStore } from "@/stores/corp";
@@ -137,6 +146,15 @@ const skuNotConfirmedAll = computed({
 	},
 	set() {},
 });
+const scheduleString = computed({
+	get() {
+		const now = Date.now();
+		const last = AnalysisStore.lastActiveScheduleCardOrder;
+		const deadline = last ? last.timeCreate + (last.joinCard?.schedule || 0) : 0;
+		return now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now);
+	},
+	set() {},
+});
 onMounted(async () => {
 	try {
 		await UserStore.setNowUser();
@@ -144,7 +162,6 @@ onMounted(async () => {
 		CorpStore.pick(CorpStore.corpList.find((e) => e.isDisabled === false));
 		await WarehouseStore.get();
 		WarehouseStore.pick(WarehouseStore.WarehouseList.find((e) => e.isDisabled === false));
-		await AnalysisStore.get();
 	} catch (error) {
 		NotifyStore.fail((error as Error).message);
 	}

@@ -2,7 +2,11 @@
 	<div class="q-pt-md q-pb-lg">
 		<div class="text-h4 text-white text-weight-bold">支付中心</div>
 		<div class="text-white q-pt-sm">
-			<div>您正在为 @{{ CorpStore.corpPicked?.name }} 进行时长充值；</div>
+			<div>
+				您正在为 @{{ CorpStore.corpPicked?.name }}
+				<span class="text-positive">{{ scheduleString }}</span>
+				，进行时长充值；
+			</div>
 		</div>
 	</div>
 
@@ -35,12 +39,14 @@
 		<div class="text-h5 text-dark text-weight-bold">购买记录</div>
 	</div>
 	<q-table
+		class="w-1000"
 		dense
 		row-key="_id"
 		:columns="[
-			{ name: 'timeCreateString', field: 'timeCreateString', label: '购买时间', align: 'left' },
+			{ name: 'timeCreateString', field: 'timeCreateString', label: '生效时间', align: 'left' },
 			{ name: 'title', field: 'title', label: '商品名称', align: 'left' },
 			{ name: 'desc', field: 'desc', label: '描述', align: 'left' },
+			{ name: 'schedule', field: 'schedule', label: '含时长', align: 'right' },
 			{ name: 'amount', field: 'amount', label: '支付金额', align: 'right' },
 			{ name: 'status', field: 'status', label: '支付状态', align: 'right' },
 		]"
@@ -53,6 +59,7 @@
 				<q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
 				<q-td key="title" :props="props"> {{ props.row.joinCard?.title }} </q-td>
 				<q-td key="desc" :props="props"> {{ props.row.joinCard?.desc }} </q-td>
+				<q-td key="schedule" :props="props"> {{ props.row.joinCard?.schedule / 86400000 }} 天</q-td>
 				<q-td key="amount" :props="props"> {{ props.row.amount }} 元 </q-td>
 				<q-td key="status" :props="props"> {{ MAP_ENUM_PAY_STATUS_WECHAT.find((e) => e.value === props.row.statusWeChatPay)?.text }} </q-td>
 			</q-tr>
@@ -60,7 +67,7 @@
 	</q-table>
 
 	<q-dialog v-model="ScheduleCardOrderStore.dialog" persistent>
-		<q-card class="w-400">
+		<q-card class="w-600">
 			<q-card-section>
 				<div class="text-h5 text-weight-bold">购买时长</div>
 				<div class="text-caption text-grey">
@@ -88,18 +95,30 @@ import { Notify, useQuasar } from "quasar";
 import { ENUM_ROLE_WMSS, MAP_ENUM_ROLE_WMSS, MAP_ENUM_PAY_STATUS_WECHAT } from "qqlx-core";
 import type { RoleWMSSJoined } from "qqlx-core/dto/wmss/role";
 
+import { getTimeGap } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useCorpStore } from "@/stores/corp";
 import { useScheduleCardStore } from "@/stores/scheduleCard";
 import { useScheduleCardOrderStore } from "@/stores/scheduleCardOrder";
+import { useAnalysisStore } from "@/stores/analysis";
 
 const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
 const ScheduleCardStore = useScheduleCardStore();
 const ScheduleCardOrderStore = useScheduleCardOrderStore();
+const AnalysisStore = useAnalysisStore();
 
 // action
+const scheduleString = computed({
+	get() {
+		const now = Date.now();
+		const last = AnalysisStore.lastActiveScheduleCardOrder;
+		const deadline = last ? last.timeCreate + (last.joinCard?.schedule || 0) : 0;
+		return now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now);
+	},
+	set() {},
+});
 onMounted(() => {
 	ScheduleCardStore.get();
 	ScheduleCardOrderStore.get(1);

@@ -25,11 +25,15 @@ class Request {
 			return config;
 		});
 		this.localAxios.interceptors.response.use(function (response) {
-			if (response.status === 200 && ["40301", "40302"].includes(response.data?.code)) {
-				setTimeout(() => {
-					localStorage.setItem("qqlx-token", "");
-					window.location.assign("/wmss/login");
-				}, 2000);
+			if (response.status === 200) {
+				if (["40301", "40302"].includes(response.data?.code)) {
+					setTimeout(() => {
+						localStorage.setItem("qqlx-token", "");
+						window.location.assign("/wmss/login");
+					}, 2000);
+				} else if (["20001"].includes(response.data?.code)) {
+					setTimeout(() => window.location.assign("/wmss/system/pay"), 2000);
+				}
 			}
 			return response;
 		});
@@ -172,4 +176,22 @@ export function getChineseMoney(n: number) {
 			.replace(/(零.)+/g, "零")
 			.replace(/^整$/, "零元整")
 	);
+}
+
+// 获取从A-B时间，共有多少天时秒
+export function getTimeGap(big: number, small: number) {
+	const gap = big - small;
+
+	const hour = ~~(gap / 1000 / 60 / 60) % 24;
+	const _hour = hour < 10 ? `0${hour}` : hour.toString();
+
+	const min = ~~(gap / 1000 / 60) % 60;
+	const _min = min < 10 ? `0${min}` : min.toString();
+
+	const sec = ~~(gap / 1000) % 60;
+	const _sec = sec < 10 ? `0${sec}` : sec.toString();
+
+	const day = ~~(gap / 1000 / 60 / 60 / 24);
+
+	return `${day}天 ${_hour}:${_min}:${_sec}`;
 }

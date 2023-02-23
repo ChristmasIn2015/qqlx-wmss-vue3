@@ -33,9 +33,9 @@
 				中；
 			</div>
 			<div>
-				当前公司，剩余可用时间
-				<span class="text-weight-bold text-positive">123</span>，
-				<span class="text-weight-bold text-negative cursor-pointer" @click="router.push('/wmss/system/pay')">点击充值</span>；
+				当前
+				<span class="text-weight-bold text-positive">{{ scheduleString }}</span
+				>， <span class="text-weight-bold text-negative cursor-pointer" @click="router.push('/wmss/system/pay')">点击充值</span>；
 			</div>
 		</div>
 	</div>
@@ -280,15 +280,18 @@ import { useRouter } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { ENUM_ROLE_WMSS, MAP_ENUM_ROLE_WMSS } from "qqlx-core";
 
+import { getTimeGap } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useCorpStore } from "@/stores/corp";
 import { useWarehouseStore } from "@/stores/warehouse";
 import { useRoleWMSSStore } from "@/stores/role";
+import { useAnalysisStore } from "@/stores/analysis";
 
 const router = useRouter();
 const CorpStore = useCorpStore();
 const WarehouseStore = useWarehouseStore();
+const AnalysisStore = useAnalysisStore();
 
 const showCorpDisabled = ref(false);
 const dialogCorp = ref(false);
@@ -296,6 +299,17 @@ const showWarehouseDisabled = ref(false);
 const dialogWarehouse = ref(false);
 
 const dialogRoleWMSS = ref(false);
+
+// vue
+const scheduleString = computed({
+	get() {
+		const now = Date.now();
+		const last = AnalysisStore.lastActiveScheduleCardOrder;
+		const deadline = last ? last.timeCreate + (last.joinCard?.schedule || 0) : 0;
+		return now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now);
+	},
+	set() {},
+});
 </script>
 
 <style scoped lang="scss"></style>

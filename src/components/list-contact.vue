@@ -175,7 +175,8 @@ const ContactStore = useContactStore();
 
 const debounceGet = debounce(() => ContactStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 17 >= ContactStore.contactList.length) {
+	console.log(details);
+	if (details.index + 16 >= details.to) {
 		debounceGet();
 	}
 };

@@ -17,7 +17,9 @@ import type { ScheduleCardOrderJoined } from "qqlx-core/dto/market/scheduleCardO
 
 import { getMongodbBase, request, getPage } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
+import { useAnalysisStore } from "@/stores/analysis";
 const NotifyStore = useNotifyStore();
+const AnalysisStore = useAnalysisStore();
 
 function getSchema(): ScheduleCardOrder {
 	return {
@@ -32,7 +34,7 @@ export const useScheduleCardOrderStore = defineStore({
 	id: "ScheduleCardOrder",
 	state: () => ({
 		list: [] as ScheduleCardOrderJoined[],
-		page: getPage(15),
+		page: getPage(999),
 		total: 0,
 		loadding: false,
 		//
@@ -45,6 +47,9 @@ export const useScheduleCardOrderStore = defineStore({
 				this.loadding = true;
 				this.page.page = page;
 				const corpId = localStorage.getItem("qqlx-corp-id") as string;
+				await this.patch();
+				await AnalysisStore.get();
+
 				const dto: getScheduleCardOrderDto = { page: this.page, corpId };
 				const res: getScheduleCardOrderRes = await request.get(PATH_SCHEDULE_CARD_ORDER, { dto });
 
@@ -63,8 +68,7 @@ export const useScheduleCardOrderStore = defineStore({
 				const schema = this.getSchema();
 				schema.cardId = card._id;
 				const dto: postScheduleCardOrderDto = { schema, corpId };
-				const res: postScheduleCardOrderRes = "weixin://wxpay/bizpayurl?pr=joQUXwQzz";
-				// await request.post(PATH_SCHEDULE_CARD_ORDER, { dto });
+				const res: postScheduleCardOrderRes = await request.post(PATH_SCHEDULE_CARD_ORDER, { dto });
 
 				this.WeChatPayUrl = await QrCode.toDataURL(res);
 				this.dialog = true;
@@ -75,16 +79,9 @@ export const useScheduleCardOrderStore = defineStore({
 			}
 		},
 		async patch() {
-			try {
-				const corpId = localStorage.getItem("qqlx-corp-id") as string;
-				const dto: patchScheduleCardOrderDto = { corpId };
-				const res: patchScheduleCardOrderRes = await request.patch(PATH_SCHEDULE_CARD_ORDER, { dto });
-
-				await this.get();
-				NotifyStore.success("刷新成功");
-			} catch (error) {
-				NotifyStore.fail((error as Error).message);
-			}
+			const corpId = localStorage.getItem("qqlx-corp-id") as string;
+			const dto: patchScheduleCardOrderDto = { corpId };
+			const res: patchScheduleCardOrderRes = await request.patch(PATH_SCHEDULE_CARD_ORDER, { dto });
 		},
 		getSchema() {
 			const schema: ScheduleCardOrder = getSchema();

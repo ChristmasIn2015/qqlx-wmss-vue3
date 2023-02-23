@@ -31,6 +31,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
+import { getTimeGap } from "@/utils";
 import { useUserStore } from "@/stores/user";
 import { useRoleWMSSStore } from "@/stores/role";
 import { useNotifyStore } from "@/stores/notify";
@@ -88,21 +89,7 @@ onMounted(async () => {
 	const start = new Date(`2021/06/01 08:35:26`).getTime();
 
 	if (window.loginTimer) clearInterval(window.loginTimer);
-	window.loginTimer = setInterval(() => {
-		const gap = Date.now() - start;
-
-		const hour = ~~(gap / 1000 / 60 / 60) % 24;
-		const _hour = hour < 10 ? `0${hour}` : hour.toString();
-
-		const min = ~~(gap / 1000 / 60) % 60;
-		const _min = min < 10 ? `0${min}` : min.toString();
-
-		const sec = ~~(gap / 1000) % 60;
-		const _sec = sec < 10 ? `0${sec}` : sec.toString();
-
-		const day = ~~(gap / 1000 / 60 / 60 / 24);
-		time.value = `${day}天 ${_hour}:${_min}:${_sec}`;
-	}, 1000);
+	window.loginTimer = setInterval(() => (time.value = getTimeGap(Date.now(), start)), 1000);
 });
 </script>
 
