@@ -2141,10 +2141,10 @@ punycode@^2.1.1:
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-qqlx-core@^0.1.66:
-  version "0.1.66"
-  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-0.1.66.tgz#e2f1fc620966ae65ad067ddd653cf58e269664d1"
-  integrity sha512-PtBTgB3hHUMG4mVjL3YS9p9VlR0w56hU8oYKywiiQrR5JYCML/5BrGGv1+NV/EZKa2jmd5FrPT5rOjM6Ar7fFA==
+qqlx-core@^0.1.67:
+  version "0.1.67"
+  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-0.1.67.tgz#d8cf5d2f660d04a969bfce953cc6fa78fb58b40d"
+  integrity sha512-zc9GYXbgSVYEu+J8yOmfTdWxnpYDpx1PeIlorZblC2/Cu5558na4XbSzjUZeq+n+2DKewAjuKcBD90Gy0QTMAQ==
   dependencies:
     esbuild "^0.17.0"
     mongodb "^4.13.0"
