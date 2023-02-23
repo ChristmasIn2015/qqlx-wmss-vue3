@@ -25,7 +25,7 @@ class Request {
 			return config;
 		});
 		this.localAxios.interceptors.response.use(function (response) {
-			if (response.status === 200) {
+			if ([200, 201].includes(response.status)) {
 				if (["40301", "40302"].includes(response.data?.code)) {
 					setTimeout(() => {
 						localStorage.setItem("qqlx-token", "");
