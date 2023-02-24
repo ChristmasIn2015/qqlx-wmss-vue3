@@ -1,5 +1,17 @@
 <template>
 	<div class="q-pb-sm row">
+		<q-btn
+			:color="BookStore.isAmountBookOfSelfRest ? 'teal' : ''"
+			:text-color="BookStore.isAmountBookOfSelfRest ? '' : 'black'"
+			@click="
+				() => {
+					BookStore.isAmountBookOfSelfRest = !BookStore.isAmountBookOfSelfRest;
+					BookStore.get(1);
+				}
+			"
+		>
+			仅查看可开票
+		</q-btn>
 		<q-space></q-space>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
@@ -94,7 +106,7 @@
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfOrder' }"
 					@click="BookStore.sort('amountBookOfOrder')"
 				>
-					<span>可开票</span>
+					<span>已结清</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -134,23 +146,7 @@
 			</q-tr>
 		</template>
 		<template v-slot:body="props">
-			<q-tr
-				class="cursor-crosshair"
-				:class="{
-					'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
-				}"
-				@mousedown.capture.stop="
-					() => {
-						endIndex = props.rowIndex;
-						startIndex = props.rowIndex;
-					}
-				"
-				@mouseup.capture.stop="
-					() => {
-						endIndex = props.rowIndex > startIndex ? props.rowIndex : startIndex;
-					}
-				"
-			>
+			<q-tr>
 				<q-td key="type" :style="tableStyle">
 					<span v-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.DAI">收款</span>
 					<span v-else-if="BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && BookStore.bookSearch.direction === ENUM_BOOK_DIRECTION.JIE">
@@ -161,9 +157,6 @@
 				<q-td key="code" :props="props" :style="tableStyle">{{ props.row.code }}</q-td>
 				<q-td key="keyOrigin" :props="props" :style="tableStyle">{{ props.row.keyOrigin }}</q-td>
 				<q-td key="keyHouse" :props="props" :style="tableStyle">{{ props.row.keyHouse }}</q-td>
-				<!-- <q-td key="amount" :props="props" :style="tableStyle">
-					{{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-				</q-td> -->
 				<q-td key="amountBookOfOrder" :props="props" :style="tableStyle">
 					{{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
 				</q-td>
@@ -179,17 +172,6 @@
 				>
 					{{ props.row.amountBookOfSelf.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
 				</q-td>
-				<!-- <q-td
-					key="amountBookOfSelfRest"
-					:props="props"
-					:style="tableStyle"
-					:class="{
-						'text-grey': props.row.amountBookOfSelfRest < 1,
-						'text-weight-bold': props.row.amountBookOfSelfRest >= 1,
-					}"
-				>
-					{{ props.row.amountBookOfSelfRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-				</q-td> -->
 				<q-td key="remark" :props="props" :style="tableStyle">
 					<span class="cursor-pointer" :class="props.row.remark ? '' : 'text-grey'">
 						{{ props.row.remark || "-" }}
@@ -252,9 +234,6 @@ const loadPage = (details: { index: number; from: number; to: number; direction:
 	}
 };
 
-const swiperIndex = ref(0);
-const startIndex = ref(-1);
-const endIndex = ref(-1);
 const pick = (book: Book) => {
 	const b = cloneDeep(book);
 	const gap = InvoiceStore.invoiceEditor.amount - nowAmount.value;
@@ -290,6 +269,7 @@ onMounted(async () => {
 		return;
 	}
 
+	BookStore.isAmountBookOfSelfRest = true;
 	BookStore.get(1);
 });
 </script>

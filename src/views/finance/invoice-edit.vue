@@ -5,7 +5,7 @@
 			{{ InvoiceStore.invoiceEditor._id ? "编辑" : "创建" }} {{ nowTypeName }}
 		</div>
 		<div class="text-white q-pt-sm">
-			<div>1.选择对应财务凭证，点击保存后，即可以在“发票记录”中看到对应记录；</div>
+			<div>1.选择对应资金记录，点击保存后，即可以在“发票记录”中看到对应记录；</div>
 		</div>
 	</div>
 
@@ -16,7 +16,7 @@
 				dense
 				:columns="[
 					{ name: 'code', field: 'code', label: '系统编号', align: 'left' },
-					{ name: 'contactId', field: 'contactId', label: '客户', align: 'left' },
+					{ name: 'keyOrigin', field: 'keyOrigin', label: '客户', align: 'left' },
 					{ name: 'amount', field: 'amount', label: '您期望的开票金额', align: 'right' },
 					{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
 					{ name: '_id', field: '_id', align: 'left', label: '操作' },
@@ -28,7 +28,7 @@
 				<template v-slot:header="props">
 					<q-tr :props="props">
 						<q-th key="code" :props="props">系统编号</q-th>
-						<q-th key="contactId" :props="props">客户</q-th>
+						<q-th key="keyOrigin" :props="props">客户</q-th>
 						<q-th key="amount" :props="props">您期望的开票金额</q-th>
 						<q-th key="remark" :props="props">备注</q-th>
 						<q-th key="_id" :props="props">操作</q-th>
@@ -37,7 +37,7 @@
 				<template v-slot:body="props">
 					<q-tr>
 						<q-td key="code" :props="props" :style="tableStyle">{{ props.row.code }}</q-td>
-						<q-td key="contactId" :props="props" :style="tableStyle">{{ props.row.joinContact?.name }}</q-td>
+						<q-td key="keyOrigin" :props="props" :style="tableStyle">{{ props.row.keyOrigin }}</q-td>
 						<q-td key="amount" :style="tableStyle">
 							<q-input
 								dense

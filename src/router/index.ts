@@ -101,7 +101,7 @@ const routes = [
 					{
 						path: "book-invoice",
 						name: "开票明细",
-						component: () => import("@/views/finance/book-invoice.vue"),
+						component: () => import("@/views/finance/book2.vue"),
 						meta: { icon: "receipt_long", color: "purple-8", backColorClass: "color-back-finance", show: true },
 					},
 					{

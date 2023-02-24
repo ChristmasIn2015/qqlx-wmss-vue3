@@ -3,6 +3,7 @@
 		class="my-sticky-header-table"
 		dense
 		:columns="[
+			{ name: 'layout', field: 'layout', label: '性质', align: 'left', style: 'font-size: 16px;' },
 			{ name: 'name', field: 'name', label: '品名', align: 'left', style: 'font-size: 16px;' },
 			{ name: 'norm', field: 'norm', label: '规格', align: 'left', style: 'font-size: 16px;' },
 			{ name: 'count', field: 'count', label: '数量', align: 'left', style: 'font-size: 16px;' },
@@ -17,6 +18,7 @@
 	>
 		<template v-slot:header="props">
 			<q-tr :props="props">
+				<q-th key="layout" :props="props">性质</q-th>
 				<q-th key="name" :props="props">品名</q-th>
 				<q-th key="norm" :props="props">规格</q-th>
 				<q-th key="count" :props="props">数量</q-th>
@@ -32,6 +34,15 @@
 		</template>
 		<template v-slot:body="props">
 			<q-tr :props="props">
+				<q-td style="max-width: 100px">
+					<span class="text-body1" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" :class="`text-${route.meta?.color}`">
+						<q-badge class="q-ml-sm" color="grey" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
+							>大件商品
+							<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+						</q-badge>
+					</span>
+					<span v-else>-</span>
+				</q-td>
 				<q-td :style="myTableCellStyle">
 					<q-input borderless v-model="props.row.name" dense clearable clear-icon="close" input-class="text-body1" placeholder="请输入品名" />
 				</q-td>

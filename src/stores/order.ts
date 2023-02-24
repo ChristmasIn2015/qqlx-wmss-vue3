@@ -18,7 +18,6 @@ import type {
 import type { Order } from "qqlx-core/schema/wmss/order";
 import type { Fee } from "qqlx-core/schema/wmss/fee";
 import type { Sku } from "qqlx-core/schema/wmss/sku";
-
 import { getMongodbBase, request, getPage } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
 import { useAnalysisStore } from "@/stores/analysis";
@@ -122,6 +121,23 @@ export const useOrderStore = defineStore("Order", {
 			} finally {
 				this.loadding = false;
 			}
+		},
+		async getJoinAll(): Promise<OrderInView[]> {
+			const page = cloneDeep(this.page);
+			page.pageSize = this.total;
+			if (page.endTime - page.startTime > 86400000 * 90) throw new Error(`最多选择90天`);
+
+			this.loadding = true;
+
+			const dto: getOrderDto = {
+				page,
+				search: this.orderSearch,
+				sortKey: this.sortKey,
+				sortValue: this.sortValue,
+				noJoin: false,
+			};
+			const res: getOrderRes = await request.get(PATH_ORDER, { dto });
+			return res.list;
 		},
 		sort(sortKey: string) {
 			if (sortKey) {

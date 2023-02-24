@@ -64,6 +64,7 @@ const columns = [
 	{ name: "poundsFinal", field: "poundsFinal", label: "过磅", style: "font-size: 16px;" },
 	{ name: "price", field: "price", label: "单价", style: "font-size: 16px;" },
 	{ name: "remark", field: "remark", label: "备注", style: "font-size: 16px;" },
+	{ name: "layout", field: "layout", label: "性质", align: "left", style: "font-size: 16px; " },
 	{ name: "_id", field: "_id", label: "操作", align: "left", style: "font-size: 16px; " },
 ];
 export const useSkuGetInStore = defineStore("SkuGetIn", {

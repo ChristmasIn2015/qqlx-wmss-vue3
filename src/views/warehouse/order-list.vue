@@ -214,7 +214,13 @@
 									<q-tr>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat }}</q-td>
-										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px"
+											>{{ _props.row.name }}
+											<q-badge class="q-ml-sm" color="grey" v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+												大件商品
+												<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+											</q-badge>
+										</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px"> {{ _props.row.count }} {{ _props.row.unit }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px">

@@ -95,14 +95,9 @@
 							{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
 						</div>
 					</div>
-				</q-card-section>
-				<q-separator></q-separator>
-				<q-card-section class="text-grey">
 					<div class="row">
-						<div class="col">占比</div>
-						<div class="col text-right text-h6 text-weight-bold" :class="{ 'text-negative': nowAmount / BookStore.bookEditor.amount > 1 }">
-							{{ ((nowAmount * 100) / BookStore.bookEditor.amount).toFixed(2) }}%
-						</div>
+						<div class="col">资金使用率</div>
+						<div class="col text-right text-body1 text-weight-bold">{{ ((nowAmount * 100) / BookStore.bookEditor.amount).toFixed(2) }}%</div>
 					</div>
 				</q-card-section>
 				<q-space></q-space>

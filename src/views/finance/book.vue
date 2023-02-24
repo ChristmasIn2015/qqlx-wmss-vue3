@@ -216,7 +216,7 @@
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfOrder' }"
 					@click="BookStore.sort('amountBookOfOrder')"
 				>
-					<span>已结清金额</span>
+					<span>订单已结清</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -226,7 +226,7 @@
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfOrderRest' }"
 					@click="BookStore.sort('amountBookOfOrderRest')"
 				>
-					<span>剩余</span>
+					<span>可结清</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th key="remark" :props="props">
@@ -282,8 +282,6 @@
 					:style="tableStyle"
 					:class="{
 						'text-grey': props.row.amountBookOfOrder < 1,
-						'text-pink-6': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfOrder >= 1,
-						'text-primary': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && props.row.amountBookOfOrder >= 1,
 						'text-weight-bold': props.row.amountBookOfOrder >= 1,
 					}"
 				>
@@ -295,6 +293,8 @@
 					:style="tableStyle"
 					:class="{
 						'text-grey': props.row.amountBookOfOrderRest < 1,
+						'text-pink-6': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfOrderRest >= 1,
+						'text-primary': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && props.row.amountBookOfOrderRest >= 1,
 						'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
 					}"
 				>
@@ -370,6 +370,7 @@ import * as XLSX from "xlsx";
 import { MongodbSort, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
 import type { BookInView } from "qqlx-core/dto/wmss/book";
 import type { Order } from "qqlx-core/schema/wmss/order";
+import type { OrderInSearch } from "qqlx-core/dto/wmss/order";
 
 import { useNotifyStore } from "@/stores/notify";
 import { useBookStore } from "@/stores/book";
@@ -448,9 +449,10 @@ const toEdit = (book: BookInView) => {
 
 	const orders: Order[] = [];
 	_book.joinBookOfOrder?.map((e) => {
-		const origin = e.joinOrder;
+		const origin = e.joinOrder as OrderInSearch;
 		if (origin) {
 			origin.amount = e.amount;
+			origin.joinContact = e.joinContact;
 			orders.push(origin);
 		}
 	});

@@ -381,10 +381,10 @@ const endIndex = ref(-1);
 // action
 const toEdit = (invoice: InvoiceInView) => {
 	const _invoice = cloneDeep(invoice);
-	InvoiceStore.setSchema(invoice);
+	InvoiceStore.setSchema(_invoice);
 
 	const books: Book[] = [];
-	invoice.joinBookOfSelf?.map((e) => {
+	_invoice.joinBookOfSelf?.map((e) => {
 		const origin = e.joinBook;
 		if (origin) {
 			origin.amount = e.amount;

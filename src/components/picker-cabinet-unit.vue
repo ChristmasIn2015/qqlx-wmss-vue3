@@ -37,7 +37,8 @@
 							endIndex = -1;
 						}
 					"
-				/>
+				>
+				</q-btn>
 			</q-btn-group>
 
 			<q-btn push square class="q-ml-sm" label="新增" @click="() => CabinetUnitStore.cabinetUnitListExcel.push(CabinetUnitStore.getSchema())">
@@ -178,7 +179,13 @@
 					}
 				"
 			>
-				<q-td key="_id" :props="props"> {{ cabinetPicked?.name }} </q-td>
+				<q-td key="_id" :props="props">
+					{{ cabinetPicked?.name }}
+					<q-badge class="q-ml-sm" color="grey" v-if="props.row.joinCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+						大件商品
+						<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+					</q-badge>
+				</q-td>
 				<q-td key="name" :props="props"> {{ props.row.name }} </q-td>
 				<q-td key="norm" :props="props">
 					{{ props.row.norm }}

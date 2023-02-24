@@ -72,10 +72,9 @@
 		/>
 
 		<q-space></q-space>
-		<q-btn color="white" disabled text-color="black" class="text-body1 q-ml-sm">
-			<q-icon name="get_app" class="q-mr-xs" style="margin-bottom: -6px"></q-icon>
+		<q-btn color="white" :loading="OrderStore.loadding" text-color="black" class="text-body1 q-ml-sm" @click="downloadOrderList()">
+			<q-icon name="get_app" class="q-mr-xs"></q-icon>
 			导出订单
-			<q-tooltip class="text-body1">敬请期待</q-tooltip>
 		</q-btn>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
@@ -141,7 +140,7 @@
 					</q-btn>
 				</q-th>
 				<q-th class="text-right cursor-pointer" :class="{ 'text-pink-6': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
-					<span>金额 </span>
+					<span>订单金额</span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -157,7 +156,7 @@
 					:class="{ 'text-pink-6': OrderStore.sortKey === 'amountBookOfOrderRest' }"
 					@click="OrderStore.sort('amountBookOfOrderRest')"
 				>
-					<span>剩余 </span>
+					<span>剩余应收</span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th class="text-left">操作</q-th>
@@ -280,6 +279,8 @@
 								hide-pagination
 								separator="vertical"
 								:columns="[
+									{ name: 'keyHouse', field: 'keyHouse', label: '产地', align: 'left' },
+									{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
 									{ name: 'name', field: 'name', label: '品名', align: 'left' },
 									{ name: 'norm', field: 'norm', label: '规格', align: 'left' },
 									{ name: 'count', field: 'count', label: '数量' },
@@ -292,7 +293,15 @@
 							>
 								<template v-slot:body="_props">
 									<q-tr>
-										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat }}</q-td>
+										<q-td :_props="_props" style="font-size: 16px"
+											>{{ _props.row.name }}
+											<q-badge class="q-ml-sm" color="grey" v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+												大件商品
+												<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+											</q-badge>
+										</q-td>
 										<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.count }} {{ _props.row.unit }}</q-td>
 										<q-td :_props="_props" style="font-size: 16px" class="text-right">
@@ -637,6 +646,55 @@ const setManager = async (order: OrderInView) => {
 	}
 	OrderStore.setSchema(OrderStore.getSchema(nowType.value));
 	await OrderStore.get();
+};
+
+const downloadOrderList = async () => {
+	try {
+		await OrderStore.get(1);
+		OrderStore.loadding = true;
+		const orders = await OrderStore.getJoinAll();
+
+		// 单据
+		const Out: any = [["创建时间", "单号", "客户名称", "单据金额", "单据备注"]];
+		// SKU
+		const SkuOut: any = [["创建时间", "单号", "客户名称", "产地", "材质", "名称", "规格", "数量", "单位", "过磅", "过磅单位", "单价", "总金额", "备注"]];
+
+		orders.map((E) => {
+			const billouts = [E.timeCreateString, E.code, E.joinContact?.name, E.amount.toFixed(2), E.remark];
+			Out.push(billouts);
+			E.joinSku?.map((C) => {
+				SkuOut.push([
+					E.timeCreateString,
+					E.code,
+					E.joinContact?.name,
+					C.keyOrigin,
+					C.keyFeat,
+					C.name,
+					C.norm,
+					C.count,
+					C.unit,
+					C.isPriceInPounds ? C.pounds.toFixed(3) : "",
+					C.isPriceInPounds ? "吨" : "",
+					C.price,
+					Number(C.price) * (C.isPriceInPounds ? Number(C.pounds) : Number(C.count)),
+					C.remark,
+				]);
+			});
+		});
+		const name = OrderStore.orderSearch.type === ENUM_ORDER.SALES ? "销售" : "采购";
+		const workbook = XLSX.utils.book_new();
+
+		const sheet1 = XLSX.utils.aoa_to_sheet(Out);
+		XLSX.utils.book_append_sheet(workbook, sheet1, `${name}单据导出`);
+		const sheet2 = XLSX.utils.aoa_to_sheet(SkuOut);
+		XLSX.utils.book_append_sheet(workbook, sheet2, `${name}明细导出`);
+
+		XLSX.writeFile(workbook, `${CorpStore.corpPicked?.name}-${name}单据导出.xlsx`);
+	} catch (error) {
+		NotifyStore.fail((error as Error).message);
+	} finally {
+		OrderStore.loadding = false;
+	}
 };
 // action
 onMounted(async () => {

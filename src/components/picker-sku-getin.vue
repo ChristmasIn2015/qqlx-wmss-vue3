@@ -207,6 +207,7 @@
 					<span>时间 </span>
 					<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
+				<q-th key="layout" :props="props">性质</q-th>
 				<q-th key="_id" :props="props">状态</q-th>
 			</q-tr>
 		</template>
@@ -231,6 +232,12 @@
 				<q-td key="price" :props="props" :class="{ 'text-grey': props.row.price <= 0 }"> {{ props.row.price.toFixed(2) }} 元</q-td>
 				<q-td key="remark" :props="props"> {{ props.row.remark }} </q-td>
 				<q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
+				<q-td key="layout" :props="props">
+					<q-badge color="grey" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+						大件商品
+						<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+					</q-badge>
+				</q-td>
 				<q-td key="_id" :props="props">
 					<q-btn color="indigo" dense v-close-popup @click="$emit('pick', cloneDeep(props.row))">选择</q-btn>
 				</q-td>

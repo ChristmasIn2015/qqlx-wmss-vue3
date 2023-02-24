@@ -170,6 +170,9 @@
 						<q-icon name="" />
 					</template>
 				</q-select>
+				<div class="q-ml-lg q-pl-md q-mb-sm text-negative" v-if="CabinetStore.cabinetEditor.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+					请注意，此货架将被设置为 “大件商品” 货架，当您使用其中的商品进行销售、发货时，需要单独选择一项已入库的商品进行库存扣减。
+				</div>
 				<q-select
 					filled
 					label="过磅公式"
@@ -209,7 +212,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { Notify, useQuasar } from "quasar";
-import { ENUM_ROLE_WMSS, MAP_ENUM_ROLE_WMSS } from "qqlx-core";
+import { ENUM_ROLE_WMSS, ENUM_LAYOUT_CABINET } from "qqlx-core";
 import type { RoleWMSSJoined } from "qqlx-core/dto/wmss/role";
 
 import { useNotifyStore } from "@/stores/notify";

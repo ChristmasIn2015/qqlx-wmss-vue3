@@ -52,6 +52,8 @@ export const useBookStore = defineStore("Book", {
 
 		// 仅仅用于开发票
 		bookListPicked: [] as BookInView[],
+		// 仅查看可开票的资金
+		isAmountBookOfSelfRest: true,
 	}),
 	actions: {
 		async get(page?: number) {
@@ -66,6 +68,7 @@ export const useBookStore = defineStore("Book", {
 					search: this.bookSearch,
 					sortKey: this.sortKey,
 					sortValue: this.sortValue,
+					isAmountBookOfSelfRest: this.isAmountBookOfSelfRest,
 				};
 				const res: getBookRes = await request.get(PATH_BOOK, { dto });
 				this.bookList = this.page.page === 1 ? res.list : this.bookList.concat(res.list);
@@ -137,6 +140,7 @@ export const useBookStore = defineStore("Book", {
 			const schema = entity ? cloneDeep(entity) : this.getSchema();
 			this.bookEditor = schema;
 			this.bookSearch = schema;
+			this.isAmountBookOfSelfRest = false;
 		},
 	},
 });
