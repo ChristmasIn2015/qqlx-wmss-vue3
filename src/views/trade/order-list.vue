@@ -453,9 +453,8 @@
 		<q-card class="print-container">
 			<q-card-section>
 				<div id="order">
-					<!-- 顶部信息 -->
 					<div class="text-weight-bold text-h4 text-center">
-						<div>{{ CorpStore.corpPicked?.name }}</div>
+						<div id="abc">{{ CorpStore.corpPicked?.name }}</div>
 						<div v-if="CorpStore.corpList.filter((e) => e.isDisabled === false && e._id !== CorpStore.corpPicked?._id)[0]?.name">
 							{{ CorpStore.corpList.filter((e) => e.isDisabled === false && e._id !== CorpStore.corpPicked?._id)[0]?.name }}
 						</div>
@@ -473,7 +472,6 @@
 						<div class="col text-center">开单人：{{ printOrder.joinCreator?.nickname }}</div>
 						<div class="col text-right">No. {{ printOrder.code }}</div>
 					</div>
-					<!-- 表头 -->
 					<div class="order-table-line row">
 						<div class="col-3">品名规格</div>
 						<div class="col-1">数量</div>
@@ -483,7 +481,6 @@
 						<div class="col-2 text-right">售价/元</div>
 						<div class="col-1">备注</div>
 					</div>
-					<!-- 内容 -->
 					<div class="order-table-line row" v-for="(sku, i) in printSkuList">
 						<div class="col-3">{{ sku.name }} {{ sku.norm }}</div>
 						<div class="col-1">
@@ -505,7 +502,6 @@
 						<div class="col">{{ getChineseMoney(printOrder.amount) }}</div>
 						<div class="col">共计: {{ printOrder.amount.toFixed(2) }} 元</div>
 					</div>
-					<!-- 尾部 -->
 					<div class="order-table-line row">
 						<div class="col q-pa-sm">单据说明</div>
 						<div class="col-8 q-pa-sm text-body2">
@@ -541,6 +537,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { callPrinter } from "call-printer";
 import * as XLSX from "xlsx";
+import html2canvas from "html2canvas";
 
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MongodbSort } from "qqlx-core";
 import type { OrderInView } from "qqlx-core/dto/wmss/order";
@@ -619,9 +616,12 @@ const printSkuList = computed({
 	},
 	set() {},
 });
-const print = () => {
+const print = async () => {
 	const dom = document.getElementById("order");
-	callPrinter(dom as Element);
+	// const image = await html2canvas(dom as HTMLElement);
+	// console.log(image.toDataURL());
+
+	callPrinter(dom as HTMLElement);
 };
 
 const setManager = async (order: OrderInView) => {
@@ -713,16 +713,20 @@ onMounted(async () => {
 	line-height: 1.375;
 	color: black;
 	font-family: cursive;
+	page-break-before: always;
+	print-color-adjust: exact;
+	color-adjust: exact;
+	-webkit-print-color-adjust: exact;
 	.order-table-line {
-		border-left: 1px solid black;
-		border-right: 1px solid black;
+		// border-left: 1px solid black;
+		// border-right: 1px solid black;
 		> div {
 			min-height: 27px;
 			text-align: center;
 			border-top: 1px solid black;
 			border-right: 1px solid black;
-			&:last-child {
-				border-right: none;
+			&:first-child {
+				border-left: 1px solid black;
 			}
 		}
 		&:last-child {

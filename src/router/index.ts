@@ -8,39 +8,64 @@ const routes = [
 		component: () => import("@/components/layout.vue"),
 		children: [
 			{
+				path: "system",
+				name: "设置",
+				component: () => import("@/views/system/index.vue"),
+				children: [
+					{
+						path: "setting",
+						name: "控制台",
+						component: () => import("@/views/system/setting.vue"),
+						meta: { icon: "settings", color: "primary", backColorClass: "color-back-system", show: true },
+					},
+					{
+						path: "role",
+						name: "公司成员",
+						component: () => import("@/views/system/role.vue"),
+						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: true },
+					},
+					{
+						path: "pay",
+						name: "支付",
+						component: () => import("@/views/system/pay.vue"),
+						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: false },
+					},
+				],
+			},
+			{
 				path: "warehouse",
 				name: "仓库",
 				component: () => import("@/views/warehouse/index.vue"),
 				children: [
 					{
-						path: "order-create",
-						name: "创建内部订单",
-						component: () => import("@/views/warehouse/order-create.vue"),
-						meta: { icon: "mdi-truck-check", color: "indigo", backColorClass: "color-back-warehouse", show: false },
-					},
-					{
-						path: "order-edit",
-						name: "修改内部订单",
-						component: () => import("@/views/warehouse/order-edit.vue"),
-						meta: { icon: "mdi-truck-check", color: "indigo", backColorClass: "color-back-warehouse", show: false },
+						path: "cabinet",
+						name: "商品分类",
+						component: () => import("@/views/warehouse/cabinet.vue"),
+						meta: { icon: "dashboard_customize", color: "orange", backColorClass: "color-back-warehouse", show: true },
 					},
 					{
 						path: "order-list",
-						name: "内部订单",
+						name: "仓库订单",
 						component: () => import("@/views/warehouse/order-list.vue"),
-						meta: { icon: "settings_suggest", color: "indigo", backColorClass: "color-back-warehouse", show: true },
+						meta: { icon: "settings_suggest", color: "orange", backColorClass: "color-back-warehouse", show: true },
+					},
+					{
+						path: "order-create",
+						name: "创建仓库订单",
+						component: () => import("@/views/warehouse/order-create.vue"),
+						meta: { icon: "mdi-truck-check", color: "orange", backColorClass: "color-back-warehouse", show: false },
+					},
+					{
+						path: "order-edit",
+						name: "修改仓库订单",
+						component: () => import("@/views/warehouse/order-edit.vue"),
+						meta: { icon: "mdi-truck-check", color: "orange", backColorClass: "color-back-warehouse", show: false },
 					},
 					{
 						path: "sku-list",
 						name: "待处理",
 						component: () => import("@/views/warehouse/sku-list.vue"),
-						meta: { icon: "format_list_numbered", color: "indigo", backColorClass: "color-back-warehouse", show: true },
-					},
-					{
-						path: "cabinet",
-						name: "货架",
-						component: () => import("@/views/warehouse/cabinet.vue"),
-						meta: { icon: "dns", color: "indigo", backColorClass: "color-back-warehouse", show: true },
+						meta: { icon: "format_list_numbered", color: "orange", backColorClass: "color-back-warehouse", show: true },
 					},
 				],
 			},
@@ -109,32 +134,6 @@ const routes = [
 						name: "编辑发票",
 						component: () => import("@/views/finance/invoice-edit.vue"),
 						meta: { icon: "money", color: "teal", backColorClass: "color-back-finance", show: false },
-					},
-				],
-			},
-
-			{
-				path: "system",
-				name: "设置",
-				component: () => import("@/views/system/index.vue"),
-				children: [
-					{
-						path: "setting",
-						name: "控制台",
-						component: () => import("@/views/system/setting.vue"),
-						meta: { icon: "settings", color: "primary", backColorClass: "color-back-system", show: true },
-					},
-					{
-						path: "role",
-						name: "公司成员",
-						component: () => import("@/views/system/role.vue"),
-						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: true },
-					},
-					{
-						path: "pay",
-						name: "支付",
-						component: () => import("@/views/system/pay.vue"),
-						meta: { icon: "group", color: "primary", backColorClass: "color-back-system", show: false },
 					},
 				],
 			},

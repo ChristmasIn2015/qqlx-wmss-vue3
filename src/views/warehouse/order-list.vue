@@ -1,10 +1,10 @@
 <template>
 	<div class="q-pt-md q-pb-lg text-white">
-		<div class="text-h4 text-weight-bold">内部订单</div>
+		<div class="text-h4 text-weight-bold">仓库订单</div>
 		<div class="q-pt-sm">
 			<div>
-				1.内部订单将会影响
-				<span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">货架</span>
+				1.仓库订单将会影响
+				<span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">商品分类</span>
 				上统计的商品库存，如发货、入库、领料、加工单
 			</div>
 			<div>* 发货单，将会减少您的商品库存统计</div>
@@ -20,7 +20,7 @@
 			color="white"
 			class="q-mr-sm"
 			text-color="grey"
-			toggle-color="indigo"
+			toggle-color="orange"
 			v-model="OrderStore.orderSearch.type"
 			:options="[
 				{ label: '发货单', value: ENUM_ORDER.GETOUT },
@@ -41,7 +41,7 @@
 			square
 			class="q-mr-sm"
 			label="最近删除"
-			:color="OrderStore.orderSearch.isDisabled ? 'indigo' : 'white'"
+			:color="OrderStore.orderSearch.isDisabled ? 'orange' : 'white'"
 			:text-color="OrderStore.orderSearch.isDisabled ? '' : 'grey'"
 			@click="
 				() => {
@@ -71,7 +71,7 @@
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
 			{{ timePicked.from }} ~ {{ timePicked.to }}
 			<q-menu>
-				<q-date v-model="timePicked" range first-day-of-week="1" color="indigo" @update:model-value="timeChange" />
+				<q-date v-model="timePicked" range first-day-of-week="1" color="orange" @update:model-value="timeChange" />
 			</q-menu>
 		</q-btn>
 	</div>
@@ -100,7 +100,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索批次"
 						style="margin-left: -6px"
@@ -109,7 +109,7 @@
 					/>
 				</q-th>
 				<q-th key="contactId" :props="props" style="width: 188px">
-					<q-btn class="q-px-sm" flat square color="indigo" @click="contactDialog = true">
+					<q-btn class="q-px-sm" flat square color="orange" @click="contactDialog = true">
 						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
 					</q-btn>
 					<q-btn
@@ -117,7 +117,7 @@
 						flat
 						dense
 						square
-						color="indigo"
+						color="orange"
 						class="q-px-sm"
 						@click="
 							() => {
@@ -133,7 +133,7 @@
 				<q-th class="text-right">商品数量</q-th>
 				<q-th class="text-left">来源</q-th>
 				<q-th class="text-left">备注</q-th>
-				<q-th class="text-left cursor-pointer" :class="{ 'text-indigo': OrderStore.sortKey === 'timeCreate' }" @click="OrderStore.sort('timeCreate')">
+				<q-th class="text-left cursor-pointer" :class="{ 'text-orange': OrderStore.sortKey === 'timeCreate' }" @click="OrderStore.sort('timeCreate')">
 					<span>时间 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
@@ -154,7 +154,7 @@
 					<span v-else class="text-grey">批量导入</span>
 				</q-td>
 				<q-td key="count" :props="props">
-					<span v-if="props.row.joinSku?.length > 0" class="text-indigo text-weight-bold">{{ props.row.joinSku?.length }}</span>
+					<span v-if="props.row.joinSku?.length > 0" class="text-orange text-weight-bold">{{ props.row.joinSku?.length }}</span>
 					<span v-else class="text-grey"> 0</span>
 					项
 				</q-td>
@@ -166,13 +166,13 @@
 						{{ props.row.remark || "点击修改备注" }}
 						<q-menu anchor="top left" @hide="OrderStore.put(props.row)">
 							<q-card class="w-400">
-								<q-toolbar class="bg-indigo text-white">
+								<q-toolbar class="bg-orange text-white">
 									<q-toolbar-title>修改备注</q-toolbar-title>
 									<q-btn dense flat icon="close" v-close-popup></q-btn>
 								</q-toolbar>
 
 								<q-card-section>
-									<q-input filled :label="props.row.code" v-model="props.row.remark" color="indigo"> </q-input>
+									<q-input filled :label="props.row.code" v-model="props.row.remark" color="orange"> </q-input>
 								</q-card-section>
 
 								<q-card-actions>
@@ -282,7 +282,7 @@
 								</q-card-section>
 								<q-card-actions class="q-pt-none">
 									<q-btn class="q-ml-sm" flat color="negative" @click="OrderStore.delete(props.row._id)">
-										{{ props.row.isDisabled ? "恢复" : props.row.parentOrderId ? "彻底删除" : "删除" }}
+										{{ props.row.isDisabled ? "恢复" : props.row.parentOrderId ? "回退" : "删除" }}
 									</q-btn>
 									<q-space></q-space>
 									<q-btn
@@ -314,7 +314,7 @@
 				class="q-my-sm"
 				color="grey-5"
 				active-design="push"
-				active-color="indigo"
+				active-color="orange"
 				v-model="OrderStore.page.page"
 				:max-pages="10"
 				:max="Math.ceil(OrderStore.total / OrderStore.page.pageSize)"

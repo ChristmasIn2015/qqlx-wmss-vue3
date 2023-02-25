@@ -1,9 +1,9 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
-		<div class="text-h4 text-white text-weight-bold">货架</div>
+		<div class="text-h4 text-white text-weight-bold">商品分类</div>
 		<div class="text-white q-pt-sm">
 			<div>1.您可以根据不同需求，设置如 “冷轧卷” “冷轧板” “管材” 等您需要的钢材分类；</div>
-			<div>2.您可以在货架中添加商品，它们将用于内部单据、采购销售开单等；</div>
+			<div>2.您可以在商品分类中添加商品，它们将用于内部单据、采购销售开单等；</div>
 		</div>
 	</div>
 
@@ -44,7 +44,7 @@
 				</div>
 				<div class="row">
 					<div class="col">性质</div>
-					<div class="col text-right" :class="CabinetStore.getLayoutChinese(cabinet.layout)?.tip ? 'text-indigo' : ''">
+					<div class="col text-right" :class="CabinetStore.getLayoutChinese(cabinet.layout)?.tip ? 'text-orange' : ''">
 						{{ CabinetStore.getLayoutChinese(cabinet.layout)?.text }}
 
 						<q-tooltip v-if="CabinetStore.getLayoutChinese(cabinet.layout)?.tip" class="text-body1">
@@ -54,7 +54,7 @@
 				</div>
 				<div class="row">
 					<div class="col">过磅公式</div>
-					<div class="col text-right" :class="CabinetStore.getFormulaChinese(cabinet.formula)?.tip ? 'text-indigo' : ''">
+					<div class="col text-right" :class="CabinetStore.getFormulaChinese(cabinet.formula)?.tip ? 'text-orange' : ''">
 						{{ CabinetStore.getFormulaChinese(cabinet.formula)?.text }}
 						<q-tooltip v-if="CabinetStore.getFormulaChinese(cabinet.formula)?.tip" class="text-body1">
 							{{ CabinetStore.getFormulaChinese(cabinet.formula)?.tip }}
@@ -66,15 +66,15 @@
 	</div>
 
 	<div class="q-pt-xl q-pb-lg">
-		<div class="text-h5 text-indigo text-weight-bold">快速添加</div>
+		<div class="text-h5 text-orange text-weight-bold">快速添加</div>
 		<div class="text-grey q-pt-sm">
-			<span>以下是常用的钢材货架，您可以快速设置为您的货架。</span>
+			<span>以下是常用的钢材商品分类，您可以快速设置为您的商品分类。</span>
 			<span
 				>您也可以直接
 				<q-btn
 					push
 					square
-					color="indigo"
+					color="orange"
 					@click="
 						() => {
 							CabinetStore.setSchema();
@@ -84,7 +84,7 @@
 				>
 					添加
 				</q-btn>
-				货架</span
+				商品分类</span
 			>
 		</div>
 	</div>
@@ -96,7 +96,7 @@
 					{{ cabinet.name }}
 				</q-toolbar-title>
 				<a
-					class="text-indigo text-weight-bold cursor-pointer"
+					class="text-orange text-weight-bold cursor-pointer"
 					@click="
 						() => {
 							CabinetStore.setSchema(cabinet);
@@ -138,7 +138,7 @@
 	<q-dialog v-model="dialogCabinet" persistent>
 		<q-card class="w-400">
 			<q-toolbar>
-				<q-toolbar-title>货架</q-toolbar-title>
+				<q-toolbar-title>商品分类</q-toolbar-title>
 
 				<q-btn flat dense icon="close" @click="dialogCabinet = false" />
 			</q-toolbar>
@@ -146,7 +146,7 @@
 			<q-separator />
 
 			<q-card-section>
-				<q-input filled label="货架名称" class="q-mb-sm" v-model="CabinetStore.cabinetEditor.name">
+				<q-input filled label="商品分类名称" class="q-mb-sm" v-model="CabinetStore.cabinetEditor.name">
 					<template v-slot:before>
 						<q-icon name="dns" />
 					</template>
@@ -171,7 +171,7 @@
 					</template>
 				</q-select>
 				<div class="q-ml-lg q-pl-md q-mb-sm text-negative" v-if="CabinetStore.cabinetEditor.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-					请注意，此货架将被设置为 “大件商品” 货架，当您使用其中的商品进行销售、发货时，需要单独选择一项已入库的商品进行库存扣减。
+					请注意，此商品分类将被设置为 “大件商品” 商品分类，当您使用其中的商品进行销售、发货时，需要单独选择一项已入库的商品进行库存扣减。
 				</div>
 				<q-select
 					filled
@@ -191,7 +191,7 @@
 
 			<q-card-actions align="right">
 				<q-btn
-					color="indigo"
+					color="orange"
 					push
 					square
 					@click="
@@ -229,7 +229,7 @@ const $q = NotifyStore.getQuasarStore();
 const deleteConfirm = (cabinetId: string) => {
 	$q.dialog({
 		title: "重要确认",
-		message: "即将为您保留货架中的所有商品库存，仅货架会被删除，确定要这样做吗？",
+		message: "即将为您保留商品分类中的所有商品库存，仅商品分类会被删除，确定要这样做吗？",
 		cancel: true,
 	}).onOk(() => CabinetStore.delete(cabinetId));
 };

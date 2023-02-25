@@ -14,7 +14,7 @@ import { useAnalysisStore } from "@/stores/analysis";
 
 const NotifyStore = useNotifyStore();
 // const RoleWMSSStore = useRoleWMSSStore();
-// const WarehouseStore = useWarehouseStore();
+const WarehouseStore = useWarehouseStore();
 const AnalysisStore = useAnalysisStore();
 
 function getSchema(): Corp {
@@ -77,6 +77,9 @@ export const useCorpStore = defineStore("Corp", {
 				this.corpPicked = corp;
 				localStorage.setItem("qqlx-corp-id", this.corpPicked._id);
 				NotifyStore.success(`切换 @${this.corpPicked.name} 成功`);
+
+				await WarehouseStore.get();
+				WarehouseStore.pick(WarehouseStore.WarehouseList.find((e) => e.isDisabled === false));
 
 				await AnalysisStore.get();
 			} catch (error) {

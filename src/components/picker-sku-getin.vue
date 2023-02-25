@@ -24,7 +24,7 @@
 				map-options
 				options-dense
 				options-cover
-				color="indigo"
+				color="orange"
 				class="q-ml-sm"
 				option-value="name"
 				display-value="自定义列"
@@ -35,14 +35,14 @@
 				<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
 				{{ timePicked.from }} ~ {{ timePicked.to }}
 				<q-menu>
-					<q-date v-model="timePicked" range first-day-of-week="1" color="indigo" @update:model-value="timeChange" />
+					<q-date v-model="timePicked" range first-day-of-week="1" color="orange" @update:model-value="timeChange" />
 				</q-menu>
 			</q-btn>
 		</template>
 		<template v-slot:header="props">
 			<q-tr>
 				<q-th key="orderContactId" :props="props">
-					<q-btn class="q-px-none" flat square color="indigo" @click="contactDialog = true">
+					<q-btn class="q-px-none" flat square color="orange" @click="contactDialog = true">
 						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
 					</q-btn>
 					<q-btn
@@ -50,7 +50,7 @@
 						class="q-px-sm"
 						flat
 						square
-						color="indigo"
+						color="orange"
 						@click="
 							() => {
 								contactPicked = ContactStore.getSchema();
@@ -68,7 +68,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="产地/钢厂"
 						style="margin-left: -6px"
@@ -82,7 +82,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="材质"
 						style="margin-left: -6px"
@@ -96,7 +96,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="自定义编号"
 						style="margin-left: -6px"
@@ -111,7 +111,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索品名"
 						style="margin-left: -6px"
@@ -125,7 +125,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索规格"
 						style="margin-left: -6px"
@@ -137,7 +137,7 @@
 					key="count"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'count' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'count' }"
 					@click="SkuGetInStore.sort('count')"
 				>
 					<span>订单中的数量</span>
@@ -147,7 +147,7 @@
 					key="pounds"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'pounds' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'pounds' }"
 					@click="SkuGetInStore.sort('pounds')"
 				>
 					<span>订单中的重量</span>
@@ -157,7 +157,7 @@
 					key="countFinal"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'countFinal' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'countFinal' }"
 					@click="SkuGetInStore.sort('countFinal')"
 				>
 					<span>在库数量</span>
@@ -167,7 +167,7 @@
 					key="poundsFinal"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'poundsFinal' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'poundsFinal' }"
 					@click="SkuGetInStore.sort('poundsFinal')"
 				>
 					<span>在库重量</span>
@@ -176,7 +176,7 @@
 				<q-th
 					key="price"
 					:props="props"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'price' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'price' }"
 					class="cursor-pointer"
 					@click="SkuGetInStore.sort('price')"
 				>
@@ -189,7 +189,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索备注"
 						style="margin-left: -6px"
@@ -200,7 +200,7 @@
 				<q-th
 					key="timeCreateString"
 					:props="props"
-					:class="{ 'text-indigo': SkuGetInStore.sortKey === 'timeCreate' }"
+					:class="{ 'text-orange': SkuGetInStore.sortKey === 'timeCreate' }"
 					class="cursor-pointer"
 					@click="SkuGetInStore.sort('timeCreate')"
 				>
@@ -239,7 +239,7 @@
 					</q-badge>
 				</q-td>
 				<q-td key="_id" :props="props">
-					<q-btn color="indigo" dense v-close-popup @click="$emit('pick', cloneDeep(props.row))">选择</q-btn>
+					<q-btn color="orange" dense v-close-popup @click="$emit('pick', cloneDeep(props.row))">选择</q-btn>
 				</q-td>
 			</q-tr>
 		</template>

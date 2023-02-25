@@ -332,8 +332,8 @@
 		<template v-slot:bottom="props">
 			<span class="text-grey">
 				<!-- <q-carousel vertical animated infinite :autoplay="4000" navigation v-model="swiperIndex" height="16px">
-					<q-carousel-slide :name="0" class="q-pa-none">【货架】从A商品长按至B商品，可以批量选中A-B之间的所有商品...</q-carousel-slide>
-					<q-carousel-slide :name="1" class="q-pa-none">【货架】单击选择商品，即可以加入开单</q-carousel-slide>
+					<q-carousel-slide :name="0" class="q-pa-none">【商品分类】从A商品长按至B商品，可以批量选中A-B之间的所有商品...</q-carousel-slide>
+					<q-carousel-slide :name="1" class="q-pa-none">【商品分类】单击选择商品，即可以加入开单</q-carousel-slide>
 				</q-carousel> -->
 			</span>
 			<q-space></q-space>

@@ -160,8 +160,6 @@ onMounted(async () => {
 		await UserStore.setNowUser();
 		await CorpStore.get();
 		CorpStore.pick(CorpStore.corpList.find((e) => e.isDisabled === false));
-		await WarehouseStore.get();
-		WarehouseStore.pick(WarehouseStore.WarehouseList.find((e) => e.isDisabled === false));
 	} catch (error) {
 		NotifyStore.fail((error as Error).message);
 	}

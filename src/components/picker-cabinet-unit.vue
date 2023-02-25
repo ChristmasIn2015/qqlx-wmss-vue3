@@ -5,7 +5,7 @@
 		class="my-sticky-header-table"
 		separator="cell"
 		:columns="[
-			{ name: '_id', field: '_id', label: '货架', align: 'left', style: 'font-size: 16px; width: 80px;' },
+			{ name: '_id', field: '_id', label: '商品分类', align: 'left', style: 'font-size: 16px; width: 80px;' },
 			{ name: 'name', field: 'name', label: '品名', align: 'left', style: 'font-size: 16px; width: 188px;' },
 			{ name: 'norm', field: 'norm', label: '规格', align: 'left', style: 'font-size: 16px; width: 188px;' },
 			{ name: 'countFinal', field: 'countFinal', label: '库存', style: 'font-size: 16px; width: 120px;' },
@@ -43,7 +43,7 @@
 
 			<q-btn push square class="q-ml-sm" label="新增" @click="() => CabinetUnitStore.cabinetUnitListExcel.push(CabinetUnitStore.getSchema())">
 				<q-tooltip class="text-body1">
-					<div>向货架 "{{ cabinetPicked.name }}" 中添加一行商品</div>
+					<div>向商品分类 "{{ cabinetPicked.name }}" 中添加一行商品</div>
 				</q-tooltip>
 			</q-btn>
 			<span v-if="CabinetUnitStore.cabinetUnitListExcel.length > 0">
@@ -89,7 +89,7 @@
 		</template>
 		<template v-slot:header="props">
 			<q-tr :props="props">
-				<q-th key="_id" :props="props">货架</q-th>
+				<q-th key="_id" :props="props">商品分类</q-th>
 				<q-th key="name" :props="props" style="width: 188px">
 					<q-input
 						square
@@ -133,7 +133,7 @@
 						<q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'" style="margin-top: -2px"></q-icon>
 						<q-tooltip class="text-body1">
 							<div>当您处理完 仓库->待入库、发货、领料、加工</div>
-							<div>货架中的库存数字将会自动计算</div>
+							<div>商品分类中的库存数字将会自动计算</div>
 						</q-tooltip>
 					</span>
 				</q-th>
@@ -209,8 +209,8 @@
 		<template v-slot:bottom="props">
 			<span class="text-grey">
 				<q-carousel vertical animated infinite :autoplay="4000" navigation v-model="swiperIndex" height="16px">
-					<q-carousel-slide :name="0" class="q-pa-none">【货架】从A商品长按至B商品，可以批量选中A-B之间的所有商品...</q-carousel-slide>
-					<q-carousel-slide :name="1" class="q-pa-none">【货架】单击选择商品，即可以加入开单</q-carousel-slide>
+					<q-carousel-slide :name="0" class="q-pa-none">【商品分类】从A商品长按至B商品，可以批量选中A-B之间的所有商品...</q-carousel-slide>
+					<q-carousel-slide :name="1" class="q-pa-none">【商品分类】单击选择商品，即可以加入开单</q-carousel-slide>
 				</q-carousel>
 			</span>
 			<q-space></q-space>

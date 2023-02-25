@@ -19,6 +19,6 @@
 	background: linear-gradient(to top right, $primary 0%, $cyan 200%);
 }
 .color-back-warehouse {
-	background: linear-gradient(to top right, $primary 0%, $indigo 100%);
+	background: linear-gradient(to top right, $primary 0%, $orange 100%);
 }
 </style>

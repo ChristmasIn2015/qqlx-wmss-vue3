@@ -2,9 +2,9 @@
 	<div class="q-pt-md q-pb-lg text-white">
 		<div class="text-h4 text-weight-bold">仓库明细</div>
 		<div class="q-pt-sm">
-			<div>1.仓库明细包含内部订单中的所有商品记录，如发货、入库、领料、加工等，您可以在这里处理某些内部订单中需要单独处理的商品</div>
+			<div>1.仓库明细包含仓库订单中的所有商品记录，如发货、入库、领料、加工等，您可以在这里处理某些仓库订单中需要单独处理的商品</div>
 			<div>
-				2. <span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">货架</span>
+				2. <span class="text-negative cursor-pointer" @click="router.push('/wmss/warehouse/cabinet')">商品分类</span>
 				中的库存数字，最终等于 入库 + 加工 - 领料- 发货
 			</div>
 		</div>
@@ -22,7 +22,7 @@
 				push
 				square
 				:label="option.label"
-				:color="SkuStore.skuSearch.type === option.value ? 'indigo' : 'white'"
+				:color="SkuStore.skuSearch.type === option.value ? 'orange' : 'white'"
 				:text-color="SkuStore.skuSearch.type === option.value ? 'white' : 'grey'"
 				@click="
 					() => {
@@ -44,7 +44,7 @@
 			color="white"
 			class="q-mr-sm"
 			text-color="grey"
-			toggle-color="indigo"
+			toggle-color="orange"
 			v-model="SkuStore.skuSearch.isConfirmed"
 			:options="[
 				{ label: '已确认', value: true },
@@ -65,10 +65,10 @@
 
 		<q-space></q-space>
 
-		<q-btn push square color="indigo" class="q-ml-sm" :disabled="endIndex == -1 || endIndex - startIndex < 0" @click="dialogCabinet = true">
-			加入货架
+		<q-btn push square color="orange" class="q-ml-sm" :disabled="endIndex == -1 || endIndex - startIndex < 0" @click="dialogCabinet = true">
+			加入商品分类
 			<q-tooltip class="text-body1">
-				<div>当你期望在开单时，在货架上看到某些商品</div>
+				<div>当你期望在开单时，在商品分类上看到某些商品</div>
 				<div>您可以从上到下长按选中它们，并点击这个按钮</div>
 			</q-tooltip>
 		</q-btn>
@@ -77,7 +77,7 @@
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
 			{{ timePicked.from }} ~ {{ timePicked.to }}
 			<q-menu>
-				<q-date v-model="timePicked" range first-day-of-week="1" color="indigo" @update:model-value="timeChange" />
+				<q-date v-model="timePicked" range first-day-of-week="1" color="orange" @update:model-value="timeChange" />
 			</q-menu>
 		</q-btn>
 	</div>
@@ -110,7 +110,7 @@
 				class="q-ml-sm"
 				option-value="name"
 				display-value="自定义列"
-				options-selected-class="text-indigo"
+				options-selected-class="text-orange"
 				v-model="SkuStore.visibleColumns"
 				:options="SkuStore.columns"
 			/>
@@ -118,7 +118,7 @@
 		<template v-slot:header="props">
 			<q-tr>
 				<q-th key="orderContactId" :props="props">
-					<q-btn class="q-px-none" flat square color="indigo" @click="contactDialog = true">
+					<q-btn class="q-px-none" flat square color="orange" @click="contactDialog = true">
 						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
 					</q-btn>
 					<q-btn
@@ -126,7 +126,7 @@
 						class="q-px-sm"
 						flat
 						square
-						color="indigo"
+						color="orange"
 						@click="
 							() => {
 								contactPicked = ContactStore.getSchema();
@@ -144,7 +144,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="产地/钢厂"
 						style="margin-left: -6px"
@@ -158,7 +158,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="材质"
 						style="margin-left: -6px"
@@ -172,7 +172,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="自定义编号"
 						style="margin-left: -6px"
@@ -187,7 +187,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索品名"
 						style="margin-left: -6px"
@@ -201,7 +201,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索规格"
 						style="margin-left: -6px"
@@ -213,7 +213,7 @@
 					key="count"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuStore.sortKey === 'count' }"
+					:class="{ 'text-orange': SkuStore.sortKey === 'count' }"
 					@click="SkuStore.sort('count')"
 				>
 					<span>单据中的数量</span>
@@ -223,7 +223,7 @@
 					key="pounds"
 					:props="props"
 					class="cursor-pointer"
-					:class="{ 'text-indigo': SkuStore.sortKey === 'pounds' }"
+					:class="{ 'text-orange': SkuStore.sortKey === 'pounds' }"
 					@click="SkuStore.sort('pounds')"
 				>
 					<span>单据中的重量</span>
@@ -232,7 +232,7 @@
 				<q-th
 					key="price"
 					:props="props"
-					:class="{ 'text-indigo': SkuStore.sortKey === 'price' }"
+					:class="{ 'text-orange': SkuStore.sortKey === 'price' }"
 					class="cursor-pointer"
 					@click="SkuStore.sort('price')"
 				>
@@ -245,7 +245,7 @@
 						filled
 						dense
 						clearable
-						color="indigo"
+						color="orange"
 						clear-icon="close"
 						placeholder="搜索备注"
 						style="margin-left: -6px"
@@ -256,7 +256,7 @@
 				<q-th
 					key="timeCreateString"
 					:props="props"
-					:class="{ 'text-indigo': SkuStore.sortKey === 'timeCreate' }"
+					:class="{ 'text-orange': SkuStore.sortKey === 'timeCreate' }"
 					class="cursor-pointer"
 					@click="SkuStore.sort('timeCreate')"
 				>
@@ -314,12 +314,12 @@
 						<span v-else-if="props.row.type === ENUM_ORDER.MATERIAL">
 							<q-btn dense @click="SkuStore.patch([props.row])"> 取消 </q-btn>
 						</span>
-						<span v-else class="text-grey"> <q-icon color="positive" name="check" class="q-mr-sm"></q-icon>货架已统计 </span>
+						<span v-else class="text-grey"> <q-icon color="positive" name="check" class="q-mr-sm"></q-icon>商品分类已统计 </span>
 					</span>
 					<span v-else>
 						<span v-if="props.row.type === ENUM_ORDER.GETOUT && props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
 							<q-btn
-								color="indigo"
+								color="orange"
 								dense
 								@click="
 									() => {
@@ -333,7 +333,7 @@
 						</span>
 						<span v-else-if="props.row.type === ENUM_ORDER.MATERIAL">
 							<q-btn
-								color="indigo"
+								color="orange"
 								dense
 								@click="
 									() => {
@@ -368,7 +368,7 @@
 					<!-- <span v-if="SkuStore.skuSearch.type === ENUM_ORDER.GETIN" class="q-mr-sm">
 						<q-btn
 							dense
-							color="indigo"
+							color="orange"
 							class="q-mx-sm q-px-sm"
 							style="margin-top: -4px"
 							:loadding="SkuStore.loadding"
@@ -388,7 +388,7 @@
 						<q-btn
 							v-if="SkuStore.skuSearch.isConfirmed === true"
 							dense
-							color="indigo"
+							color="orange"
 							class="q-mx-sm q-px-sm"
 							style="margin-top: -4px"
 							:loadding="SkuStore.loadding"
@@ -434,14 +434,14 @@
 		<q-card class="w-1200">
 			<q-toolbar>
 				<q-toolbar-title>
-					<div>货架</div>
+					<div>商品分类</div>
 				</q-toolbar-title>
 				<q-btn dense flat icon="close" v-close-popup></q-btn>
 			</q-toolbar>
 			<q-separator />
 
 			<q-card-section class="q-pb-none">
-				<div class="text-body2 text-grey">点击选择后，可以快速在货架中加入商品。</div>
+				<div class="text-body2 text-grey">点击选择后，可以快速在商品分类中加入商品。</div>
 			</q-card-section>
 			<q-card-section>
 				<picker-cabinet @pick="pickCabinet" />
