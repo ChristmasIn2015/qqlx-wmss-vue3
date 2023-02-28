@@ -365,14 +365,14 @@
 					，</span
 				>
 				<span>已加载 {{ BookStore.bookList.length }} / {{ BookStore.total }}，</span>
-				<span
-					>合计
+				<span>
+					合计
 
-					<span class="text-body1 text-weight-bold text-negative">{{
-						BookStore.amountTotal.toLocaleString("zh", { minimumFractionDigits: 2 })
-					}}</span>
-					元</span
-				>
+					<span class="text-body1 text-weight-bold text-negative">
+						{{ BookStore.amountTotal.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+					</span>
+					元
+				</span>
 			</div>
 		</template>
 	</q-table>

@@ -153,7 +153,7 @@
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfSelf' }"
 					@click="BookStore.sort('amountBookOfSelf')"
 				>
-					<span>已开票</span>
+					<span>{{ BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK ? "已开票" : "已收发票" }}</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
@@ -163,7 +163,7 @@
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfSelfRest' }"
 					@click="BookStore.sort('amountBookOfSelfRest')"
 				>
-					<span>可开票</span>
+					<span>{{ BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK ? "可开发票" : "应收发票" }}</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th key="remark" :props="props">

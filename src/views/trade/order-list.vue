@@ -365,7 +365,7 @@
 
 										<div class="row text-body1">
 											<span class="col text-grey"
-												>审核人
+												>复核人
 												<a v-if="props.row.managerId" class="cursor-pointer text-negative" @click.stop="setManager(props.row, true)">
 													取消
 												</a>
@@ -623,6 +623,7 @@ const print = async () => {
 	callPrinter(dom as HTMLElement);
 };
 const setManager = async (order: OrderInView, toClear = false) => {
+	await setOrderSku(order);
 	const entity = cloneDeep(order);
 	entity.managerId = toClear ? "" : UserStore.userEditor.userId;
 	await OrderStore.put(entity);

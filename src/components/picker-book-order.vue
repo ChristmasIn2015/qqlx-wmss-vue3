@@ -270,7 +270,8 @@ onMounted(async () => {
 	}
 
 	OrderStore.accounterIdIdRequired = true;
-	OrderStore.getOrderWidthContact(1);
+	OrderStore.page.page = 1;
+	debounceGet();
 });
 </script>
 
