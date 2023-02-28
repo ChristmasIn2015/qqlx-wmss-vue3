@@ -785,7 +785,7 @@
 "@esbuild/darwin-x64@0.16.17":
   version "0.16.17"
   resolved "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.16.17.tgz#42829168730071c41ef0d028d8319eea0e2904b4"
-  integrity sha512-2By45OBHulkd9Svy5IOCZt376Aa2oOkiE9QWUK9fe6Tb+WDr8hXL3dpqi+DeLiMed8tVXspzsTAvd0jUl96wmg==
+  integrity sha512-2By45OBHulkd9Svy5IOCZt376Aa2oOkiE9QWUK9fe6Tb+WDr8hXL3dpqi+Deindigo-14d8tVXspzsTAvd0jUl96wmg==
 
 "@esbuild/darwin-x64@0.17.6":
   version "0.17.6"
@@ -962,10 +962,10 @@
   resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.17.6.tgz#563ff4277f1230a006472664fa9278a83dd124da"
   integrity sha512-n6d8MOyUrNp6G4VSpRcgjs5xj4A91svJSaiwLIDWVWEsZtpN5FA9NlBbZHDmAJc2e8e6SF4tkBD3HAvPF+7igA==
 
-"@quasar/extras@^1.15.10":
-  version "1.15.10"
-  resolved "https://registry.npmjs.org/@quasar/extras/-/extras-1.15.10.tgz#515298377249765f9ca0027f6843f6a8e61efcd8"
-  integrity sha512-6w8e+wPNfcWhzW43tlnJPHOrcNwAgaaNJ3zBz8k+BMqpenA3fHZhFhxCYEVRZVqPFE2IK/8nRiPBp4t9xlW5tA==
+"@quasar/extras@^1.15.11":
+  version "1.15.11"
+  resolved "https://registry.npmjs.org/@quasar/extras/-/extras-1.15.11.tgz#a54d60b14446b850a1e5fccab3f381a2e447a73f"
+  integrity sha512-EEXL10EJQmL9jNs5fp0Kd/nyonG8hTODolj+qpYNPG3qEEoy3txr05Pdmp9qJYaXIzP9rOS9FGhFe9Mnq6MBBg==
 
 "@quasar/vite-plugin@^1.3.0":
   version "1.3.0"
@@ -2168,10 +2168,10 @@ punycode@^2.1.1:
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-qqlx-core@^0.1.67:
-  version "0.1.67"
-  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-0.1.67.tgz#d8cf5d2f660d04a969bfce953cc6fa78fb58b40d"
-  integrity sha512-zc9GYXbgSVYEu+J8yOmfTdWxnpYDpx1PeIlorZblC2/Cu5558na4XbSzjUZeq+n+2DKewAjuKcBD90Gy0QTMAQ==
+qqlx-core@^0.1.80:
+  version "0.1.80"
+  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-0.1.80.tgz#0b24d3c4e0b515c612b256101fd35ad1148eeccf"
+  integrity sha512-Z/npmA3xwTFT1l7lb4I/C9sI0iMf/rGMGPfIsXvn8PQMTEy7RVWQBex28cWHhYuqIVDWcFh3gTRCdmG9S4vZFQ==
   dependencies:
     esbuild "^0.17.0"
     mongodb "^4.13.0"
@@ -2186,10 +2186,10 @@ qrcode@^1.5.1:
     pngjs "^5.0.0"
     yargs "^15.3.1"
 
-quasar@^2.11.5:
-  version "2.11.5"
-  resolved "https://registry.npmjs.org/quasar/-/quasar-2.11.5.tgz#c8a74c8f7bf24b16cdf51f1257df1a38b68fdfb8"
-  integrity sha512-rX4Rwp9wlCeB9A6RQUxEx/q84LMBVVm6WTECkoq8r/+NBgl9aHVexzZQBnRn2i61D0BJpdX5VcnMxAnJkTx/kA==
+quasar@^2.11.6:
+  version "2.11.6"
+  resolved "https://registry.npmjs.org/quasar/-/quasar-2.11.6.tgz#9d200a0de44dc235915fee3ea3ff5673045fdcbc"
+  integrity sha512-jJniWqTtfLHDuAT1YNx6ZZdZU7nM8vwscyM7IxmijaHq+fDpgjaujDQUlJWgn5ZMkqe3Yvg93MgSxjcL71oJIw==
 
 read-pkg@^3.0.0:
   version "3.0.0"

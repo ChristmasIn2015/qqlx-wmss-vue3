@@ -4,9 +4,15 @@
 		dense
 		:columns="[
 			{ name: 'name', field: 'name', label: '客户名称', align: 'left', style: 'font-size: 16px; width: 300px; max-width: 300px;' },
-			{ name: 'address', field: 'address', label: '联系方式', align: 'left', style: 'font-size: 16px; width: 150px;' },
 			{ name: 'remark', field: 'remark', label: '备注', align: 'left', style: 'font-size: 16px; width: 150px;' },
-			{ name: 'timeCreateString', field: 'timeCreateString', align: 'left', label: '创建时间', style: 'font-size: 16px;' },
+			{ name: 'address', field: 'address', label: '联系方式', align: 'left', style: 'font-size: 16px; width: 150px; max-width: 150px;' },
+			{
+				name: 'timeCreateString',
+				field: 'timeCreateString',
+				align: 'left',
+				label: '创建时间',
+				style: 'font-size: 16px; width: 270px; max-width: 270px; padding: 0 8px;',
+			},
 		]"
 		row-key="_id"
 		:rows-per-page-options="[0]"
@@ -19,8 +25,8 @@
 		<template v-slot:top="props">
 			<div class="col q-mb-md">
 				<q-input
-					standout
 					dense
+					standout
 					clearable
 					color="green-6"
 					clear-icon="close"
@@ -56,7 +62,7 @@
 						color="green-6"
 						@click="() => ContactStore.post()"
 					/>
-					<q-btn class="q-ml-sm" glossy label="清空" @click="() => (ContactStore.contactListExcel = [])" />
+					<q-btn class="q-ml-sm text-negative" glossy label="清空" @click="() => (ContactStore.contactListExcel = [])" />
 					<q-btn class="q-ml-sm" glossy label="批量导入">
 						<q-menu>
 							<q-list>
@@ -88,10 +94,10 @@
 					<q-input square filled v-model="schema.name" dense clearable clear-icon="close" color="green-6" placeholder="请输入客户名称" />
 				</q-td>
 				<q-td>
-					<q-input square filled v-model="schema.address" dense clearable clear-icon="close" color="green-6" placeholder="请输入联系方式" />
+					<q-input square filled v-model="schema.remark" dense clearable clear-icon="close" color="green-6" placeholder="请输入备注" />
 				</q-td>
 				<q-td>
-					<q-input square filled v-model="schema.remark" dense clearable clear-icon="close" color="green-6" placeholder="请输入备注" />
+					<q-input square filled v-model="schema.address" dense clearable clear-icon="close" color="green-6" placeholder="请输入联系方式" />
 				</q-td>
 				<q-td>
 					<q-btn icon="close" dense class="text-negative" flat @click="() => ContactStore.contactListExcel.splice(index, 1)"> </q-btn>
@@ -101,13 +107,15 @@
 		<template v-slot:body="props">
 			<q-tr :props="props">
 				<q-td key="name" :props="props" class="ellipsis"> {{ props.row.name }} </q-td>
-				<q-td key="address" :props="props"> {{ props.row.address }} </q-td>
 				<q-td key="remark" :props="props"> {{ props.row.remark }} </q-td>
+				<q-td key="address" :props="props" class="ellipsis"> {{ props.row.address }} </q-td>
 				<q-td key="timeCreateString" :props="props">
 					<div class="row items-center">
 						<span>{{ props.row.timeCreateString }}</span>
 						<q-space></q-space>
-						<q-btn dense class="q-ml-sm" color="green-6" v-close-popup glossy @click="$emit('pick', cloneDeep(props.row))"> 选择 </q-btn>
+						<q-btn dense push square class="q-ml-sm" color="green-6" v-close-popup glossy @click="$emit('pick', cloneDeep(props.row))">
+							选择
+						</q-btn>
 						<q-btn dense icon="more_horiz" class="q-ml-sm">
 							<q-menu anchor="top left" @hide="ContactStore.patch(props.row)">
 								<q-card class="w-400">

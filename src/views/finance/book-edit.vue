@@ -1,7 +1,10 @@
 <template>
 	<div class="q-pt-md q-pb-lg">
 		<div class="text-h5 text-white text-weight-bold">
-			<q-btn color="white" text-color="black" icon="arrow_back" @click="router.back()"></q-btn>
+			<q-btn color="white" text-color="black" @click="router.back()">
+				<q-icon name="arrow_back_ios" size="16px"></q-icon>
+				<span>返回</span>
+			</q-btn>
 			{{ BookStore.bookEditor._id ? "编辑" : "创建" }}{{ nowTypeName }}
 		</div>
 		<div class="text-white q-pt-sm">
@@ -17,8 +20,8 @@
 				:columns="[
 					{ name: 'code', field: 'code', label: '编号', align: 'left' },
 					{ name: 'contactId', field: 'contactId', label: '客户', align: 'left' },
+					{ name: 'amountBookOfOrderRest', field: 'amountBookOfOrderRest', label: '可结清', align: 'left' },
 					{ name: 'amount', field: 'amount', label: '金额', align: 'right' },
-					{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
 					{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
 					{ name: '_id', field: '_id', align: 'left', label: '操作' },
 				]"
@@ -28,18 +31,32 @@
 			>
 				<template v-slot:header="props">
 					<q-tr :props="props">
-						<q-th key="code" :props="props">编号</q-th>
-						<q-th key="contactId" :props="props">客户</q-th>
-						<q-th key="amount" :props="props">您期望结清的金额</q-th>
+						<q-th key="code" :props="props">编号/客户</q-th>
+						<q-th key="amountBookOfOrderRest" :props="props" class="text-right">还可结清</q-th>
+						<q-th key="amount" :props="props">本次结清</q-th>
 						<q-th key="remark" :props="props">备注</q-th>
-						<q-th key="_id" :props="props">操作</q-th>
+						<q-th key="_id" :props="props"></q-th>
 					</q-tr>
 				</template>
 				<template v-slot:body="props">
 					<q-tr>
-						<q-td key="code" :props="props" :style="tableStyle">{{ props.row.code }}</q-td>
-						<q-td key="contactId" :props="props" :style="tableStyle">{{ props.row.joinContact?.name }}</q-td>
-						<q-td key="amount" :style="tableStyle">
+						<q-td key="code" :props="props" :style="tableStyle">
+							<div>{{ props.row.code }}</div>
+							<div>{{ props.row.joinContact?.name }}</div>
+						</q-td>
+						<q-td key="amountBookOfOrderRest" :props="props" class="text-right" :style="tableStyle">
+							<div class="row">
+								订单金额
+								<q-space></q-space>
+								{{ props.row.amount.toFixed(2) }}
+							</div>
+							<div class="row">
+								累计已结清
+								<q-space></q-space>
+								<span class="text-teal text-weight-bold">{{ props.row.amountBookOfOrder.toFixed(2) }}</span>
+							</div>
+						</q-td>
+						<q-td key="amount" :style="tableStyle" style="max-width: 150px">
 							<q-input
 								dense
 								square
@@ -47,11 +64,15 @@
 								type="number"
 								input-class="text-body1 text-right"
 								placeholder="请输入金额"
-								v-model="props.row.amount"
+								v-model="props.row.amountBookOfOrderRest"
 								color="pink-6"
-							/>
+							>
+								<template v-slot:append>
+									<span class="text-body1">元</span>
+								</template>
+							</q-input>
 						</q-td>
-						<q-td key="remark" :props="props" :style="tableStyle">{{ props.row.remark }}</q-td>
+						<q-td key="remark" :props="props" class="ellipsis" :style="tableStyle" style="max-width: 150px">{{ props.row.remark }}</q-td>
 						<q-td key="_id" style="padding: 0 4px 0 0">
 							<q-btn dense class="text-negative" icon="close" flat @click="() => OrderStore.orderListPicked.splice(props.rowIndex, 1)"> </q-btn>
 						</q-td>
@@ -63,22 +84,22 @@
 			<q-card class="full-height column">
 				<q-card-section class="text-h6 text-weight-bold">资金信息 </q-card-section>
 				<q-separator></q-separator>
-				<q-card-section class="text-grey">
+				<q-card-section class="text-grey text-body1">
 					<div class="row">
 						<div class="col">编号</div>
-						<div class="col text-right">{{ BookStore.bookEditor.code }}</div>
+						<div class="col-8 text-right">{{ BookStore.bookEditor.code }}</div>
 					</div>
 					<div class="row">
 						<div class="col">客户</div>
-						<div class="col text-right">{{ BookStore.bookEditor.keyOrigin }}</div>
+						<div class="col-8 text-right">{{ BookStore.bookEditor.keyOrigin }}</div>
 					</div>
 					<div class="row">
 						<div class="col">银行</div>
-						<div class="col text-right">{{ BookStore.bookEditor.keyHouse }}</div>
+						<div class="col-8 text-right">{{ BookStore.bookEditor.keyHouse }}</div>
 					</div>
 					<div class="row">
 						<div class="col">时间</div>
-						<div class="col text-right">{{ BookStore.bookEditor.timeCreateString }}</div>
+						<div class="col-8 text-right">{{ BookStore.bookEditor.timeCreateString }}</div>
 					</div>
 				</q-card-section>
 				<q-separator></q-separator>
@@ -156,7 +177,7 @@ const nowTypeName = computed({
 const nowAmount = computed({
 	get() {
 		let amount = 0;
-		OrderStore.orderListPicked.map((e) => (amount += Number(e.amount)));
+		OrderStore.orderListPicked.map((e) => (amount += Number(e.amountBookOfOrderRest)));
 		return Number(parseInt((amount * 100).toString()) / 100);
 	},
 	set() {},

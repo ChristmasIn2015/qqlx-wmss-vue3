@@ -61,19 +61,15 @@ export const useContactStore = defineStore("Contact", {
 				this.loadding = false;
 			}
 		},
-		// async get10() {
-		// 	try {
-		// 		this.loadding = true;
-
-		// 		const dto: getContactDto = { page: getPage(10), search: this.getSchema(), keyword: this.keyword };
-		// 		const res: getContactRes = await request.get(PATH_CONTACT, { dto });
-		// 		this.contactListKeyword = res.list.map((e) => ({ title: `${e.name} / ${e.remark}`, value: e._id }));
-		// 	} catch (error) {
-		// 		NotifyStore.fail((error as Error).message);
-		// 	} finally {
-		// 		this.loadding = false;
-		// 	}
-		// },
+		async get10() {
+			this.loadding = true;
+			const schema = this.getSchema();
+			schema.name = this.contactSearch.name;
+			const dto: getContactDto = { page: getPage(10), search: schema };
+			const res: getContactRes = await request.get(PATH_CONTACT, { dto });
+			this.loadding = false;
+			return res;
+		},
 		async post() {
 			try {
 				const excels = cloneDeep(this.contactListExcel);

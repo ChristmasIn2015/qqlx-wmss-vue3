@@ -56,6 +56,7 @@ export const useCabinetStore = defineStore("Cabinet", {
 		cabinetSearch: getSchema() as Cabinet,
 		cabinetList: [] as Cabinet[],
 		cabinetListRecommand: [recommand0, recommand3, recommand1, recommand2],
+		loadding: false,
 
 		OPTION_ENUM_POUNDS_FORMULA: MAP_ENUM_POUNDS_FORMULA,
 		OPTION_ENUM_LAYOUT_CABINET: MAP_ENUM_LAYOUT_CABINET,
@@ -64,10 +65,11 @@ export const useCabinetStore = defineStore("Cabinet", {
 		async get() {
 			const dto: getCabinetDto = null;
 			const res: getCabinetRes = await request.get(PATH_CABINET);
-			this.cabinetList = res;
+			this.cabinetList = res.sort((p, n) => -(p.timeUpdate - n.timeUpdate));
 		},
 		async post() {
 			try {
+				this.loadding = true;
 				const dto: postCabinetDto = this.cabinetEditor;
 				const res: postCabinetRes = await request.post(PATH_CABINET, { dto });
 				await this.get();
@@ -76,16 +78,21 @@ export const useCabinetStore = defineStore("Cabinet", {
 				NotifyStore.success("创建成功");
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
+			} finally {
+				this.loadding = false;
 			}
 		},
 		async patch() {
 			try {
+				this.loadding = true;
 				const dto: patchCabinetDto = this.cabinetEditor;
 				const res: patchCabinetRes = await request.patch(PATH_CABINET, { dto });
 				await this.get();
 				NotifyStore.success("修改成功");
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
+			} finally {
+				this.loadding = false;
 			}
 		},
 		async delete(cabinetId: string) {

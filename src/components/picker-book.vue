@@ -15,9 +15,9 @@
 		<q-space></q-space>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
-			{{ timePicked.from }} ~ {{ timePicked.to }}
+			{{ BookStore.timeQuasarPicked?.from }} ~ {{ BookStore.timeQuasarPicked?.to }}
 			<q-menu>
-				<q-date v-model="timePicked" range first-day-of-week="1" color="teal" @update:model-value="timeChange" />
+				<q-date v-model="BookStore.timeQuasarPicked" range first-day-of-week="1" color="teal" @update:model-value="BookStore.timeChange" />
 			</q-menu>
 		</q-btn>
 	</div>
@@ -104,7 +104,7 @@
 					:props="props"
 					class="cursor-pointer"
 					:class="{ 'text-teal': BookStore.sortKey === 'amountBookOfOrder' }"
-					@click="BookStore.sort('amountBookOfOrder')"
+					@click="BookStore.sort('amountBookOfOrder', true)"
 				>
 					<span>已结清</span>
 					<q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
@@ -166,7 +166,7 @@
 					:style="tableStyle"
 					:class="{
 						'text-grey': props.row.amountBookOfSelf < 1,
-						'text-purple-8': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfSelf >= 1,
+						purple: BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfSelf >= 1,
 						'text-weight-bold': props.row.amountBookOfSelf >= 1,
 					}"
 				>
@@ -216,16 +216,6 @@ const BookStore = useBookStore();
 const InvoiceStore = useInvoiceStore();
 
 const tableStyle = { "font-size": "16px" };
-const date = new Date();
-const timePicked = ref({ from: `${date.getFullYear()}/01/01`, to: date.toLocaleString().split(" ")[0] });
-const timeChange = () => {
-	console.log(JSON.stringify(timePicked.value));
-	if (timePicked.value) {
-		BookStore.page.startTime = new Date(timePicked.value.from + " 00:00:00").getTime();
-		BookStore.page.endTime = new Date(timePicked.value.to + " 23:59:59").getTime();
-		BookStore.get(1);
-	}
-};
 
 const debounceGet = debounce(() => BookStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {

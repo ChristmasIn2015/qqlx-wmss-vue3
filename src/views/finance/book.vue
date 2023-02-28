@@ -2,8 +2,8 @@
 	<div class="q-pt-md q-pb-lg">
 		<div class="text-h4 text-white text-weight-bold">资金记录</div>
 		<div class="text-white q-pt-sm">
-			<div>1.您可以根据实际收款情况，对不同公司导入银行的收付款数据；</div>
-			<div>2.对资金记录点击结清，可以将收付款情况对应到订单中；</div>
+			<div>1.您可以根据实际收款情况，导入不同公司的银行收付款数据</div>
+			<div>2.对资金记录点击结清，可以将收付款情况对应到订单中</div>
 		</div>
 	</div>
 
@@ -86,9 +86,17 @@
 		/>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
-			{{ timePicked.from }} ~ {{ timePicked.to }}
+			{{ BookStore.timeQuasarPicked?.from }} ~ {{ BookStore.timeQuasarPicked?.to }}
 			<q-menu>
-				<q-date v-model="timePicked" range first-day-of-week="1" color="teal" @update:model-value="timeChange" />
+				<q-date
+					range
+					minimal
+					no-unset
+					color="teal"
+					first-day-of-week="1"
+					v-model="BookStore.timeQuasarPicked"
+					@update:model-value="BookStore.timeChange"
+				/>
 			</q-menu>
 		</q-btn>
 	</div>
@@ -247,7 +255,7 @@
 		</template>
 		<template v-slot:body="props">
 			<q-tr
-				class="cursor-crosshair select-none"
+				class="cursor-crosshair"
 				:class="{
 					'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
 				}"
@@ -356,7 +364,15 @@
 					</a>
 					，</span
 				>
-				<span>{{ BookStore.bookList.length }} / {{ BookStore.total }}</span>
+				<span>已加载 {{ BookStore.bookList.length }} / {{ BookStore.total }}，</span>
+				<span
+					>合计
+
+					<span class="text-body1 text-weight-bold text-negative">{{
+						BookStore.amountTotal.toLocaleString("zh", { minimumFractionDigits: 2 })
+					}}</span>
+					元</span
+				>
 			</div>
 		</template>
 	</q-table>
@@ -382,16 +398,6 @@ const OrderStore = useOrderStore();
 const BookStore = useBookStore();
 
 const tableStyle = { "font-size": "16px" };
-const date = new Date();
-const timePicked = ref({ from: `${date.getFullYear()}/01/01`, to: date.toLocaleString().split(" ")[0] });
-const timeChange = () => {
-	console.log(JSON.stringify(timePicked.value));
-	if (timePicked.value) {
-		BookStore.page.startTime = new Date(timePicked.value.from + " 00:00:00").getTime();
-		BookStore.page.endTime = new Date(timePicked.value.to + " 23:59:59").getTime();
-		BookStore.get(1);
-	}
-};
 
 const debounceGet = debounce(() => BookStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {

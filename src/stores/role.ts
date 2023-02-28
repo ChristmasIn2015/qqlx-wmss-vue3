@@ -40,7 +40,7 @@ export const useRoleWMSSStore = defineStore("RoleWMSS", {
 		async get() {
 			const dto: getRoleWMSSDto = null;
 			const res: getRoleWMSSRes = await request.get(PATH_WMSS_ROLE);
-			this.RoleWMSSList = res;
+			this.RoleWMSSList = res?.reverse();
 		},
 		// 创建角色
 		async post(askerId: string, role?: ENUM_ROLE_WMSS) {

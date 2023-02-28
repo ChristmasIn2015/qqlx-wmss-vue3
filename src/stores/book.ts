@@ -47,7 +47,9 @@ export const useBookStore = defineStore("Book", {
 		sortKey: "timeCreate",
 		sortValue: MongodbSort.DES,
 		page: getPage(),
+		timeQuasarPicked: { from: `${new Date().getFullYear()}/01/01`, to: new Date().toLocaleString().split(" ")[0] },
 		total: 0,
+		amountTotal: 0,
 		loadding: false,
 
 		// 仅仅用于开发票
@@ -73,12 +75,20 @@ export const useBookStore = defineStore("Book", {
 				const res: getBookRes = await request.get(PATH_BOOK, { dto });
 				this.bookList = this.page.page === 1 ? res.list : this.bookList.concat(res.list);
 				this.total = res.total;
+				this.amountTotal = res.group?.value || 0;
 
 				if (res.list.length > 0) this.page.page++;
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			} finally {
 				this.loadding = false;
+			}
+		},
+		timeChange() {
+			if (this.timeQuasarPicked) {
+				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
+				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
+				this.get(1);
 			}
 		},
 		sort(sortKey: string) {

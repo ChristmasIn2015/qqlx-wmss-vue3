@@ -49,29 +49,29 @@ function getSchema(): Sku {
 	};
 }
 
+const cellStyle = { "font-size": "16px" };
 const columns = [
-	{ name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: "font-size: 16px;" },
-	{ name: "timeCreateString", field: "timeCreateString", label: "时间", style: "font-size: 16px; " },
-	{ name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: "font-size: 16px;" },
-	{ name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: "font-size: 16px;" },
-	{ name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: "font-size: 16px;" },
-	{ name: "orderId", field: "orderId", label: "订单编号", align: "left", style: "font-size: 16px;" },
-	{ name: "name", field: "name", label: "品名", align: "left", style: "font-size: 16px;" },
-	{ name: "norm", field: "norm", label: "规格", align: "left", style: "font-size: 16px;" },
-	{ name: "count", field: "count", label: "数量", style: "font-size: 16px;" },
-	{ name: "pounds", field: "pounds", label: "过磅", style: "font-size: 16px;" },
-	{ name: "countFinal", field: "countFinal", label: "数量", style: "font-size: 16px;" },
-	{ name: "poundsFinal", field: "poundsFinal", label: "过磅", style: "font-size: 16px;" },
-	{ name: "price", field: "price", label: "单价", style: "font-size: 16px;" },
-	{ name: "remark", field: "remark", label: "备注", style: "font-size: 16px;" },
-	{ name: "layout", field: "layout", label: "性质", align: "left", style: "font-size: 16px; " },
-	{ name: "_id", field: "_id", label: "操作", align: "left", style: "font-size: 16px; " },
+	{ name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: cellStyle },
+	{ name: "timeCreateString", field: "timeCreateString", label: "时间", style: cellStyle },
+	{ name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: cellStyle },
+	{ name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: cellStyle },
+	{ name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: cellStyle },
+	{ name: "orderId", field: "orderId", label: "订单编号", align: "left", style: cellStyle },
+	{ name: "layout", field: "layout", label: "性质", align: "left", style: cellStyle },
+	{ name: "name", field: "name", label: "品名", align: "left", style: cellStyle },
+	{ name: "norm", field: "norm", label: "规格", align: "left", style: cellStyle },
+	{ name: "count", field: "count", label: "数量", style: cellStyle },
+	{ name: "pounds", field: "pounds", label: "过磅", style: cellStyle },
+	{ name: "price", field: "price", label: "单价", style: cellStyle },
+	{ name: "remark", field: "remark", label: "备注", style: cellStyle },
+	{ name: "_id", field: "_id", label: "操作", align: "left", style: cellStyle },
 ];
 export const useSkuGetInStore = defineStore("SkuGetIn", {
 	state: () => ({
 		skuSearch: getSchema() as Sku,
 		skuList: [] as SkuInView[],
 
+		timeQuasarPicked: { from: `${new Date().getFullYear()}/01/01`, to: new Date().toLocaleString().split(" ")[0] },
 		sortKey: "timeCreate",
 		sortValue: MongodbSort.DES,
 		types: [],
@@ -88,14 +88,16 @@ export const useSkuGetInStore = defineStore("SkuGetIn", {
 				// 分页
 				if (page && page > 0) this.page.page = page;
 				this.loadding = true;
+				this.skuSearch.type = ENUM_ORDER.GETIN;
+				this.skuSearch.isConfirmed = true;
 
 				const dto: getSkuDto = {
 					sortKey: this.sortKey,
 					sortValue: this.sortValue,
+					isIndividual: true,
 
 					page: this.page,
 					search: this.skuSearch,
-					types: this.types,
 				};
 				const res: getSkuRes = await request.get(PATH_SKU, { dto });
 				this.skuList = this.page.page === 1 ? res.list : this.skuList.concat(res.list);
@@ -116,6 +118,13 @@ export const useSkuGetInStore = defineStore("SkuGetIn", {
 			}
 			this.sortValue = this.sortValue === MongodbSort.DES ? MongodbSort.ASC : MongodbSort.DES;
 			this.get(1); // async
+		},
+		timeChange() {
+			if (this.timeQuasarPicked) {
+				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
+				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
+				this.get(1);
+			}
 		},
 		getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {
 			const schema: Sku = getSchema();

@@ -1,7 +1,9 @@
 <template>
 	<q-layout container view="lHh Lpr lff">
 		<q-drawer side="left" :width="180" show-if-above class="select-none hide-scrollbar bg-blue-grey-1">
-			<div class="q-pt-sm q-pl-md text-weight-bold text-h5" :class="`text-${route.meta?.color}`">开单办公室</div>
+			<div class="q-pt-sm q-pl-md text-weight-bold text-h5" :class="`text-${route.meta?.color}`">
+				<div>开单办公室</div>
+			</div>
 
 			<!-- 导航 -->
 			<!-- 导航 -->
@@ -17,16 +19,14 @@
 							<q-icon :name="(route.meta?.icon as string)" :class="isActive ? `text-${route.meta?.color}` : 'text-grey'"> </q-icon>
 						</q-item-section>
 						<q-item-section class="text-weight-bold text-body1" :class="isActive ? `text-${route.meta?.color}` : 'text-grey'">
-							<span>
-								{{ route.name }}
-								<span
-									v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'"
-									class="bg-negative text-white q-px-xs q-ml-sm text-body2"
-									style="border-radius: 3px"
-								>
-									{{ skuNotConfirmedAll }}
+							<q-item-label style="position: relative">
+								<span>
+									{{ route.name }}
+									<q-badge style="transform: translateY(-2px)" color="negative" v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'">
+										{{ skuNotConfirmedAll }}
+									</q-badge>
 								</span>
-							</span>
+							</q-item-label>
 						</q-item-section>
 					</q-item>
 				</router-link>
@@ -40,17 +40,19 @@
 					<q-item-section avatar>
 						<q-avatar rounded>
 							<img :src="UserStore.userEditor?.avator || UserStore.wxAvatorDefault" />
+							<q-badge color="negative" floating v-if="scheduleString.isOver">已过期</q-badge>
 						</q-avatar>
 					</q-item-section>
 					<q-item-section>
 						<q-item-label class="text-weight-bold ellipsis">{{ UserStore.userEditor?.nickname }}</q-item-label>
-						<q-item-label caption class="ellipsis">{{ scheduleString }}</q-item-label>
+						<q-item-label caption class="ellipsis">{{ nowCorpName }}</q-item-label>
 					</q-item-section>
 					<q-item-section side style="padding-left: 4px">
 						<q-icon name="unfold_more" />
 					</q-item-section>
 				</q-item>
 			</q-list>
+
 			<q-dialog v-model="userDialog" persistent>
 				<q-card class="w-400">
 					<q-toolbar>
@@ -68,13 +70,19 @@
 							</template>
 						</q-input>
 
-						<q-input filled disable label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
+						<q-input filled readonly label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
 							<template v-slot:before>
-								<q-icon name="event" />
+								<q-icon name="" />
 							</template>
 						</q-input>
 
-						<q-input filled readonly label="当前公司剩余时长" class="q-mb-sm" v-model="scheduleString">
+						<q-input filled readonly label="当前公司" class="q-mb-sm" v-model="nowCorpName">
+							<template v-slot:before>
+								<q-icon name="" />
+							</template>
+						</q-input>
+
+						<q-input filled readonly label="有效期" class="q-mb-sm" v-model="scheduleString.text">
 							<template v-slot:before>
 								<q-icon name="" />
 							</template>
@@ -85,7 +93,7 @@
 					<q-card-actions>
 						<q-btn color="negative" flat v-close-popup @click="router.push('/wmss/login')">
 							<q-icon name="logout"></q-icon>
-							<span class="q-ml-xs">退出</span>
+							<span class="q-ml-xs">切换用户</span>
 						</q-btn>
 						<q-space></q-space>
 						<q-btn color="primary" v-close-popup @click="UserStore.patch()"> 应用 </q-btn>
@@ -141,7 +149,7 @@ const openWebTab = () => window.open("https://qqlx.tech");
 const skuNotConfirmedAll = computed({
 	get() {
 		let count = 0;
-		AnalysisStore.skuNotConfirmed.map((e) => (count += e.count));
+		AnalysisStore.analysis?.skuNotConfirmed.map((e) => (count += e.count));
 		return count;
 	},
 	set() {},
@@ -149,9 +157,18 @@ const skuNotConfirmedAll = computed({
 const scheduleString = computed({
 	get() {
 		const now = Date.now();
-		const last = AnalysisStore.lastActiveScheduleCardOrder;
+		const last = AnalysisStore.analysis?.lastActiveScheduleCardOrder;
 		const deadline = last ? last.timeCreate + (last.joinCard?.schedule || 0) : 0;
-		return now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now);
+		return {
+			isOver: now > deadline,
+			text: now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now),
+		};
+	},
+	set() {},
+});
+const nowCorpName = computed({
+	get() {
+		return CorpStore.corpPicked?.name || "-";
 	},
 	set() {},
 });

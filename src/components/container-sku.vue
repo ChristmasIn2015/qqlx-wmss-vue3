@@ -38,7 +38,7 @@
 					<span class="text-body1" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" :class="`text-${route.meta?.color}`">
 						<q-badge class="q-ml-sm" color="grey" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
 							>大件商品
-							<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+							<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独扣减在库的 “大件商品” 库存 </q-tooltip>
 						</q-badge>
 					</span>
 					<span v-else>-</span>

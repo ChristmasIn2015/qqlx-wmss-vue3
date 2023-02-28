@@ -3,9 +3,17 @@
 		<q-space></q-space>
 		<q-btn color="white" text-color="black" class="text-body1 q-ml-sm">
 			<q-icon name="date_range" class="q-mr-xs" style="margin-bottom: -4px"></q-icon>
-			{{ timePicked.from }} ~ {{ timePicked.to }}
+			{{ OrderStore.timeQuasarPicked?.from }} ~ {{ OrderStore.timeQuasarPicked?.to }}
 			<q-menu>
-				<q-date v-model="timePicked" range first-day-of-week="1" color="pink-6" @update:model-value="timeChange" />
+				<q-date
+					range
+					minimal
+					no-unset
+					color="pink-6"
+					first-day-of-week="1"
+					v-model="OrderStore.timeQuasarPicked"
+					@update:model-value="OrderStore.timeChange"
+				/>
 			</q-menu>
 		</q-btn>
 	</div>
@@ -36,53 +44,56 @@
 			<q-tr>
 				<q-th key="code" :props="props" style="width: 188px">
 					<q-input
+						dense
 						square
 						filled
-						dense
 						clearable
-						:color="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
 						clear-icon="close"
 						placeholder="搜索批次"
 						style="margin-left: -6px"
+						:color="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
 						v-model="OrderStore.orderSearch.code"
-						@blur="OrderStore.get(1)"
+						@blur="OrderStore.getOrderWidthContact(1)"
 					/>
 				</q-th>
 				<q-th key="contactId" :props="props" style="width: 188px">
-					<q-btn
-						class="q-px-none"
-						flat
+					<q-select
+						dense
 						square
+						filled
+						use-input
+						emit-value
+						option-label="name"
+						placeholder="搜索客户"
+						style="margin-left: -6px"
+						:options="contactSelecting"
 						:color="OrderStore.orderSearch.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
-						@click="contactDialog = true"
-					>
-						{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
-					</q-btn>
-					<q-btn
-						v-show="contactPicked._id"
-						class="q-px-sm"
-						flat
-						square
-						color="pink-6"
-						@click="
+						:loading="ContactStore.loadding"
+						v-model="contactPicked"
+						@filter="searchContact"
+						@update:model-value="
 							() => {
-								contactPicked = ContactStore.getSchema();
-								OrderStore.orderSearch.contactId = '';
-								OrderStore.get(1);
+								OrderStore.orderSearch.contactId = contactPicked ? contactPicked._id : '';
+								OrderStore.accounterIdIdRequired = true;
+								OrderStore.getOrderWidthContact(1);
 							}
 						"
 					>
-						<q-icon name="close" style="margin-bottom: -4px"></q-icon>
-					</q-btn>
+						<template v-slot:no-option>
+							<q-item>
+								<q-item-section class="text-grey"> 暂无结果 </q-item-section>
+							</q-item>
+						</template>
+					</q-select>
 				</q-th>
-				<q-th class="text-right cursor-pointer" :class="{ 'text-primary': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
+				<q-th class="text-right cursor-pointer" :class="{ 'text-primary': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount', true)">
 					<span>金额 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th
 					class="text-right cursor-pointer"
 					:class="{ 'text-primary': OrderStore.sortKey === 'amountBookOfOrder' }"
-					@click="OrderStore.sort('amountBookOfOrder')"
+					@click="OrderStore.sort('amountBookOfOrder', true)"
 				>
 					<span>{{ OrderStore.orderSearch.type === ENUM_ORDER.SALES ? "已收款" : "已付款" }} </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
@@ -90,14 +101,18 @@
 				<q-th
 					class="text-left cursor-pointer"
 					:class="{ 'text-primary': OrderStore.sortKey === 'amountBookOfOrderRest' }"
-					@click="OrderStore.sort('amountBookOfOrderRest')"
+					@click="OrderStore.sort('amountBookOfOrderRest', true)"
 				>
 					<span>剩余 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
 				<q-th class="text-left">操作</q-th>
 				<q-th class="text-left">备注</q-th>
-				<q-th class="text-left cursor-pointer" :class="{ 'text-primary': OrderStore.sortKey === 'timeCreate' }" @click="OrderStore.sort('timeCreate')">
+				<q-th
+					class="text-left cursor-pointer"
+					:class="{ 'text-primary': OrderStore.sortKey === 'timeCreate' }"
+					@click="OrderStore.sort('timeCreate', true)"
+				>
 					<span>时间 </span>
 					<q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 				</q-th>
@@ -151,7 +166,7 @@
 		</template>
 		<template v-slot:bottom="props">
 			<q-space></q-space>
-			<span>共 {{ OrderStore.total }} 项，合计</span>
+			<span>已加载 {{ OrderStore.orderList.length }} / {{ OrderStore.total }} 项，合计</span>
 			<span class="text-body1 text-weight-bold text-negative q-mx-sm"> {{ OrderStore.amountTotal.toFixed(2) }} </span>
 			<span>元</span>
 		</template>
@@ -170,7 +185,7 @@
 					(value) => {
 						contactPicked = value;
 						OrderStore.orderSearch.contactId = value._id;
-						OrderStore.getNoJoin(1);
+						OrderStore.getOrderWidthContact(1);
 					}
 				"
 			></list-contact>
@@ -184,6 +199,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 
 import { ENUM_ORDER, MongodbSort, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
+import type { Contact } from "qqlx-core/schema/brand/contact";
 import type { Order } from "qqlx-core/schema/wmss/order";
 
 import listContact from "@/components/list-contact.vue";
@@ -198,26 +214,29 @@ const ContactStore = useContactStore();
 const OrderStore = useOrderStore();
 const BookStore = useBookStore();
 
-const debounceGet = debounce(() => OrderStore.getNoJoin(), 200);
+const debounceGet = debounce(() => OrderStore.getOrderWidthContact(), 100);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 9 >= details.to) {
+	if (details.index + 10 >= details.to) {
 		debounceGet();
-	}
-};
-
-const date = new Date();
-const timePicked = ref({ from: `${date.getFullYear()}/01/01`, to: date.toLocaleString().split(" ")[0] });
-const timeChange = () => {
-	console.log(JSON.stringify(timePicked.value));
-	if (timePicked.value) {
-		OrderStore.page.startTime = new Date(timePicked.value.from + " 00:00:00").getTime();
-		OrderStore.page.endTime = new Date(timePicked.value.to + " 23:59:59").getTime();
-		OrderStore.get(1);
 	}
 };
 
 const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
+const contactSelecting = ref([] as Contact[]);
+const debounceContact = debounce(async () => {
+	const page = await ContactStore.get10();
+	contactSelecting.value = page.list;
+}, 100);
+const searchContact = (val: any, update: Function) => {
+	update(async () => {
+		ContactStore.contactSearch.name = val || "";
+		debounceContact();
+	});
+};
+//
+
+// action
 const pick = (order: Order) => {
 	const o = cloneDeep(order);
 	const gap = BookStore.bookEditor.amount - nowAmount.value;
@@ -225,11 +244,9 @@ const pick = (order: Order) => {
 	let amount = o.amountBookOfOrderRest;
 	if (amount > gap) amount = gap;
 	else if (gap === 0) amount = 0;
-	o.amount = amount;
+	o.amountBookOfOrderRest = amount;
 	OrderStore.orderListPicked.push(o);
 };
-
-// action
 const nowAmount = computed({
 	get() {
 		let amount = 0;
@@ -253,7 +270,7 @@ onMounted(async () => {
 	}
 
 	OrderStore.accounterIdIdRequired = true;
-	OrderStore.getNoJoin(1);
+	OrderStore.getOrderWidthContact(1);
 });
 </script>
 

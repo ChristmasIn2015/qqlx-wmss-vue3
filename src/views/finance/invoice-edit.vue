@@ -12,7 +12,7 @@
 	<div class="row items-stretch q-mb-sm">
 		<div class="col-8">
 			<q-table
-				class="my-sticky-header-table"
+				class="my-sticky-header-table full-height"
 				dense
 				:columns="[
 					{ name: 'code', field: 'code', label: '系统编号', align: 'left' },
@@ -60,9 +60,9 @@
 		</div>
 		<div class="col-4 q-pl-sm">
 			<q-card class="full-height column">
-				<q-card-section class="text-h6 text-weight-bold">发票信息</q-card-section>
+				<q-card-section class="text-h5 text-weight-bold">发票信息</q-card-section>
 				<q-separator></q-separator>
-				<q-card-section class="text-grey">
+				<q-card-section class="text-grey text-body1">
 					<div class="row">
 						<div class="col">系统编号</div>
 						<div class="col text-right">{{ InvoiceStore.invoiceEditor.code || "-" }}</div>
@@ -80,7 +80,7 @@
 						filled
 						emit-value
 						map-options
-						color="purple-8"
+						color="purple"
 						class="q-mb-sm"
 						placeholder="请选择抬头"
 						:options="(nowCorps as any)"
@@ -88,7 +88,7 @@
 						@update:model-value="InvoiceStore.get(1)"
 					>
 						<template v-slot:before>
-							<span class="text-body2">抬头</span>
+							<span class="text-body1">抬头</span>
 						</template>
 					</q-select>
 					<q-input
@@ -96,14 +96,14 @@
 						square
 						filled
 						label="客户名称"
-						color="purple-8"
+						color="purple"
 						class="q-mb-sm"
 						input-class="text-body1"
 						placeholder="请输入客户名称"
 						v-model="InvoiceStore.invoiceEditor.keyOrigin"
 					>
 						<template v-slot:before>
-							<span class="text-body2">客户</span>
+							<span class="text-body1">客户</span>
 						</template>
 					</q-input>
 					<q-input
@@ -111,14 +111,14 @@
 						square
 						filled
 						label="发票票号"
-						color="purple-8"
+						color="purple"
 						class="q-mb-sm"
 						input-class="text-body1"
 						placeholder="请输入票号"
 						v-model="InvoiceStore.invoiceEditor.keyCode"
 					>
 						<template v-slot:before>
-							<span class="text-body2">票号</span>
+							<span class="text-body1">票号</span>
 						</template>
 					</q-input>
 					<q-input
@@ -130,18 +130,22 @@
 						input-class="text-body1"
 						placeholder="请输入金额"
 						v-model="InvoiceStore.invoiceEditor.amount"
-						color="purple-8"
+						color="purple"
 					>
 						<template v-slot:before>
-							<span class="text-body2">金额</span>
+							<span class="text-body1">金额</span>
 						</template>
 					</q-input>
 				</q-card-section>
 				<q-separator></q-separator>
-				<q-card-section class="text-grey">
+				<q-card-section class="text-grey text-body1">
 					<div class="row">
-						<div class="col">已选金额</div>
-						<div class="col text-right text-body1 text-weight-bold">
+						<div class="col">
+							已选金额
+
+							<span class="text-purple cursor-pointer" @click="InvoiceStore.invoiceEditor.amount = nowAmount">设为发票金额</span>
+						</div>
+						<div class="col text-right text-weight-bold">
 							{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
 						</div>
 					</div>
@@ -151,7 +155,7 @@
 				<q-card-actions>
 					<q-space></q-space>
 					<q-btn @click="router.back()">返回</q-btn>
-					<q-btn color="purple-8" :loading="InvoiceStore.loadding" @click="action()">保存</q-btn>
+					<q-btn color="purple" :loading="InvoiceStore.loadding" @click="action()">保存</q-btn>
 				</q-card-actions>
 			</q-card>
 		</div>

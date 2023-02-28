@@ -183,7 +183,7 @@
 					{{ cabinetPicked?.name }}
 					<q-badge class="q-ml-sm" color="grey" v-if="props.row.joinCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
 						大件商品
-						<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独选择一项已入库的商品进行库存扣减。 </q-tooltip>
+						<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独扣减在库的 “大件商品” 库存 </q-tooltip>
 					</q-badge>
 				</q-td>
 				<q-td key="name" :props="props"> {{ props.row.name }} </q-td>
@@ -191,9 +191,17 @@
 					{{ props.row.norm }}
 				</q-td>
 				<q-td key="countFinal" :props="props">
-					<a class="cursor-pointer" :class="`text-${route.meta.color}`" @click="skuGetInDialog = true">
-						<span v-if="cabinetPicked.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"> {{ props.row.poundsFinal }} 吨 </span>
-						<span v-else> {{ props.row.countFinal }} {{ props.row.joinCabinet?.unit }} </span>
+					<a class="cursor-pointer text-grey">
+						<span
+							v-if="cabinetPicked.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
+							:class="props.row.poundsFinal > 1 ? `text-${route.meta.color}` : ''"
+							@click="$router.push('/wmss/warehouse/sku-individual')"
+						>
+							{{ props.row.poundsFinal.toFixed(3) }} 吨
+						</span>
+						<span v-else :class="props.row.countFinal > 1 ? `text-${route.meta.color}` : ''" @click="$router.push('/wmss/warehouse/sku-list')">
+							{{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}
+						</span>
 					</a>
 				</q-td>
 				<q-td key="price" :props="props" :class="{}"> {{ props.row.price }} 元 </q-td>
@@ -282,22 +290,6 @@
 			</q-card-actions>
 		</q-card>
 	</q-dialog>
-
-	<q-dialog v-model="skuGetInDialog" maximized transition-show="slide-up" transition-hide="slide-down">
-		<q-card>
-			<q-toolbar>
-				<q-toolbar-title>
-					<div>在库库存</div>
-				</q-toolbar-title>
-				<q-btn dense flat icon="close" v-close-popup></q-btn>
-			</q-toolbar>
-			<q-separator />
-
-			<q-card-section>
-				<picker-sku-getin />
-			</q-card-section>
-		</q-card>
-	</q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -309,7 +301,7 @@ import { ENUM_LAYOUT_CABINET, MongodbSort } from "qqlx-core";
 import type { SkuInView } from "qqlx-core/dto/wmss/sku";
 import type { CabinetUnit } from "qqlx-core/schema/wmss/cabinetUnit";
 
-import pickerSkuGetin from "@/components/picker-sku-getin.vue";
+import pickerSkuGetin from "@/components/picker-sku-individual.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useCabinetStore } from "@/stores/cabinet";
 import { useCabinetUnitStore } from "@/stores/cabinetUnit";

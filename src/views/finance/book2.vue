@@ -202,7 +202,7 @@
 					:style="tableStyle"
 					:class="{
 						'text-grey': props.row.amountBookOfSelf < 1,
-						'text-purple-8': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfSelf >= 1,
+						purple: BookStore.bookSearch.type === ENUM_BOOK_TYPE.YSZK && props.row.amountBookOfSelf >= 1,
 						'text-primary': BookStore.bookSearch.type === ENUM_BOOK_TYPE.YFZK && props.row.amountBookOfSelf >= 1,
 						'text-weight-bold': props.row.amountBookOfSelf >= 1,
 					}"

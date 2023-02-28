@@ -44,7 +44,7 @@
 				</div>
 				<div class="row">
 					<div class="col">性质</div>
-					<div class="col text-right" :class="CabinetStore.getLayoutChinese(cabinet.layout)?.tip ? 'text-orange' : ''">
+					<div class="col text-right" :class="CabinetStore.getLayoutChinese(cabinet.layout)?.tip ? 'text-indigo-14' : ''">
 						{{ CabinetStore.getLayoutChinese(cabinet.layout)?.text }}
 
 						<q-tooltip v-if="CabinetStore.getLayoutChinese(cabinet.layout)?.tip" class="text-body1">
@@ -54,19 +54,26 @@
 				</div>
 				<div class="row">
 					<div class="col">过磅公式</div>
-					<div class="col text-right" :class="CabinetStore.getFormulaChinese(cabinet.formula)?.tip ? 'text-orange' : ''">
+					<div class="col text-right" :class="CabinetStore.getFormulaChinese(cabinet.formula)?.tip ? 'text-indigo-14' : ''">
 						{{ CabinetStore.getFormulaChinese(cabinet.formula)?.text }}
 						<q-tooltip v-if="CabinetStore.getFormulaChinese(cabinet.formula)?.tip" class="text-body1">
 							{{ CabinetStore.getFormulaChinese(cabinet.formula)?.tip }}
 						</q-tooltip>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col">{{ cabinet.timeUpdateString }}</div>
+				</div>
 			</q-card-section>
+
+			<q-inner-loading :showing="CabinetStore.loadding">
+				<q-spinner-gears size="50px" color="indigo-14" />
+			</q-inner-loading>
 		</q-card>
 	</div>
 
 	<div class="q-pt-xl q-pb-lg">
-		<div class="text-h5 text-orange text-weight-bold">快速添加</div>
+		<div class="text-h5 text-weight-bold">快速添加</div>
 		<div class="text-grey q-pt-sm">
 			<span>以下是常用的钢材商品分类，您可以快速设置为您的商品分类。</span>
 			<span
@@ -74,7 +81,7 @@
 				<q-btn
 					push
 					square
-					color="orange"
+					color="indigo-14"
 					@click="
 						() => {
 							CabinetStore.setSchema();
@@ -95,8 +102,11 @@
 				<q-toolbar-title>
 					{{ cabinet.name }}
 				</q-toolbar-title>
-				<a
-					class="text-orange text-weight-bold cursor-pointer"
+				<q-btn
+					fab
+					flat
+					dense
+					style="margin-right: -12px"
 					@click="
 						() => {
 							CabinetStore.setSchema(cabinet);
@@ -104,8 +114,8 @@
 						}
 					"
 				>
-					快速添加
-				</a>
+					<q-icon name="add" color="indigo-14"></q-icon>
+				</q-btn>
 			</q-toolbar>
 			<q-card-section class="text-grey q-pt-none">
 				<div class="row">
@@ -132,6 +142,10 @@
 					</div>
 				</div>
 			</q-card-section>
+
+			<q-inner-loading :showing="CabinetStore.loadding">
+				<q-spinner-gears size="50px" color="indigo-14" />
+			</q-inner-loading>
 		</q-card>
 	</div>
 
@@ -171,7 +185,7 @@
 					</template>
 				</q-select>
 				<div class="q-ml-lg q-pl-md q-mb-sm text-negative" v-if="CabinetStore.cabinetEditor.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-					请注意，此商品分类将被设置为 “大件商品” 商品分类，当您使用其中的商品进行销售、发货时，需要单独选择一项已入库的商品进行库存扣减。
+					请注意，此商品分类将被设置为 “大件商品” 商品分类，当您使用其中的商品进行销售、发货时，需要单独扣减在库的 “大件商品” 库存
 				</div>
 				<q-select
 					filled
@@ -191,7 +205,7 @@
 
 			<q-card-actions align="right">
 				<q-btn
-					color="orange"
+					color="indigo-14"
 					push
 					square
 					@click="

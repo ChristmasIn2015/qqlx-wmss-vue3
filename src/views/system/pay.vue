@@ -113,7 +113,7 @@ const AnalysisStore = useAnalysisStore();
 const scheduleString = computed({
 	get() {
 		const now = Date.now();
-		const last = AnalysisStore.lastActiveScheduleCardOrder;
+		const last = AnalysisStore.analysis?.lastActiveScheduleCardOrder;
 		const deadline = last ? last.timeCreate + (last.joinCard?.schedule || 0) : 0;
 		return now > deadline ? "已过期" : "剩余 " + getTimeGap(deadline, now);
 	},

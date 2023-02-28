@@ -59,12 +59,13 @@ export const useOrderStore = defineStore("Order", {
 		orderEditor: getSchema() as OrderInView,
 		orderList: [] as OrderInView[],
 
+		loadding: false,
 		sortKey: "timeCreate",
 		sortValue: MongodbSort.DES,
 		page: getPage(15),
+		timeQuasarPicked: { from: `${new Date().getFullYear()}/01/01`, to: new Date().toLocaleString().split(" ")[0] },
 		total: 0,
 		amountTotal: 0,
-		loadding: false,
 
 		// 是否可以复核、结清
 		managerIdRequired: false,
@@ -86,7 +87,10 @@ export const useOrderStore = defineStore("Order", {
 					accounterIdIdRequired: this.accounterIdIdRequired,
 					sortKey: this.sortKey,
 					sortValue: this.sortValue,
-					noJoin: false,
+					joinContact: false,
+					joinSku: false,
+					joinUser: true,
+					join: false,
 				};
 				const res: getOrderRes = await request.get(PATH_ORDER, { dto });
 				this.orderList = res.list;
@@ -98,7 +102,14 @@ export const useOrderStore = defineStore("Order", {
 				this.loadding = false;
 			}
 		},
-		async getNoJoin(page?: number) {
+		timeChange() {
+			if (this.timeQuasarPicked) {
+				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
+				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
+				this.get(1);
+			}
+		},
+		async getOrderWidthContact(page?: number) {
 			try {
 				if (page && page > 0) this.page.page = page;
 				this.loadding = true;
@@ -110,7 +121,59 @@ export const useOrderStore = defineStore("Order", {
 					accounterIdIdRequired: this.accounterIdIdRequired,
 					sortKey: this.sortKey,
 					sortValue: this.sortValue,
-					noJoin: true,
+					joinContact: false,
+					joinUser: false,
+					joinSku: true,
+					join: false,
+				};
+				const res: getOrderRes = await request.get(PATH_ORDER, { dto });
+				this.orderList = this.page.page === 1 ? res.list : this.orderList.concat(res.list);
+				this.total = res.total;
+				this.amountTotal = res.group?.value as number;
+				if (res.list.length > 0) this.page.page++;
+			} catch (error) {
+				NotifyStore.fail((error as Error).message);
+			} finally {
+				this.loadding = false;
+			}
+		},
+		async geOrderWidthSku(): Promise<OrderInView[]> {
+			const page = cloneDeep(this.page);
+			page.page = 1;
+			page.pageSize = this.total;
+			if (page.endTime - page.startTime > 86400000 * 90) throw new Error(`最多选择90天`);
+
+			this.loadding = true;
+
+			const dto: getOrderDto = {
+				page,
+				search: this.orderSearch,
+				sortKey: this.sortKey,
+				sortValue: this.sortValue,
+				joinContact: false,
+				joinUser: false,
+				joinSku: true,
+				join: false,
+			};
+			const res: getOrderRes = await request.get(PATH_ORDER, { dto });
+			return res.list;
+		},
+		async getOrderInView(page?: number) {
+			try {
+				if (page && page > 0) this.page.page = page;
+				this.loadding = true;
+
+				const dto: getOrderDto = {
+					page: this.page,
+					search: this.orderSearch,
+					managerIdRequired: this.managerIdRequired,
+					accounterIdIdRequired: this.accounterIdIdRequired,
+					sortKey: this.sortKey,
+					sortValue: this.sortValue,
+					joinContact: false,
+					joinSku: false,
+					joinUser: false,
+					join: true,
 				};
 				const res: getOrderRes = await request.get(PATH_ORDER, { dto });
 				this.orderList = res.list;
@@ -122,31 +185,14 @@ export const useOrderStore = defineStore("Order", {
 				this.loadding = false;
 			}
 		},
-		async getJoinAll(): Promise<OrderInView[]> {
-			const page = cloneDeep(this.page);
-			page.pageSize = this.total;
-			if (page.endTime - page.startTime > 86400000 * 90) throw new Error(`最多选择90天`);
-
-			this.loadding = true;
-
-			const dto: getOrderDto = {
-				page,
-				search: this.orderSearch,
-				sortKey: this.sortKey,
-				sortValue: this.sortValue,
-				noJoin: false,
-			};
-			const res: getOrderRes = await request.get(PATH_ORDER, { dto });
-			return res.list;
-		},
-		sort(sortKey: string) {
+		sort(sortKey: string, widthJoin = false) {
 			if (sortKey) {
 				this.sortKey = sortKey;
 			} else {
 				this.sortKey = "timeCreate";
 			}
 			this.sortValue = this.sortValue === MongodbSort.DES ? MongodbSort.ASC : MongodbSort.DES;
-			this.get(1); // async
+			widthJoin ? this.getOrderWidthContact(1) : this.get(1); // async
 		},
 		async post(skuList?: Sku[], feeList?: Fee[]) {
 			try {
@@ -166,17 +212,15 @@ export const useOrderStore = defineStore("Order", {
 				this.loadding = false;
 			}
 		},
-		async put(entity?: Order, skuList?: Sku[], feeList?: Fee[]) {
+		async put(entity?: OrderInView, skuList?: Sku[], feeList?: Fee[]) {
 			let code = "";
 			try {
 				const target = entity || this.orderEditor;
 				const dto: putOrderDto = { entity: target, skuList, feeList };
 				const res: putOrderRes = await request.put(PATH_ORDER, { dto });
-				await this.get();
+				NotifyStore.success("修改成功");
 
 				code = target.code;
-				this.orderEditor = this.getSchema(this.orderSearch.type);
-				NotifyStore.success("修改成功");
 				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
@@ -186,6 +230,7 @@ export const useOrderStore = defineStore("Order", {
 		},
 		async delete(orderId: string) {
 			try {
+				this.loadding = true;
 				const dto: deleteOrderDto = { orderId };
 				const res: deleteOrderRes = await request.delete(PATH_ORDER, { dto });
 
@@ -194,6 +239,8 @@ export const useOrderStore = defineStore("Order", {
 				await AnalysisStore.get();
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
+			} finally {
+				this.loadding = false;
 			}
 		},
 		getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {

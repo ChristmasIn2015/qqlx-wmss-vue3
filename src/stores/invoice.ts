@@ -53,6 +53,7 @@ export const useInvoiceStore = defineStore("Invoice", {
 		invoiceList: [] as InvoiceInView[],
 		invoiceListExcel: [] as Invoice[],
 
+		timeQuasarPicked: { from: `${new Date().getFullYear()}/01/01`, to: new Date().toLocaleString().split(" ")[0] },
 		sortKey: "timeCreate",
 		sortValue: MongodbSort.DES,
 		page: getPage(),
@@ -82,6 +83,13 @@ export const useInvoiceStore = defineStore("Invoice", {
 				NotifyStore.fail((error as Error).message);
 			} finally {
 				this.loadding = false;
+			}
+		},
+		timeChange() {
+			if (this.timeQuasarPicked) {
+				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
+				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
+				this.get(1);
 			}
 		},
 		sort(sortKey: string) {
