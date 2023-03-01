@@ -85,8 +85,12 @@ export const useInvoiceStore = defineStore("Invoice", {
 				this.loadding = false;
 			}
 		},
-		timeChange() {
-			if (this.timeQuasarPicked) {
+		timeChange(event: string) {
+			if (typeof event === "string") {
+				this.page.startTime = new Date(event + " 00:00:00").getTime();
+				this.page.endTime = new Date(event + " 23:59:59").getTime();
+				this.get(1);
+			} else if (this.timeQuasarPicked) {
 				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
 				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
 				this.get(1);

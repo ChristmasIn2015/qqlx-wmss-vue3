@@ -358,7 +358,10 @@ const pushSku = (unit: CabinetUnit) => {
 	schema.name = unit.name;
 	schema.norm = unit.norm;
 	schema.unit = cabinetPicked.value.unit;
-	schema.price = unit.price;
+
+	//@ts-ignore
+	schema.count = null as number;
+	schema.price = (unit.price || null) as number;
 
 	schema.formula = cabinetPicked.value.formula;
 	schema.layout = cabinetPicked.value.layout;

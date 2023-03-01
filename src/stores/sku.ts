@@ -113,8 +113,12 @@ export const useSkuStore = defineStore("Sku", {
 				await AnalysisStore.get();
 			}
 		},
-		timeChange() {
-			if (this.timeQuasarPicked) {
+		timeChange(event: string) {
+			if (typeof event === "string") {
+				this.page.startTime = new Date(event + " 00:00:00").getTime();
+				this.page.endTime = new Date(event + " 23:59:59").getTime();
+				this.get(1);
+			} else if (this.timeQuasarPicked) {
 				this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
 				this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
 				this.get(1);
@@ -170,7 +174,7 @@ export const useSkuStore = defineStore("Sku", {
 		/** 根据 厚度mm *宽度mm *长度mm 计算板材重量（吨）
 		 */
 		getNormPounds_1(norm: string, count: number): number {
-			norm = String(norm).replace(/ /g, "");
+			norm = String(norm).replace(/s/g, "");
 			count = Number(count) || 0;
 
 			let POUNDS = 0;
@@ -178,7 +182,7 @@ export const useSkuStore = defineStore("Sku", {
 			norm.split("*").map((MM) => (VOLUME = VOLUME * (Number(MM) / 10))); // 1m = 100cm = 1000mm
 			POUNDS = (VOLUME / 1000 / 1000) * Number(count); // 吨
 
-			return parseInt(((POUNDS || 0) * 1000).toString()) / 1000;
+			return parseInt(Math.round((POUNDS || 0) * 1000).toString()) / 1000;
 		},
 	},
 });

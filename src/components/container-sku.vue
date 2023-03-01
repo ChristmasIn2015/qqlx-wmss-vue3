@@ -99,6 +99,7 @@
 							square
 							dense
 							type="number"
+							input-class="text-body1"
 							v-model="props.row.pounds"
 							:filled="props.row.isPriceInPounds"
 							:color="(route.meta?.color as string)"

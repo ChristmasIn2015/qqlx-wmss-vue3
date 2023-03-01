@@ -455,6 +455,7 @@
 			<list-contact
 				@pick="
 					(value) => {
+						OrderStore.setSchema(OrderStore.getSchema(nowType));
 						contactPicked = value;
 						OrderStore.orderSearch.contactId = value._id;
 						OrderStore.get(1);
