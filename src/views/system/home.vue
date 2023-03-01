@@ -228,7 +228,7 @@
 							<q-btn v-else dense fab icon="remove" text-color="negative" flat @click="Announce.delete(ann)"></q-btn>
 						</template>
 					</q-input>
-					<div class="text-body2 text-grey q-pl-sm">订单打印时，公司别称将出现在顶部</div>
+					<div class="text-body2 text-grey q-pl-sm">公告将会固定在顶部播放，且所有人可见</div>
 				</q-card-section>
 
 				<q-inner-loading :showing="AnalysisStore.loadding">
