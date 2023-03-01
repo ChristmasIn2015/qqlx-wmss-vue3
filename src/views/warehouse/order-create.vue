@@ -33,6 +33,7 @@
 			square
 			class="q-ml-sm"
 			color="negative"
+			:loading="OrderStore.loadding"
 			@click="
 				async () => {
 					await OrderStore.post(SkuStore.skuListPicked, FeeStore.feeListPicked);

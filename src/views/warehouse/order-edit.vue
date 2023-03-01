@@ -13,7 +13,7 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" square push color="negative" @click="putOrder()"> 修改 {{ OrderStore.orderEditor.code }} </q-btn>
+		<q-btn class="q-ml-sm" square push color="negative" :loading="OrderStore.loadding" @click="putOrder()"> 修改 {{ OrderStore.orderEditor.code }} </q-btn>
 	</div>
 
 	<picker-cabinet-unit />

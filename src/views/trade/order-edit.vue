@@ -13,13 +13,11 @@
 
 	<div class="q-py-md row">
 		<q-space></q-space>
-		<q-btn class="q-ml-sm" push square  color="green-7" @click="contactDialog = true"
-			>{{ contactPicked._id ? contactPicked.name : "选择客户" }}
-		</q-btn>
+		<q-btn class="q-ml-sm" push square color="green-7" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
 		<q-btn
 			class="q-ml-sm"
 			square
-			
+			:loading="OrderStore.loadding"
 			push
 			:color="OrderStore.orderEditor.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
 			v-if="contactPicked._id"

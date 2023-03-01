@@ -35,14 +35,25 @@
 			</template>
 			<template v-slot:body="props">
 				<q-tr :props="props">
-					<q-td style="max-width: 100px">
-						<span class="text-body1" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" :class="`text-${route.meta?.color}`">
-							<q-badge class="q-ml-sm" color="grey" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
-								>大件商品
-								<q-tooltip class="text-body1"> “大件商品”销售、发货时，需要单独扣减在库的 “大件商品” 库存 </q-tooltip>
-							</q-badge>
-						</span>
-						<span v-else>-</span>
+					<q-td
+						style="max-width: 100px"
+						class="cursor-pointer"
+						@click="
+							props.row.layout =
+								props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? ENUM_LAYOUT_CABINET.SUMMARY : ENUM_LAYOUT_CABINET.INDIVIDUAL
+						"
+					>
+						<q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+							大件商品
+							<q-tooltip class="text-body1"> “大件商品”发货\领料时，需要单独扣减在库的 “大件商品” 库存 </q-tooltip>
+						</q-badge>
+						<q-badge color="grey" v-else>
+							修改
+							<q-tooltip class="text-body1">
+								<div>设置为 “大件商品”</div>
+								<div>“大件商品”发货、领料时，需要单独扣减在库的 “大件商品” 库存</div>
+							</q-tooltip>
+						</q-badge>
 					</q-td>
 					<q-td :style="myTableCellStyle">
 						<q-input borderless v-model="props.row.name" dense clearable clear-icon="close" input-class="text-body1" placeholder="请输入品名" />

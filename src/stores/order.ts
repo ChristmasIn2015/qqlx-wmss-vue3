@@ -220,6 +220,7 @@ export const useOrderStore = defineStore("Order", {
 		async put(entity?: OrderInView, skuList?: Sku[], feeList?: Fee[]) {
 			let code = "";
 			try {
+				this.loadding = true;
 				const target = entity || this.orderEditor;
 				const dto: putOrderDto = { entity: target, skuList, feeList };
 				const res: putOrderRes = await request.put(PATH_ORDER, { dto });
@@ -230,6 +231,7 @@ export const useOrderStore = defineStore("Order", {
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
 			} finally {
+				this.loadding = false;
 				return code;
 			}
 		},

@@ -16,6 +16,7 @@
 			square
 			push
 			color="primary"
+			:loading="OrderStore.loadding"
 			v-if="contactPicked._id"
 			@click="
 				async () => {
