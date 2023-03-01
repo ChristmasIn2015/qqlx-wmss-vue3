@@ -19,7 +19,7 @@
 		>
 			<template v-slot:header="props">
 				<q-tr :props="props">
-					<q-th key="layout" :props="props">性质</q-th>
+					<q-th key="layout" :props="props">库存性质</q-th>
 					<q-th key="name" :props="props">品名</q-th>
 					<q-th key="norm" :props="props">规格</q-th>
 					<q-th key="count" :props="props">数量</q-th>
@@ -48,7 +48,7 @@
 							<q-tooltip class="text-body1"> “大件商品”发货\领料时，需要单独扣减在库的 “大件商品” 库存 </q-tooltip>
 						</q-badge>
 						<q-badge color="grey" v-else>
-							修改
+							切换
 							<q-tooltip class="text-body1">
 								<div>设置为 “大件商品”</div>
 								<div>“大件商品”发货、领料时，需要单独扣减在库的 “大件商品” 库存</div>
