@@ -85,6 +85,7 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
 		},
 		async post(cabinet: Cabinet) {
 			try {
+				this.loadding = true;
 				const excels = cloneDeep(this.cabinetUnitListExcel);
 				while (excels.length > 0) {
 					const dto: postCabinetUnitDto = {
@@ -100,6 +101,8 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
 				NotifyStore.success("添加成功");
 			} catch (error) {
 				NotifyStore.fail((error as Error).message);
+			} finally {
+				this.loadding = false;
 			}
 		},
 		async patch(cabinet: Cabinet, excels: CabinetUnit[], price: number) {

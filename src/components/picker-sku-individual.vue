@@ -277,6 +277,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import * as XLSX from "xlsx";
 import { cloneDeep, debounce } from "lodash";
 import { ENUM_LAYOUT_CABINET, MongodbSort, ENUM_ORDER } from "qqlx-core";
@@ -291,6 +292,7 @@ import { useCabinetStore } from "@/stores/cabinet";
 import { useCabinetUnitStore } from "@/stores/cabinetUnit";
 import { useSkuGetInStore } from "@/stores/sku-indivudual";
 
+const route = useRoute();
 const NotifyStore = useNotifyStore();
 const ContactStore = useContactStore();
 const CabinetStore = useCabinetStore();
@@ -318,6 +320,9 @@ const getLabelByType = (type: ENUM_ORDER) => {
 defineProps(["readonly"]);
 onMounted(() => {
 	SkuGetInStore.page.page = 1;
+	const { name, norm } = route.query;
+	SkuGetInStore.skuSearch.name = (name || "").toString();
+	SkuGetInStore.skuSearch.norm = (norm || "").toString();
 	debounceGet();
 });
 </script>

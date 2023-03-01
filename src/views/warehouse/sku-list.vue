@@ -418,7 +418,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ENUM_LAYOUT_CABINET, MongodbSort, ENUM_ORDER } from "qqlx-core";
 import type { SkuInView } from "qqlx-core/dto/wmss/sku";
 import type { Cabinet } from "qqlx-core/schema/wmss/cabinet";
@@ -436,6 +436,7 @@ import { useSkuStore } from "@/stores/sku";
 import { useAnalysisStore } from "@/stores/analysis";
 
 const router = useRouter();
+const route = useRoute();
 // const NotifyStore = useNotifyStore();
 const ContactStore = useContactStore();
 // const CabinetStore = useCabinetStore();
@@ -513,6 +514,10 @@ const getLabelByType = (type: ENUM_ORDER) => {
 onMounted(async () => {
 	SkuStore.setSchema(ENUM_ORDER.NONE);
 	SkuStore.page.page = 1;
+	SkuStore.skuSearch.isConfirmed = true;
+	const { name, norm } = route.query;
+	SkuStore.skuSearch.name = (name || "").toString();
+	SkuStore.skuSearch.norm = (norm || "").toString();
 	debounceGet();
 });
 </script>

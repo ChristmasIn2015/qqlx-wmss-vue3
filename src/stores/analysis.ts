@@ -69,6 +69,7 @@ export const useAnalysisStore = defineStore("Analysis", {
 		},
 		timeChange(event: string) {
 			if (typeof event === "string") {
+				this.timeQuasarPicked = { from: event, to: event };
 				this.page.startTime = new Date(event + " 00:00:00").getTime();
 				this.page.endTime = new Date(event + " 23:59:59").getTime();
 				this.get();

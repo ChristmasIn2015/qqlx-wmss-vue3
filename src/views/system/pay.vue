@@ -22,9 +22,9 @@
 						<div class="col">时长</div>
 						<div class="col text-right">{{ card.schedule / 86400000 }} 天</div>
 					</div>
-					<div class="row">
+					<div class="row items-end">
 						<div class="col">金额</div>
-						<div class="col text-right">{{ card.amount }} 元</div>
+						<div class="col text-right text-negative text-h6 text-weight-bold">{{ card.amount }} 元</div>
 					</div>
 				</div>
 			</q-card-section>

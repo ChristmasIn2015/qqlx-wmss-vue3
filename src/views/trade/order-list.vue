@@ -470,9 +470,9 @@
 			<q-card-section>
 				<div id="order">
 					<div class="text-weight-bold text-h4 text-center">
-						<div id="abc">{{ CorpStore.corpPicked?.name }}</div>
-						<div v-if="CorpStore.corpList.filter((e) => e.isDisabled === false && e._id !== CorpStore.corpPicked?._id)[0]?.name">
-							{{ CorpStore.corpList.filter((e) => e.isDisabled === false && e._id !== CorpStore.corpPicked?._id)[0]?.name }}
+						<div>{{ CorpStore.corpPicked?.name }}</div>
+						<div v-if="ConfigCorp.titles.length > 0">
+							<div v-for="title in ConfigCorp.titles">{{ title.text }}</div>
 						</div>
 					</div>
 					<div class="row">
@@ -582,6 +582,7 @@ import { useWarehouseStore } from "@/stores/warehouse";
 import { useContactStore } from "@/stores/contact";
 import { useSkuStore } from "@/stores/sku";
 import { useOrderStore } from "@/stores/order";
+import { useConfigCorp } from "@/stores/configCorp";
 
 const NotifyStore = useNotifyStore();
 const router = useRouter();
@@ -592,6 +593,7 @@ const WarehouseStore = useWarehouseStore();
 const ContactStore = useContactStore();
 const SkuStore = useSkuStore();
 const OrderStore = useOrderStore();
+const ConfigCorp = useConfigCorp();
 
 // view
 const nowType = ref(ENUM_ORDER.SALES);

@@ -4,35 +4,26 @@
 	<div class="q-pt-md q-pb-lg q-mt-lg text-white">
 		<div class="text-h4 text-weight-bold row items-center">
 			<span>公司</span>
-			<q-btn dense icon="more_vert" class="q-ml-sm" size="22px">
-				<q-menu>
-					<q-list>
-						<q-item
-							clickable
-							v-close-popup
-							@click="
-								() => {
-									CorpStore.setSchema();
-									dialogCorp = true;
-								}
-							"
-						>
-							<q-item-section>添加新公司</q-item-section>
-						</q-item>
-						<q-item clickable @click="showCorpDisabled = !showCorpDisabled">
-							<q-item-section>
-								<span :class="{ 'text-negative': !showCorpDisabled }">{{ showCorpDisabled ? "返回" : "最近删除" }}</span>
-							</q-item-section>
-						</q-item>
-					</q-list>
-				</q-menu>
-			</q-btn>
 		</div>
 		<div class="q-mt-md">
 			<div>
 				您的使用数据，如订单信息、库存信息等，都将会保存在
 				<span class="text-weight-bold">@{{ CorpStore.corpPicked?.name }}</span>
-				中
+				中， 您也可以
+				<q-btn
+					push
+					square
+					color="negative"
+					class="q-mx-sm"
+					@click="
+						() => {
+							CorpStore.setSchema();
+							dialogCorp = true;
+						}
+					"
+				>
+					添加新公司
+				</q-btn>
 			</div>
 			<div>
 				当前
@@ -44,7 +35,61 @@
 
 	<div class="row">
 		<q-card
-			v-for="corp in CorpStore.corpList.filter((e) => e.isDisabled === showCorpDisabled)"
+			v-for="corp in CorpStore.corpList.filter((e) => e.isDisabled === false)"
+			class="w-200 q-mr-md q-mb-md shadow-15"
+			:class="corp._id === CorpStore.corpPicked?._id ? 'w-325' : ''"
+		>
+			<q-card-section>
+				<div class="text-h6 ellipsis" :class="corp._id === CorpStore.corpPicked?._id ? 'text-weight-bold' : 'text-grey'">
+					{{ corp.name }}
+					<q-badge v-if="corp.joinRole?.role === ENUM_ROLE_WMSS.ROOT" floating>管理员</q-badge>
+					<q-badge v-else floating color="grey">成员</q-badge>
+				</div>
+				<div class="text-grey ellipsis">{{ corp.contact || "-" }}</div>
+				<div class="text-grey ellipsis">{{ corp.address || "-" }}</div>
+			</q-card-section>
+			<q-card-actions>
+				<q-space></q-space>
+				<q-btn icon="more_horiz" flat>
+					<q-menu>
+						<q-list>
+							<q-item clickable v-close-popup @click="CorpStore.pick(corp)">
+								<q-item-section>切换到这家</q-item-section>
+							</q-item>
+							<q-separator />
+							<q-item
+								clickable
+								v-close-popup
+								@click="
+									() => {
+										CorpStore.setSchema(corp);
+										dialogCorp = true;
+									}
+								"
+							>
+								<q-item-section>修改</q-item-section>
+							</q-item>
+							<q-item clickable v-close-popup>
+								<q-item-section class="text-negative" @click="CorpStore.delete(corp)">
+									{{ corp.isDisabled ? "恢复" : "删除" }}
+								</q-item-section>
+							</q-item>
+						</q-list>
+					</q-menu>
+				</q-btn>
+			</q-card-actions>
+		</q-card>
+	</div>
+
+	<div class="q-pt-md q-pb-lg q-mt-lg">
+		<div class="text-h5 text-weight-bold row items-center">
+			<span>最近删除</span>
+		</div>
+	</div>
+
+	<div class="row">
+		<q-card
+			v-for="corp in CorpStore.corpList.filter((e) => e.isDisabled === true)"
 			class="w-200 q-mr-md q-mb-md shadow-15"
 			:class="corp._id === CorpStore.corpPicked?._id ? 'w-325' : ''"
 		>
@@ -155,7 +200,6 @@ const router = useRouter();
 const CorpStore = useCorpStore();
 const AnalysisStore = useAnalysisStore();
 
-const showCorpDisabled = ref(false);
 const dialogCorp = ref(false);
 const scheduleString = computed({
 	get() {

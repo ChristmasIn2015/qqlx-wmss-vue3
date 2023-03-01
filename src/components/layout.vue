@@ -105,6 +105,15 @@
 		<q-page-container>
 			<q-page class="bg-blue-grey-1">
 				<div class="app-background bg-dark">
+					<div style="left: 10px; top: 16px; position: absolute; width: 800px">
+						<q-carousel class="bg-transparent text-white" vertical animated infinite :autoplay="4000" v-model="swiperIndex">
+							<q-carousel-slide v-for="(ann, index) in Announce.list" :name="index">
+								公告：{{ ann.content }}
+
+								<span class="q-mx-sm">{{ index + 1 }}/{{ Announce.list.length }}</span>
+							</q-carousel-slide>
+						</q-carousel>
+					</div>
 					<q-img
 						style="width: 200px; float: right; top: 20px; right: 20px"
 						class="cursor-pointer select-none"
@@ -131,6 +140,8 @@ import { useUserStore } from "@/stores/user";
 import { useCorpStore } from "@/stores/corp";
 import { useWarehouseStore } from "@/stores/warehouse";
 import { useAnalysisStore } from "@/stores/analysis";
+import { useConfigCorp } from "@/stores/configCorp";
+import { useAnnounce } from "@/stores/announce";
 
 const route = useRoute();
 const router = useRouter();
@@ -141,7 +152,10 @@ const UserStore = useUserStore();
 const CorpStore = useCorpStore();
 const WarehouseStore = useWarehouseStore();
 const AnalysisStore = useAnalysisStore();
+const ConfigCorp = useConfigCorp();
+const Announce = useAnnounce();
 
+const swiperIndex = ref(0);
 const userDialog = ref(false);
 const openWebTab = () => window.open("https://qqlx.tech");
 
@@ -177,6 +191,9 @@ onMounted(async () => {
 		await UserStore.setNowUser();
 		await CorpStore.get();
 		CorpStore.pick(CorpStore.corpList.find((e) => e.isDisabled === false));
+
+		await ConfigCorp.get();
+		await Announce.get();
 	} catch (error) {
 		NotifyStore.fail((error as Error).message);
 	}
