@@ -537,11 +537,26 @@
 					</div>
 				</div>
 			</q-card-section>
-			<q-card-actions>
-				<q-space></q-space>
-				<q-btn class="q-ml-sm" label="关闭" v-close-popup />
-				<q-btn class="q-ml-sm" label="打印" color="pink-6" @click.stop="print" />
-			</q-card-actions>
+			<div class="row q-px-md q-pb-sm">
+				<div class="col">
+					<q-select
+						dense
+						square
+						filled
+						emit-value
+						map-options
+						label="选择提货仓库"
+						color="pink-6"
+						option-label="name"
+						:options="WarehouseStore.WarehouseList.filter((e) => e.isDisabled === false)"
+						v-model="WarehouseStore.WarehousePicked"
+					/>
+				</div>
+				<div class="col text-right">
+					<q-btn class="q-ml-sm" label="关闭" v-close-popup />
+					<q-btn class="q-ml-sm" label="打印" color="pink-6" @click.stop="print" />
+				</div>
+			</div>
 		</q-card>
 	</q-dialog>
 </template>
