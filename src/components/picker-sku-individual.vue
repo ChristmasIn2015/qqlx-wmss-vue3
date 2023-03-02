@@ -15,7 +15,6 @@
 		<q-table
 			dense
 			row-key="_id"
-			separator="vertical"
 			class="my-sticky-header-table select-none"
 			:columns="(SkuGetInStore.columns as any)"
 			:visible-columns="SkuGetInStore.visibleColumns"
@@ -46,35 +45,16 @@
 			</template>
 			<template v-slot:header="props">
 				<q-tr>
-					<q-th key="orderContactId" :props="props">
-						<q-btn class="q-px-none" flat square color="indigo-14" @click="contactDialog = true">
-							{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
-						</q-btn>
-						<q-btn
-							v-show="contactPicked._id"
-							class="q-px-sm"
-							flat
-							square
-							color="indigo-14"
-							@click="
-								() => {
-									contactPicked = ContactStore.getSchema();
-									SkuGetInStore.skuSearch.orderContactId = '';
-									SkuGetInStore.get(1);
-								}
-							"
-						>
-							<q-icon name="close" style="margin-bottom: -4px"></q-icon>
-						</q-btn>
-					</q-th>
+					<q-th key="layout" :props="props">性质</q-th>
 					<q-th
 						key="timeCreateString"
+						class="cursor-pointer"
+						style="text-align: left"
 						:props="props"
 						:class="{ 'text-indigo-14': SkuGetInStore.sortKey === 'timeCreate' }"
-						class="cursor-pointer"
 						@click="SkuGetInStore.sort('timeCreate')"
 					>
-						<span>时间 </span>
+						<span>时间</span>
 						<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
 					</q-th>
 					<q-th key="keyOrigin" :props="props">
@@ -105,22 +85,6 @@
 							@blur="SkuGetInStore.get(1)"
 						/>
 					</q-th>
-					<q-th key="keyCode" :props="props">
-						<q-input
-							square
-							filled
-							dense
-							clearable
-							color="indigo-14"
-							clear-icon="close"
-							placeholder="自定义编号"
-							style="margin-left: -6px"
-							v-model="SkuGetInStore.skuSearch.keyCode"
-							@blur="SkuGetInStore.get(1)"
-						/>
-					</q-th>
-					<q-th key="orderId" :props="props">订单编号</q-th>
-					<q-th key="layout" :props="props">性质</q-th>
 					<q-th key="name" :props="props">
 						<q-input
 							square
@@ -153,8 +117,8 @@
 						key="count"
 						:props="props"
 						class="cursor-pointer"
-						:class="{ 'text-indigo-14': SkuGetInStore.sortKey === 'count' }"
-						@click="SkuGetInStore.sort('count')"
+						:class="{ 'text-indigo-14': SkuGetInStore.sortKey === 'countFinal' }"
+						@click="SkuGetInStore.sort('countFinal')"
 					>
 						<span>数量</span>
 						<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
@@ -163,8 +127,8 @@
 						key="pounds"
 						:props="props"
 						class="cursor-pointer"
-						:class="{ 'text-indigo-14': SkuGetInStore.sortKey === 'pounds' }"
-						@click="SkuGetInStore.sort('pounds')"
+						:class="{ 'text-indigo-14': SkuGetInStore.sortKey === 'poundsFinal' }"
+						@click="SkuGetInStore.sort('poundsFinal')"
 					>
 						<span>重量</span>
 						<q-icon :name="SkuGetInStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
@@ -193,20 +157,47 @@
 							@blur="SkuGetInStore.get(1)"
 						/>
 					</q-th>
+					<q-th key="orderId" :props="props">订单编号</q-th>
+					<q-th key="keyCode" :props="props">
+						<q-input
+							square
+							filled
+							dense
+							clearable
+							color="indigo-14"
+							clear-icon="close"
+							placeholder="自定义编号"
+							style="margin-left: -6px"
+							v-model="SkuGetInStore.skuSearch.keyCode"
+							@blur="SkuGetInStore.get(1)"
+						/>
+					</q-th>
+					<q-th key="orderContactId" :props="props">
+						<q-btn class="q-px-none" flat square color="indigo-14" @click="contactDialog = true">
+							{{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
+						</q-btn>
+						<q-btn
+							v-show="contactPicked._id"
+							class="q-px-sm"
+							flat
+							square
+							color="indigo-14"
+							@click="
+								() => {
+									contactPicked = ContactStore.getSchema();
+									SkuGetInStore.skuSearch.orderContactId = '';
+									SkuGetInStore.get(1);
+								}
+							"
+						>
+							<q-icon name="close" style="margin-bottom: -4px"></q-icon>
+						</q-btn>
+					</q-th>
 					<q-th key="_id" :props="props">状态</q-th>
 				</q-tr>
 			</template>
 			<template v-slot:body="props">
 				<q-tr>
-					<q-td key="orderContactId" :props="props">
-						<span v-if="props.row.joinOrderContact">{{ props.row.joinOrderContact?.name }} </span>
-						<span v-else class="text-grey">批量导入</span>
-					</q-td>
-					<q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
-					<q-td key="keyOrigin" :props="props"> {{ props.row.keyOrigin }} </q-td>
-					<q-td key="keyFeat" :props="props"> {{ props.row.keyFeat }} </q-td>
-					<q-td key="keyCode" :props="props"> {{ props.row.keyCode }} </q-td>
-					<q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
 					<q-td key="layout" :props="props">
 						<q-badge class="q-mr-sm" :color="getLabelByType(props.row.type).color">{{ getLabelByType(props.row.type).text }}</q-badge>
 						<q-badge color="grey" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
@@ -215,6 +206,9 @@
 						</q-badge>
 						<span v-else>-</span>
 					</q-td>
+					<q-td key="timeCreateString" :props="props" style="text-align: left"> {{ props.row.timeCreateString }} </q-td>
+					<q-td key="keyOrigin" :props="props"> {{ props.row.keyOrigin }} </q-td>
+					<q-td key="keyFeat" :props="props"> {{ props.row.keyFeat }} </q-td>
 					<q-td key="name" :props="props"> {{ props.row.name }} </q-td>
 					<q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
 					<q-td key="count" :props="props" :class="{ 'text-grey': props.row.count <= 0 }">
@@ -224,7 +218,9 @@
 						<span class="text-body2 text-grey">
 							<div class="row">
 								<div class="col text-left">剩余</div>
-								<div class="col text-black text-right">{{ props.row.poundsFinal.toFixed(3) }} 吨</div>
+								<div class="col text-right text-weight-bold" :class="props.row.poundsFinal > 0 ? 'text-black' : 'text-negative'">
+									{{ props.row.poundsFinal.toFixed(3) }} 吨
+								</div>
 							</div>
 							<div class="row">
 								<div class="col text-left">初始</div>
@@ -234,6 +230,12 @@
 					</q-td>
 					<q-td key="price" :props="props" class="text-grey"> {{ props.row.price.toFixed(2) }} 元</q-td>
 					<q-td key="remark" :props="props" class="text-grey"> {{ props.row.remark }} </q-td>
+					<q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
+					<q-td key="keyCode" :props="props"> {{ props.row.keyCode }} </q-td>
+					<q-td key="orderContactId" :props="props">
+						<span v-if="props.row.joinOrderContact">{{ props.row.joinOrderContact?.name }} </span>
+						<span v-else class="text-grey">批量导入</span>
+					</q-td>
 					<q-td key="_id" :props="props">
 						<span v-if="!readonly && props.row.isConfirmed">
 							<q-btn color="indigo-14" square push dense v-close-popup @click="$emit('pick', cloneDeep(props.row))">选择</q-btn>

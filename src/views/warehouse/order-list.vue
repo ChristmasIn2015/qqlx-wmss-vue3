@@ -206,6 +206,7 @@
 									hide-pagination
 									separator="vertical"
 									:columns="[
+										{ name: 'type', field: 'type', label: '性质', align: 'left' },
 										{ name: 'keyHouse', field: 'keyHouse', label: '产地', align: 'left' },
 										{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
 										{ name: 'name', field: 'name', label: '品名', align: 'left' },
@@ -213,7 +214,6 @@
 										{ name: 'count', field: 'count', label: '数量', align: 'left' },
 										{ name: 'pounds', field: 'pounds', label: '过磅', align: 'left' },
 										{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
-										{ name: 'type', field: 'type', label: '性质', align: 'left' },
 										{ name: '_id', field: '_id', label: '状态', align: 'left' },
 									]"
 									:rows-per-page-options="[0]"

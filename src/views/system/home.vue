@@ -169,7 +169,7 @@
 						clearable
 						class="q-mb-sm"
 						clear-icon="close"
-						label="请输入公司别称"
+						label="公司别称"
 						input-class="text-body1"
 						v-model="title.text"
 					>

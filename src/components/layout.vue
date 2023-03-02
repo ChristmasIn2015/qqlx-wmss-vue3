@@ -70,24 +70,31 @@
 							</template>
 						</q-input>
 
-						<q-input filled readonly label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
+						<q-input readonly label="创建日期" class="q-mb-sm" v-model="UserStore.userEditor.timeCreateString">
 							<template v-slot:before>
 								<q-icon name="" />
 							</template>
 						</q-input>
 
-						<q-input filled readonly label="当前公司" class="q-mb-sm" v-model="nowCorpName">
+						<q-input readonly label="当前公司" class="q-mb-sm" v-model="nowCorpName">
 							<template v-slot:before>
 								<q-icon name="" />
+							</template>
+							<template v-slot:append>
+								<q-btn fab flat v-close-popup icon="chevron_right" style="margin-right: -8px" @click="router.push('/wmss/system/corp')"></q-btn>
 							</template>
 						</q-input>
 
-						<q-input filled readonly label="有效期" class="q-mb-sm" v-model="scheduleString.text">
+						<q-input readonly label="有效期" class="q-mb-sm" v-model="scheduleString.text">
 							<template v-slot:before>
 								<q-icon name="" />
 							</template>
+							<template v-slot:append>
+								<q-btn fab flat v-close-popup icon="chevron_right" style="margin-right: -8px" @click="router.push('/wmss/system/pay')">
+									<q-tooltip class="text-body1">去充值</q-tooltip>
+								</q-btn>
+							</template>
 						</q-input>
-						<span v-close-popup class="q-ml-lg q-pl-md cursor-pointer text-negative" @click="router.push('/wmss/system/pay')">点击充值</span>
 					</q-card-section>
 
 					<q-card-actions>
@@ -105,9 +112,18 @@
 		<q-page-container>
 			<q-page class="bg-blue-grey-1">
 				<div class="app-background bg-dark">
-					<div style="left: 10px; top: 16px; position: absolute; width: 800px">
-						<q-carousel class="bg-transparent text-white" vertical animated infinite :autoplay="4000" v-model="swiperIndex">
-							<q-carousel-slide v-for="(ann, index) in Announce.list" :name="index">
+					<div style="left: 24px; top: 16px; position: absolute; width: 800px">
+						<q-carousel
+							class="bg-transparent text-white"
+							vertical
+							animated
+							infinite
+							:autoplay="4000"
+							:padding="false"
+							v-model="swiperIndex"
+							height="40px"
+						>
+							<q-carousel-slide v-for="(ann, index) in Announce.list" :name="index" class="q-pa-none">
 								公告：{{ ann.content }}
 
 								<span class="q-mx-sm">{{ index + 1 }}/{{ Announce.list.length }}</span>
@@ -190,7 +206,11 @@ onMounted(async () => {
 	try {
 		await UserStore.setNowUser();
 		await CorpStore.get();
-		CorpStore.pick(CorpStore.corpList.find((e) => e.isDisabled === false));
+
+		const corpIdPicked = localStorage.getItem("qqlx-corp-id");
+		const match = CorpStore.corpList.find((e) => e._id === corpIdPicked);
+		const first = CorpStore.corpList.find((e) => e.isDisabled === false);
+		CorpStore.pick(match || first);
 
 		await ConfigCorp.get();
 		await Announce.get();

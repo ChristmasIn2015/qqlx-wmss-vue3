@@ -603,7 +603,7 @@ const init = (type: ENUM_ORDER, ignoreRoute: boolean = false) => {
 	// 设置搜索
 	nowType.value = type;
 	OrderStore.setSchema(OrderStore.getSchema(nowType.value));
-	OrderStore.page = getPage();
+	OrderStore.page = getPage(15);
 	// 根据条件设置搜索
 	const { code } = route.query;
 	if (ignoreRoute === false && code) {
@@ -750,7 +750,7 @@ onMounted(() => init(ENUM_ORDER.SALES));
 	max-width: 960px;
 }
 #order {
-	font-size: 18px;
+	font-size: 19px;
 	line-height: 1.375;
 	color: black;
 	font-family: cursive;
