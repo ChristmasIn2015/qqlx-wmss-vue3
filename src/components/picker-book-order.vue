@@ -216,7 +216,7 @@ const BookStore = useBookStore();
 
 const debounceGet = debounce(() => OrderStore.getOrderWidthContact(), 100);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 10 >= details.to) {
+	if (details.index + 10 >= details.to && details.to > 0) {
 		debounceGet();
 	}
 };

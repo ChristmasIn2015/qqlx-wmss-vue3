@@ -272,7 +272,7 @@ const timeChange = () => {
 
 const debounceGet = debounce(() => BookStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 19 >= details.to) {
+	if (details.index + 19 >= details.to && details.to > 0) {
 		debounceGet();
 	}
 };

@@ -82,8 +82,8 @@ const filePickNext = async (file: File) => {
 			const row = rowJsonList[i];
 			const schema = SkuStore.getSchema() as SkuInView;
 			schema.keyOrigin = String(row["@产地"] || "");
-			schema.keyFeat = String(row["@材质"]);
-			schema.keyCode = String(row["@序号"]);
+			schema.keyFeat = String(row["@材质"] || "");
+			schema.keyCode = String(row["@序号"] || "");
 			schema.name = String(row["@品名"] || "");
 			schema.norm = String(row["@规格"] || "");
 			schema.count = Number(row["@数量"] || 0);

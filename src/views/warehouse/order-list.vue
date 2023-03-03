@@ -206,55 +206,58 @@
 									hide-pagination
 									separator="vertical"
 									:columns="[
-										{ name: 'type', field: 'type', label: '性质', align: 'left' },
-										{ name: 'keyHouse', field: 'keyHouse', label: '产地', align: 'left' },
-										{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
+										{ name: 'layout', field: 'layout', label: '商品性质', align: 'left' },
 										{ name: 'name', field: 'name', label: '品名', align: 'left' },
 										{ name: 'norm', field: 'norm', label: '规格', align: 'left' },
-										{ name: 'count', field: 'count', label: '数量', align: 'left' },
-										{ name: 'pounds', field: 'pounds', label: '过磅', align: 'left' },
+										{ name: 'count', field: 'count', label: '数量' },
+										{ name: 'pounds', field: 'pounds', label: '过磅' },
+										{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
+										{ name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
+										{ name: 'keyHouse', field: 'keyHouse', label: '仓库', align: 'left' },
+										{ name: 'price', field: 'price', label: '单价' },
 										{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
-										{ name: '_id', field: '_id', label: '状态', align: 'left' },
+										{ name: '_id', field: '_id', label: '当前状态', align: 'left' },
 									]"
 									:rows-per-page-options="[0]"
 									:rows="props.row.joinSku || []"
 								>
 									<template v-slot:body="_props">
 										<q-tr>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">
-												{{ _props.row.name }}
-											</q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px"> {{ _props.row.count }} {{ _props.row.unit }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">
-												<span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds }} 吨</span>
-											</q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">
-												<q-badge color="grey" v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+											<q-td :_props="_props" style="font-size: 16px"
+												><q-badge color="grey" v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
 													大件商品
-													<q-tooltip class="text-body1"> “大件商品” 发货时，需要单独选择在库的 "大件商品" 进行发货 </q-tooltip>
+													<q-tooltip class="text-body1"> “大件商品”发货时，需要单独选择在库的“大件商品”进行发货</q-tooltip>
 												</q-badge>
 											</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }} </q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px" class="text-right"
+												>{{ _props.row.count }} {{ _props.row.unit }}</q-td
+											>
+											<q-td :_props="_props" style="font-size: 16px" class="text-right">
+												<span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
+											</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyOrigin || "-" }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse || "-" }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
 											<q-td :_props="_props" style="font-size: 16px">
 												<span v-if="_props.row.type === ENUM_ORDER.GETOUT">
-													<span v-if="_props.row.isConfirmed" class="text-grey">已发货</span>
-													<span v-else class="text-grey">
-														<span v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" class="text-negative">
-															大件商品，需要单独发货
-														</span>
-														<span v-else>待发货</span>
+													<span v-if="_props.row.isConfirmed" class="text-positive">已发货</span>
+													<span v-else class="text-negative cursor-pointer" @click="$router.push('/wmss/warehouse/sku-list')">
+														去发货
 													</span>
 												</span>
-												<span v-else-if="_props.row.type === ENUM_ORDER.MATERIAL">
-													<span v-if="_props.row.isConfirmed"> <q-icon name="check" color="positive"></q-icon>已扣减</span>
-													<span v-else class="text-negative">领料需要选择库存，单独扣减</span>
+												<span v-else-if="_props.row.type === ENUM_ORDER.MATERIAL" class="text-negative">
+													<span v-if="_props.row.isConfirmed">已扣减</span>
+													<span v-else class="cursor-pointer" @click="$router.push('/wmss/warehouse/sku-list')"> 去领料 </span>
 												</span>
 												<span v-else class="text-grey">
-													<span v-if="_props.row.isConfirmed">已入库</span>
-													<span v-else>待入库</span>
+													<span v-if="_props.row.isConfirmed" class="text-positive">已入库</span>
+													<span v-else class="text-negative cursor-pointer" @click="$router.push('/wmss/warehouse/sku-list')">
+														去入库
+													</span>
 												</span>
 											</q-td>
 										</q-tr>

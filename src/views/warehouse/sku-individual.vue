@@ -6,14 +6,26 @@
 		</div>
 	</div>
 
-	<PickerSkuGetIn :readonly="true" />
+	<PickerSkuGetIn :name="pickingName" :norm="pickingNorm" :readonly="true" />
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from "vue-router";
 import { useSkuGetInStore } from "@/stores/sku-indivudual";
 import PickerSkuGetIn from "@/components/picker-sku-individual.vue";
+import { onBeforeMount, ref } from "vue";
 
+const route = useRoute();
 const SkuGetInStore = useSkuGetInStore();
+
+const pickingName = ref("");
+const pickingNorm = ref("");
+
+onBeforeMount(() => {
+	const { name, norm } = route.query;
+	pickingName.value = (name || "").toString();
+	pickingNorm.value = (norm || "").toString();
+});
 </script>
 
 <style lang="sass" scoped></style>

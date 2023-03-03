@@ -349,7 +349,7 @@ const cabinetPicked = ref(CabinetStore.getSchema());
 const debounceInit = debounce(() => CabinetUnitStore.get(cabinetPicked.value, 1), 255);
 const debounceGet = debounce(() => CabinetUnitStore.get(cabinetPicked.value), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 9 >= details.to) {
+	if (details.index + 9 >= details.to && details.to > 0) {
 		debounceGet();
 	}
 };

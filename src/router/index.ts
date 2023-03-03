@@ -75,7 +75,7 @@ const routes = [
 					},
 					{
 						path: "sku-individual",
-						name: "大件库存",
+						name: "大件商品",
 						component: () => import("@/views/warehouse/sku-individual.vue"),
 						meta: { icon: "stroller", color: "indigo-14", backColorClass: "color-back-warehouse", show: true },
 					},

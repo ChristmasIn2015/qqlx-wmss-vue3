@@ -43,7 +43,8 @@
 			<div class="col text-right q-mb-md">
 				<q-btn
 					class="q-ml-sm"
-					glossy
+					push
+					square
 					label="最近删除"
 					:color="ContactStore.contactSearch.isDisabled ? 'green-6' : ''"
 					:text-color="ContactStore.contactSearch.isDisabled ? '' : 'black'"
@@ -57,13 +58,14 @@
 				<span v-if="ContactStore.contactListExcel.length > 0">
 					<q-btn
 						class="q-ml-sm"
-						glossy
+						push
+						square
 						:label="`保存 ${ContactStore.contactListExcel.length}项`"
 						color="green-6"
 						@click="() => ContactStore.post()"
 					/>
-					<q-btn class="q-ml-sm text-negative" glossy label="清空" @click="() => (ContactStore.contactListExcel = [])" />
-					<q-btn class="q-ml-sm" glossy label="批量导入">
+					<q-btn class="q-ml-sm text-negative" push square label="清空" @click="() => (ContactStore.contactListExcel = [])" />
+					<q-btn class="q-ml-sm" push square label="批量导入">
 						<q-menu>
 							<q-list>
 								<q-item clickable @click="NotifyStore.download()">
@@ -85,7 +87,7 @@
 						</q-menu>
 					</q-btn>
 				</span>
-				<q-btn class="q-ml-sm" glossy label="继续添加" @click="() => ContactStore.contactListExcel.push(ContactStore.getSchema())" />
+				<q-btn class="q-ml-sm" push square label="继续添加" @click="() => ContactStore.contactListExcel.push(ContactStore.getSchema())" />
 			</div>
 		</template>
 		<template v-slot:top-row>
@@ -113,10 +115,7 @@
 					<div class="row items-center">
 						<span>{{ props.row.timeCreateString }}</span>
 						<q-space></q-space>
-						<q-btn dense push square class="q-ml-sm" color="green-6" v-close-popup glossy @click="$emit('pick', cloneDeep(props.row))">
-							选择
-						</q-btn>
-						<q-btn dense icon="more_horiz" class="q-ml-sm">
+						<q-btn dense icon="more_horiz" class="q-ml-sm" flat>
 							<q-menu anchor="top left" @hide="ContactStore.patch(props.row)">
 								<q-card class="w-400">
 									<q-toolbar class="bg-green-6 text-white">
@@ -149,6 +148,9 @@
 									</q-card-actions>
 								</q-card>
 							</q-menu>
+						</q-btn>
+						<q-btn dense push square class="q-ml-sm" color="green-6" v-close-popup glossy @click="$emit('pick', cloneDeep(props.row))">
+							选择
 						</q-btn>
 					</div>
 				</q-td>
@@ -183,7 +185,8 @@ const ContactStore = useContactStore();
 
 const debounceGet = debounce(() => ContactStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 16 >= details.to) {
+	console.log("list-contact", details.index, details.to);
+	if (details.index + 16 >= details.to && details.to > 0) {
 		debounceGet();
 	}
 };

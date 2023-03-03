@@ -48,24 +48,6 @@ function getSchema(): Sku {
 		...getMongodbBase(),
 	};
 }
-
-const cellStyle = { "font-size": "16px" };
-const columns = [
-	{ name: "layout", field: "layout", label: "性质", align: "left", style: cellStyle },
-	{ name: "timeCreateString", field: "timeCreateString", label: "时间", style: cellStyle },
-	{ name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: cellStyle },
-	{ name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: cellStyle },
-	{ name: "name", field: "name", label: "品名", align: "left", style: cellStyle },
-	{ name: "norm", field: "norm", label: "规格", align: "left", style: cellStyle },
-	{ name: "count", field: "count", label: "数量", style: cellStyle },
-	{ name: "pounds", field: "pounds", label: "过磅", style: cellStyle },
-	{ name: "price", field: "price", label: "单价", style: cellStyle },
-	{ name: "remark", field: "remark", label: "备注", style: cellStyle },
-	{ name: "orderId", field: "orderId", label: "订单编号", align: "left", style: cellStyle },
-	{ name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: cellStyle },
-	{ name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: cellStyle },
-	{ name: "_id", field: "_id", label: "状态", align: "left", style: cellStyle },
-];
 export const useSkuGetInStore = defineStore("SkuGetIn", {
 	state: () => ({
 		skuSearch: getSchema() as Sku,
@@ -78,9 +60,6 @@ export const useSkuGetInStore = defineStore("SkuGetIn", {
 		page: getPage() as MongodbPage,
 		total: 0,
 		loadding: false,
-
-		columns: columns,
-		visibleColumns: columns.filter((e, i) => i <= 9).map((e) => e.name),
 	}),
 	actions: {
 		async get(page?: number) {

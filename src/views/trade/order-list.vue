@@ -300,13 +300,14 @@
 									hide-pagination
 									separator="vertical"
 									:columns="[
-										{ name: 'keyHouse', field: 'keyHouse', label: '产地', align: 'left' },
-										{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
+										{ name: 'layout', field: 'layout', label: '商品性质', align: 'left' },
 										{ name: 'name', field: 'name', label: '品名', align: 'left' },
 										{ name: 'norm', field: 'norm', label: '规格', align: 'left' },
-										{ name: 'layout', field: 'layout', label: '性质', align: 'left' },
 										{ name: 'count', field: 'count', label: '数量' },
 										{ name: 'pounds', field: 'pounds', label: '过磅' },
+										{ name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
+										{ name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
+										{ name: 'keyHouse', field: 'keyHouse', label: '仓库', align: 'left' },
 										{ name: 'price', field: 'price', label: '单价' },
 										{ name: 'remark', field: 'remark', label: '备注', align: 'left' },
 									]"
@@ -315,22 +316,23 @@
 								>
 									<template v-slot:body="_props">
 										<q-tr>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse || "-" }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }} </q-td>
-											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
 											<q-td :_props="_props" style="font-size: 16px"
 												><q-badge color="grey" v-if="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
 													大件商品
 													<q-tooltip class="text-body1"> “大件商品”发货时，需要单独选择在库的“大件商品”进行发货</q-tooltip>
 												</q-badge>
 											</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }} </q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
 											<q-td :_props="_props" style="font-size: 16px" class="text-right"
 												>{{ _props.row.count }} {{ _props.row.unit }}</q-td
 											>
 											<q-td :_props="_props" style="font-size: 16px" class="text-right">
 												<span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
 											</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyOrigin || "-" }}</q-td>
+											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse || "-" }}</q-td>
 											<q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
 											<q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
 										</q-tr>
@@ -488,32 +490,34 @@
 						<div class="col text-center">开单人：{{ printOrder.joinCreator?.nickname }}</div>
 						<div class="col text-right">No. {{ printOrder.code }}</div>
 					</div>
-					<div class="order-table-line row">
-						<div class="col-3">品名规格</div>
-						<div class="col-1">数量</div>
-						<div class="col-1" style="width: 45px">单位</div>
-						<div class="col-2 text-right" style="width: 100px">过磅称重</div>
-						<div class="col-2 text-right" style="width: 110px">单价/元</div>
-						<div class="col-2 text-right">售价/元</div>
-						<div class="col-1" style="flex: 1">备注</div>
-					</div>
-					<div class="order-table-line row" v-for="(sku, i) in printSkuList">
-						<div class="col-3">{{ sku.name }} {{ sku.norm }}</div>
-						<div class="col-1">
-							<span v-show="sku.name && sku.norm">{{ sku.count }}</span>
-						</div>
-						<div class="col-1" style="width: 45px">{{ sku.unit }}</div>
-						<div class="col-2 text-right" style="width: 100px">
-							<span v-show="sku.isPriceInPounds">{{ sku.pounds.toFixed(3) }} 吨</span>
-						</div>
-						<div class="col-2 text-right" style="width: 110px">
-							<span v-show="sku.name && sku.norm">{{ sku.price.toFixed(2) }}</span>
-						</div>
-						<div class="col-2 text-right">
-							<span v-show="sku.name && sku.norm">{{ (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2) }}</span>
-						</div>
-						<div class="col-1" style="flex: 1">{{ sku.remark }}</div>
-					</div>
+					<table class="full-width">
+						<tr>
+							<th>品名规格</th>
+							<th>数量</th>
+							<th>单位</th>
+							<th>过磅称重</th>
+							<th>单价/元</th>
+							<th>售价/元</th>
+							<th>备注</th>
+						</tr>
+						<tr v-for="(sku, i) in printSkuList">
+							<td>{{ sku.name }} {{ sku.norm }}</td>
+							<td>
+								<span v-show="sku.name && sku.norm">{{ sku.count }}</span>
+							</td>
+							<td>{{ sku.unit }}</td>
+							<td>
+								<span v-show="sku.isPriceInPounds && sku.pounds > 0">{{ sku.pounds.toFixed(3) }} 吨</span>
+							</td>
+							<td>
+								<span v-show="sku.name && sku.norm">{{ sku.price.toFixed(2) }}</span>
+							</td>
+							<td>
+								<span v-show="sku.name && sku.norm">{{ (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2) }}</span>
+							</td>
+							<td>{{ sku.remark }}</td>
+						</tr>
+					</table>
 					<div class="order-table-line row">
 						<div class="col">{{ getChineseMoney(printOrder.amount) }}</div>
 						<div class="col">共计: {{ printOrder.amount.toFixed(2) }} 元</div>
@@ -750,17 +754,38 @@ onMounted(() => init(ENUM_ORDER.SALES));
 	max-width: 960px;
 }
 #order {
+	color: black;
 	font-size: 19px;
 	line-height: 1.375;
-	color: black;
 	font-family: cursive;
 	page-break-before: always;
 	print-color-adjust: exact;
-	color-adjust: exact;
 	-webkit-print-color-adjust: exact;
+	table {
+		border-collapse: separate;
+		border-spacing: 0px 0px;
+		tr {
+			> th {
+				border-top: 1px solid black;
+				border-right: 1px solid black;
+				&:first-child {
+					border-left: 1px solid black;
+				}
+			}
+			> td {
+				height: 27px;
+				min-height: 27px;
+				line-height: 27px;
+				text-align: center;
+				border-top: 1px solid black;
+				border-right: 1px solid black;
+				&:first-child {
+					border-left: 1px solid black;
+				}
+			}
+		}
+	}
 	.order-table-line {
-		// border-left: 1px solid black;
-		// border-right: 1px solid black;
 		> div {
 			min-height: 27px;
 			text-align: center;
@@ -770,6 +795,7 @@ onMounted(() => init(ENUM_ORDER.SALES));
 				border-left: 1px solid black;
 			}
 		}
+
 		&:last-child {
 			border-bottom: 1px solid black;
 		}

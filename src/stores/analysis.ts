@@ -10,8 +10,12 @@ import type { ScheduleCardOrderJoined } from "qqlx-core/dto/market/scheduleCardO
 
 import { getMongodbBase, request, getPage, getTimeGap } from "@/utils";
 import { useNotifyStore } from "@/stores/notify";
+import { useAnnounce } from "@/stores/announce";
+import { useConfigCorp } from "@/stores/configCorp";
 
 const NotifyStore = useNotifyStore();
+const Announce = useAnnounce();
+const ConfigCorp = useConfigCorp();
 
 export const useAnalysisStore = defineStore("Analysis", {
 	state: () => ({
@@ -46,6 +50,9 @@ export const useAnalysisStore = defineStore("Analysis", {
 				this.loadding = true;
 				const dto: getAnalysisDto = { startTime: this.page.startTime, endTime: this.page.endTime };
 				const res: getAnalysisRes = await request.get(PATH_ANALYSIS, { dto });
+
+				await ConfigCorp.get();
+				await Announce.get();
 
 				this.analysis = res;
 			} catch (error) {

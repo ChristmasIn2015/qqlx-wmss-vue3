@@ -277,7 +277,11 @@ const skuNotConfirmedAll = computed({
 	},
 	set() {},
 });
-onMounted(() => AnalysisStore.getOrder());
+onMounted(() => {
+	Announce.get();
+	ConfigCorp.get();
+	AnalysisStore.getOrder();
+});
 </script>
 
 <style scoped lang="scss"></style>

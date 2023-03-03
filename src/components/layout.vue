@@ -211,9 +211,6 @@ onMounted(async () => {
 		const match = CorpStore.corpList.find((e) => e._id === corpIdPicked);
 		const first = CorpStore.corpList.find((e) => e.isDisabled === false);
 		CorpStore.pick(match || first);
-
-		await ConfigCorp.get();
-		await Announce.get();
 	} catch (error) {
 		NotifyStore.fail((error as Error).message);
 	}
