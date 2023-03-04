@@ -330,7 +330,7 @@ const visibleColumns = ref(columns.value.filter((e, i) => i < 11 || i === column
 const debounceGet = debounce(() => SkuGetInStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
 	console.log("sku individual", details.index, details.to);
-	if (details.index + 12 >= details.to && details.to > 0 && details.direction === "increase") {
+	if (details.index + 17 >= details.to && details.to > 0 && details.direction === "increase") {
 		debounceGet();
 	}
 };
