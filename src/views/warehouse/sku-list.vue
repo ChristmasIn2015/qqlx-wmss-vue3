@@ -312,6 +312,7 @@
 						<span v-else>
 							<span v-if="props.row.type === ENUM_ORDER.GETOUT && props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
 								<q-btn
+									push
 									dense
 									square
 									color="indigo-14"
@@ -327,8 +328,10 @@
 							</span>
 							<span v-else-if="props.row.type === ENUM_ORDER.MATERIAL">
 								<q-btn
-									color="indigo-14"
+									push
 									dense
+									square
+									color="indigo-14"
 									@click="
 										() => {
 											skuGetInDialog = true;
@@ -338,6 +341,9 @@
 								>
 									领料
 								</q-btn>
+							</span>
+							<span v-else>
+								<q-btn push square color="indigo-14" dense @click="SkuStore.patch([props.row])"> 入库 </q-btn>
 							</span>
 						</span>
 					</q-td>
