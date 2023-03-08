@@ -170,7 +170,7 @@
 							map-options
 							color="purple"
 							:options="(nowCorps as any)"
-							v-model="InvoiceStore.invoiceSearch.headerId"
+							v-model="InvoiceStore.invoiceSearch.keyHouse"
 							@update:model-value="InvoiceStore.get(1)"
 						/>
 					</q-th>
@@ -260,7 +260,7 @@
 					<q-td key="timeCreateString" :props="props" :style="tableStyle">{{ props.row.timeCreateString }}</q-td>
 					<q-td key="code" :props="props" :style="tableStyle">{{ props.row.code }}</q-td>
 					<q-td key="keyCode" :props="props" :style="tableStyle">{{ props.row.keyCode }}</q-td>
-					<q-td key="headerId" :props="props" :style="tableStyle">{{ props.row.joinHeader?.name }}</q-td>
+					<q-td key="headerId" :props="props" :style="tableStyle">{{ props.row.keyHouse }}</q-td>
 					<q-td key="keyOrigin" :props="props" :style="tableStyle">{{ props.row.keyOrigin }}</q-td>
 					<q-td key="keyHouse" :props="props" :style="tableStyle">{{ props.row.keyHouse }}</q-td>
 					<q-td key="amount" :props="props" :style="tableStyle">
@@ -352,11 +352,12 @@ import { useCorpStore } from "@/stores/corp";
 import { useInvoiceStore } from "@/stores/invoice";
 import { useBookStore } from "@/stores/book";
 import { useOrderStore } from "@/stores/order";
+import { useConfigCorp } from "@/stores/configCorp";
 
 const router = useRouter();
 const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
-const OrderStore = useOrderStore();
+const ConfigCorp = useConfigCorp();
 const InvoiceStore = useInvoiceStore();
 const BookStore = useBookStore();
 
@@ -364,7 +365,10 @@ const tableStyle = { "font-size": "16px" };
 
 const debounceGet = debounce(() => InvoiceStore.get(), 200);
 const loadPage = (details: { index: number; from: number; to: number; direction: "increase" | "decrease" }) => {
-	if (details.index + 19 >= details.to && details.to > 0) {
+	console.log("invoice", details.index, details.to);
+	if (details.index === 0 && details.direction === "increase") {
+		InvoiceStore.get(1);
+	} else if (details.index + 19 >= details.to && details.to > 0 && details.direction === "increase") {
 		debounceGet();
 	}
 };
@@ -391,14 +395,15 @@ const toEdit = (invoice: InvoiceInView) => {
 };
 const nowCorps = computed({
 	get() {
-		return CorpStore.corpList.filter((e) => e.isDisabled === false).map((e) => ({ label: e.name, value: e._id }));
+		const nowCorp = CorpStore.corpPicked;
+		const list: string[] = [nowCorp.name, ...ConfigCorp.titles.map((e) => e.text)];
+		return list;
 	},
 	set() {},
 });
 onMounted(async () => {
 	InvoiceStore.setSchema(InvoiceStore.getSchema(ENUM_BOOK_TYPE.YSZK_VAT, ENUM_BOOK_DIRECTION.JIE));
 	BookStore.bookListPicked = [];
-	await InvoiceStore.get(1);
 });
 </script>
 

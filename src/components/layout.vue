@@ -124,10 +124,10 @@
 							height="40px"
 						>
 							<q-carousel-slide v-for="(ann, index) in Announce.list" :name="index" class="q-pa-none">
-								公告：{{ ann.content }}
-
-								<span class="q-mx-sm">{{ index + 1 }}/{{ Announce.list.length }}</span>
+								<div class="ellipsis">{{ ann.content }}</div>
+								<div class="text-right">{{ index + 1 }} / {{ Announce.list.length }}</div>
 							</q-carousel-slide>
+							<span class="q-mx-sm"></span>
 						</q-carousel>
 					</div>
 					<q-img

@@ -84,7 +84,7 @@
 						class="q-mb-sm"
 						placeholder="请选择抬头"
 						:options="(nowCorps as any)"
-						v-model="InvoiceStore.invoiceEditor.headerId"
+						v-model="InvoiceStore.invoiceEditor.keyHouse"
 						@update:model-value="InvoiceStore.get(1)"
 					>
 						<template v-slot:before>
@@ -173,6 +173,7 @@ import { MongodbSort, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
 import pickerBook from "@/components/picker-book.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useCorpStore } from "@/stores/corp";
+import { useConfigCorp } from "@/stores/configCorp";
 import { useOrderStore } from "@/stores/order";
 import { useBookStore } from "@/stores/book";
 import { useInvoiceStore } from "@/stores/invoice";
@@ -180,7 +181,7 @@ import { useInvoiceStore } from "@/stores/invoice";
 const router = useRouter();
 const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
-const OrderStore = useOrderStore();
+const ConfigCorp = useConfigCorp();
 const BookStore = useBookStore();
 const InvoiceStore = useInvoiceStore();
 
@@ -215,7 +216,9 @@ const nowTypeName = computed({
 });
 const nowCorps = computed({
 	get() {
-		return CorpStore.corpList.filter((e) => e.isDisabled === false).map((e) => ({ label: e.name, value: e._id }));
+		const nowCorp = CorpStore.corpPicked;
+		const list: string[] = [nowCorp.name, ...ConfigCorp.titles.map((e) => e.text)];
+		return list;
 	},
 	set() {},
 });
