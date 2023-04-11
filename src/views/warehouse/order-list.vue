@@ -128,7 +128,8 @@
                             :props="props"
                             :class="{ 'bg-grey-4': props.expand }"
                             @click.stop="
-                                () => {
+                                async () => {
+                                    if (props.expand === false) await setOrderSku(props.row);
                                     props.expand = !props.expand;
                                 }
                             "
@@ -149,7 +150,7 @@
                                 项
                             </q-td>
                             <q-td key="pounds" :props="props">
-                                {{ props.row.joinParentOrder[0] ? `${props.row.joinParentOrder[0]?.code}` : "" }}
+                                {{ props.row.joinParentOrder && props.row.joinParentOrder[0] ? `${props.row.joinParentOrder[0]?.code}` : "" }}
                             </q-td>
                             <q-td key="remark" :props="props">
                                 <span
@@ -244,7 +245,7 @@
                                                     <span class="col text-grey">
                                                         <q-badge
                                                             rounded
-                                                            :color="props.row.joinParentOrder.length > 0 ? 'primary' : 'grey'"
+                                                            :color="props.row.joinParentOrder?.length > 0 ? 'primary' : 'grey'"
                                                             class="shadow-5 q-mr-sm"
                                                         >
                                                         </q-badge>
@@ -252,9 +253,9 @@
                                                     </span>
                                                     <span class="col text-right text-weight-bold">
                                                         <a
-                                                            v-if="props.row.joinParentOrder.length > 0"
+                                                            v-if="props.row.joinParentOrder?.length > 0"
                                                             class="cursor-pointer text-negative text-underline"
-                                                            @click="() => $router.push(`/wmss/trade/sale-list?code=${props.row.joinParentOrder[0].code}`)"
+                                                            @click="() => $router.push(`/wmss/trade/sale-list?code=${props.row.joinParentOrder[0]?.code}`)"
                                                         >
                                                             查看
                                                         </a>
@@ -431,6 +432,23 @@ const SkuStore = useSkuStore();
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
+const setOrderSku = async (order: OrderJoined) => {
+    try {
+        OrderStore.loadding = true;
+        const info = await OrderStore.getSku(order);
+        order.joinSku = info.skuList;
+        order.joinBookOfOrder = info.bookOfOrderList;
+        order.joinAccounter = info.joinAccounter;
+        order.joinCreator = info.joinCreator;
+        order.joinManager = info.joinManager;
+        order.joinChildOrder = info.joinChildOrder;
+        order.joinParentOrder = info.joinParentOrder;
+    } catch (error) {
+        NotifyStore.fail(`网络异常, 请重新试试`);
+    } finally {
+        OrderStore.loadding = false;
+    }
+};
 
 const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());

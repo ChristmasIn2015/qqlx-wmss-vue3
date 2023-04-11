@@ -362,15 +362,15 @@
                                         </div>
                                         <div class="row text-body1 q-mt-xs">
                                             <span class="col text-grey"
-                                                ><q-badge rounded :color="props.row.joinChildOrder.length > 0 ? 'primary' : 'grey'" class="shadow-5 q-mr-sm">
+                                                ><q-badge rounded :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'" class="shadow-5 q-mr-sm">
                                                 </q-badge
                                                 >发货单
                                             </span>
                                             <span class="col text-right text-weight-bold">
                                                 <a
-                                                    v-if="props.row.joinChildOrder.length > 0"
+                                                    v-if="props.row.joinChildOrder?.length > 0"
                                                     class="cursor-pointer text-negative text-underline"
-                                                    @click="() => $router.push(`/wmss/warehouse/order-list?code=${props.row.joinChildOrder[0].code}`)"
+                                                    @click="() => $router.push(`/wmss/warehouse/order-list?code=${props.row.joinChildOrder[0]?.code}`)"
                                                 >
                                                     查看
                                                 </a>
@@ -420,7 +420,7 @@
                                         <q-btn
                                             class="q-ml-sm"
                                             text-color="negative"
-                                            :disabled="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder.length > 0"
+                                            :disabled="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                             @click="
                                                 async () => {
                                                     await OrderStore.delete(props.row._id);
@@ -432,7 +432,7 @@
                                         </q-btn>
                                         <q-btn
                                             v-if="!props.row.isDisabled"
-                                            :disabled="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder.length > 0"
+                                            :disabled="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                             class="q-ml-sm"
                                             text-color="primary"
                                             @click="
@@ -446,7 +446,7 @@
                                             编辑
                                         </q-btn>
                                         <q-tooltip
-                                            v-if="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder.length > 0"
+                                            v-if="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                             class="text-body1"
                                         >
                                             <div v-if="!!props.row.managerId">* 订单已复核，无法修改</div>
@@ -852,6 +852,11 @@ const setOrderSku = async (order: OrderJoined) => {
         const info = await OrderStore.getSku(order);
         order.joinSku = info.skuList;
         order.joinBookOfOrder = info.bookOfOrderList;
+        order.joinAccounter = info.joinAccounter;
+        order.joinCreator = info.joinCreator;
+        order.joinManager = info.joinManager;
+        order.joinChildOrder = info.joinChildOrder;
+        order.joinParentOrder = info.joinParentOrder;
     } catch (error) {
         NotifyStore.fail(`网络异常, 请重新试试`);
     } finally {
