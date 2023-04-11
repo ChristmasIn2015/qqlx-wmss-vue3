@@ -142,7 +142,7 @@
                 v-model="ContactStore.page.page"
                 :max-pages="10"
                 :max="Math.ceil(ContactStore.total / ContactStore.page.pageSize)"
-                @update:model-value="(value) => ContactStore.get(1)"
+                @update:model-value="(value) => ContactStore.get(value)"
             />
             <q-space></q-space>
             <span>共 {{ ContactStore.total }} 项</span>
