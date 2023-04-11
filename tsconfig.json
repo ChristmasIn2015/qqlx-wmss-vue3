@@ -1,15 +1,16 @@
 {
-	"extends": "@vue/tsconfig/tsconfig.web.json",
-	"include": ["src/**/*", "src/**/*.vue"],
-	"compilerOptions": {
-		"paths": {
-			"@/*": ["./src/*"]
-		}
-	},
+    "extends": "@vue/tsconfig/tsconfig.web.json",
+    "include": ["src/**/*", "src/**/*.vue"],
+    "compilerOptions": {
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "isolatedModules": false
+    },
 
-	"references": [
-		{
-			"path": "./tsconfig.config.json"
-		}
-	]
+    "references": [
+        {
+            "path": "./tsconfig.config.json"
+        }
+    ]
 }
