@@ -800,7 +800,7 @@ const OrderStore = useOrderStore();
 const orderDialog = ref(false);
 const downloadOrderList = async () => {
     try {
-        // await OrderStore.get(1);
+        await OrderStore.get(1);
         OrderStore.loadding = true;
         const orders = await OrderStore.geOrderWidthSku();
 

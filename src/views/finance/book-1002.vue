@@ -96,7 +96,7 @@
                         </q-menu>
                     </a>
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle">-</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入打款人" v-model="schema.keyOrigin" />
                 </q-td>
@@ -104,14 +104,14 @@
                     <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-badge class="q-mr-xs shadow-5" color="grey" rounded></q-badge>
+                    <q-badge class="q-mr-xs shadow-5" color="teal" rounded></q-badge>
                     收款
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle"> </q-td>
-                <q-td :style="NotifyStore.fontStyle">-</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入备注" v-model="schema.remark" />
                 </q-td>
@@ -366,7 +366,7 @@ const filePickNext = async (file: File) => {
             for (let i in rowJsonList) {
                 const row = rowJsonList[i];
                 const schema = BookStore.getSchema({ type: BookStore.search.type, direction: BookStore.search.direction });
-                schema.keyOrigin = String(row["@打款人名称"] || "");
+                schema.keyOrigin = String(row["@客户名称"] || "");
                 schema.keyHouse = String(row["@银行"] || "");
                 schema.amount = Number(row["@金额"] || 0) || 0;
                 schema.remark = String(row["@备注"] || "");

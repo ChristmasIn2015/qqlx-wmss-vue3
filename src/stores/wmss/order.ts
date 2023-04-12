@@ -117,7 +117,6 @@ export const useOrderStore = defineStore("Order", {
                 this.get(1);
             }
         },
-        /** @viewcatch */
         async geOrderWidthSku(): Promise<OrderJoined[]> {
             const page = cloneDeep(this.page);
             page.page = 1;
@@ -126,7 +125,7 @@ export const useOrderStore = defineStore("Order", {
 
             this.loadding = true;
             const dto: getOrderDto = {
-                page: this.page,
+                page: page,
                 search: this.search,
                 requireManagerId: this.requireManagerId,
                 requireAccounterId: this.requireAccounterId,
