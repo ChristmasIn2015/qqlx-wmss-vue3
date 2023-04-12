@@ -1,69 +1,79 @@
 <template>
-    <div class="q-pl-xs q-mb-lg">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>销售单列表</span>
         </div>
-        <div class="text-option text-primary"></div>
-    </div>
+        <div class="text-option text-primary row items-center">
+            <div>
+                销售单复核后首先将会通知仓库装货，并生成发货单。您可以通过
 
-    <div class="row q-mb-sm">
-        <q-btn
-            push
-            square
-            class="q-mr-sm"
-            label="最近删除"
-            :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
-            :text-color="OrderStore.search.isDisabled ? '' : 'black'"
-            @click="
-                () => {
-                    OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
-                    OrderStore.get(1);
-                }
-            "
-        />
-        <q-btn
-            push
-            square
-            class="q-mr-sm"
-            label="可复核"
-            :color="OrderStore.requireManagerId ? 'primary' : 'white'"
-            :text-color="OrderStore.requireManagerId ? '' : 'black'"
-            @click="
-                () => {
-                    OrderStore.requireManagerId = !OrderStore.requireManagerId;
-                    OrderStore.get(1);
-                }
-            "
-        />
-        <q-btn
-            push
-            square
-            class="q-mr-sm"
-            label="可结清"
-            :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
-            :text-color="OrderStore.requireAccounterId ? '' : 'black'"
-            @click="
-                () => {
-                    OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
-                    OrderStore.get(1);
-                }
-            "
-        />
-
-        <q-space></q-space>
-        <q-btn color="white" :loading="OrderStore.loadding" text-color="black" class="q-ml-sm" @click="downloadOrderList()">
-            <q-icon name="get_app" class="q-mr-xs"></q-icon>
-            导出订单
-        </q-btn>
-        <picker-range
-            @change="
-                ($event) => {
-                    OrderStore.page.startTime = $event.startTime;
-                    OrderStore.page.endTime = $event.endTime;
-                    OrderStore.get(1);
-                }
-            "
-        />
+                <span class="text-negative cursor-pointer" @click="$router.push('/wmss/trade/sale-sku')">销售明细</span>
+                查看哪些商品正在发货。
+            </div>
+            <q-space></q-space>
+            <q-btn
+                square
+                class="q-ml-sm"
+                label="最近删除"
+                :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
+                :text-color="OrderStore.search.isDisabled ? '' : 'black'"
+                @click="
+                    () => {
+                        OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
+                        OrderStore.get(1);
+                    }
+                "
+            />
+            <q-btn
+                square
+                class="q-ml-sm"
+                label="可复核"
+                :color="OrderStore.requireManagerId ? 'primary' : 'white'"
+                :text-color="OrderStore.requireManagerId ? '' : 'black'"
+                @click="
+                    () => {
+                        OrderStore.requireManagerId = !OrderStore.requireManagerId;
+                        OrderStore.get(1);
+                    }
+                "
+            />
+            <q-btn
+                square
+                class="q-ml-sm"
+                label="可结清"
+                :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
+                :text-color="OrderStore.requireAccounterId ? '' : 'black'"
+                @click="
+                    () => {
+                        OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
+                        OrderStore.get(1);
+                    }
+                "
+            />
+            <q-btn color="white" text-color="black" icon="more_vert" class="q-ml-sm">
+                <q-menu>
+                    <q-item clickable @click="$router.push('/wmss/trade/sale-sku')">
+                        <q-item-section>
+                            <div><q-icon name="format_list_numbered" class="q-mr-xs" size="20px"></q-icon>销售明细</div>
+                        </q-item-section>
+                    </q-item>
+                    <q-item clickable @click="downloadOrderList()">
+                        <q-item-section>
+                            <div><q-icon name="get_app" class="q-mr-xs" size="18px"></q-icon>导出订单</div>
+                        </q-item-section>
+                    </q-item>
+                </q-menu>
+            </q-btn>
+            <picker-range
+                @change="
+                    ($event) => {
+                        OrderStore.page.startTime = $event.startTime;
+                        OrderStore.page.endTime = $event.endTime;
+                        OrderStore.get(1);
+                    }
+                "
+            />
+        </div>
     </div>
 
     <q-card>
@@ -72,7 +82,7 @@
             row-key="_id"
             style="min-height: 630px"
             :rows="OrderStore.list"
-            :rows-per-page-options="[OrderStore.page.pageSize]"
+            :rows-per-page-options="[0]"
             :columns="[
                 { name: 'code', field: 'code', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
@@ -184,7 +194,7 @@
                     "
                 >
                     <q-td key="code" :props="props">
-                        <q-badge rounded color="pink-6" class="shadow-5 q-mr-sm"> </q-badge>
+                        <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
                         <span>{{ props.row.code }}</span>
                         <q-tooltip class="text-body1">销售单</q-tooltip>
                     </q-td>
@@ -349,7 +359,7 @@
                                     <q-card-section>
                                         <div class="row text-body1">
                                             <span class="col-6 text-grey">
-                                                <q-badge rounded :color="props.row.managerId ? 'primary' : 'grey'" class="shadow-5 q-mr-sm"> </q-badge>复核人
+                                                <q-badge rounded :color="props.row.managerId ? 'primary' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge>复核人
                                                 <a
                                                     v-if="props.row.managerId"
                                                     class="cursor-pointer text-negative text-underline"
@@ -362,7 +372,7 @@
                                         </div>
                                         <div class="row text-body1 q-mt-xs">
                                             <span class="col text-grey"
-                                                ><q-badge rounded :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'" class="shadow-5 q-mr-sm">
+                                                ><q-badge rounded :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'" class="shadow-2 q-mr-sm">
                                                 </q-badge
                                                 >发货单
                                             </span>
@@ -382,7 +392,7 @@
                                     <q-card-section>
                                         <div class="row text-body1 q-mt-xs">
                                             <span class="col text-grey">
-                                                <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-5 q-mr-sm"> </q-badge>结清确认
+                                                <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge>结清确认
                                                 <a
                                                     v-if="props.row.accounterId"
                                                     class="cursor-pointer q-mx-sm text-negative"
@@ -395,7 +405,7 @@
                                         </div>
                                         <div class="text-body1 text-grey q-mt-xs" v-if="props.row.joinBookOfOrder">
                                             <span>
-                                                <q-badge rounded :color="props.row.joinBookOfOrder?.length ? 'teal' : 'grey'" class="shadow-5 q-mr-sm">
+                                                <q-badge rounded :color="props.row.joinBookOfOrder?.length ? 'teal' : 'grey'" class="shadow-2 q-mr-sm">
                                                 </q-badge
                                                 >收到货款
                                             </span>
@@ -719,7 +729,7 @@
         <q-card class="w-400">
             <q-toolbar class="bg-primary text-white">
                 <q-toolbar-title>
-                    <q-badge rounded color="pink-6" class="shadow-5 q-mr-sm"> </q-badge>
+                    <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
                     修改
                 </q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
@@ -752,7 +762,7 @@
         <q-card class="w-400">
             <q-toolbar class="bg-primary text-white">
                 <q-toolbar-title>
-                    <q-badge rounded color="pink-6" class="shadow-5 q-mr-sm"> </q-badge>
+                    <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
                     提货仓库
                 </q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
@@ -933,6 +943,7 @@ onMounted(() => {
     SkuStore.setEditor();
     // 清空订单
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
+    OrderStore.search.contactId = "";
     OrderStore.page.pageSize = 20;
     // 根据路由进行搜索
     const { code } = route.query;

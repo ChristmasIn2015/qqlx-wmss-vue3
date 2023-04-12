@@ -143,7 +143,6 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
         setEditor(entity?: CabinetUnit) {
             const schema = entity ? cloneDeep(entity) : this.getSchema();
             this.editor = schema;
-            this.search = schema;
         },
     },
 });

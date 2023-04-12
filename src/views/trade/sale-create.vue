@@ -1,9 +1,8 @@
 <template>
-    <div class="q-pl-xs q-mb-lg">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>代客下单</span>
         </div>
-        <div class="text-option text-primary"></div>
     </div>
 
     <container-sku />

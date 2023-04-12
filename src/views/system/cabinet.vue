@@ -1,9 +1,9 @@
 <template>
-    <div class="q-pl-xs q-mb-md q-mt-sm">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row">
             <span>商品分类</span>
             <q-space></q-space>
-            <q-btn push square class="q-ml-sm" color="primary">
+            <q-btn square class="q-ml-sm" color="primary">
                 <span>快速添加</span>
                 <q-menu>
                     <q-item
@@ -21,7 +21,6 @@
                 </q-menu>
             </q-btn>
             <q-btn
-                push
                 square
                 class="q-ml-sm"
                 color="negative"
@@ -58,8 +57,8 @@
                             row-key="_id"
                             dense
                             :rows="CabinetUnitStore.list"
+                            :rows-per-page-options="[0]"
                             v-model:selected="CabinetUnitStore.listPicked"
-                            :rows-per-page-options="[CabinetUnitStore.page.pageSize]"
                             :columns="[
                                 { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.cellStyle },
                                 { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
@@ -101,10 +100,9 @@
                                             clearable
                                             placeholder="搜索品名"
                                             v-model="CabinetUnitStore.search.name"
-                                            @update:model-value="debounceGet()"
+                                            @blur="CabinetUnitStore.get(nowCabinet, 1)"
                                         />
                                     </q-th>
-                                    <!-- @blur="CabinetUnitStore.get(nowCabinet, 1)" -->
                                     <q-th>
                                         <q-input
                                             square
@@ -112,10 +110,9 @@
                                             dense
                                             clearable
                                             placeholder="搜索规格"
-                                            style="margin-left: -6px"
                                             :loading="CabinetUnitStore.loadding"
                                             v-model="CabinetUnitStore.search.norm"
-                                            @update:model-value="debounceGet()"
+                                            @blur="CabinetUnitStore.get(nowCabinet, 1)"
                                         />
                                     </q-th>
                                     <q-th
@@ -497,7 +494,6 @@ const filePickNext = async (file: File) => {
 const selectingAll = ref(false);
 const pricePatching = ref(0);
 const dialogPatching = ref(false);
-const debounceGet = debounce(() => CabinetUnitStore.get(nowCabinet.value, 1), 200);
 
 // action
 onMounted(async () => {

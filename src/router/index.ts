@@ -116,6 +116,12 @@ const routes = [
                         component: () => import("@/views/trade/sale-edit.vue"),
                         meta: { icon: "menu", color: "pink-6", show: false },
                     },
+                    {
+                        path: "sale-sku",
+                        name: "销售明细",
+                        component: () => import("@/views/trade/sale-sku.vue"),
+                        meta: { icon: "menu", color: "pink-6", show: false },
+                    },
                 ],
             },
             {

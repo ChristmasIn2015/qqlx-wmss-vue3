@@ -1,5 +1,5 @@
 <template>
-    <div class="text-h5 text-primary text-weight-bold q-mt-sm q-mb-md q-pl-xs">销售</div>
+    <div class="text-h5 text-primary text-weight-bold q-mb-md q-pl-xs">销售</div>
     <div class="row q-pb-md">
         <q-card class="q-mr-md q-mb-md text-body1 full-height text-primary col" v-for="(time, index) in times">
             <q-card-section>
@@ -13,16 +13,12 @@
             <q-separator />
             <q-card-section class="text-primary">
                 <div class="row">
-                    <span class="col">销售额</span>
-                    <span class="col text-right" :class="index === 0 ? 'text-bold text-negative' : ''">
-                        {{ Number((time.calcu as any)[ENUM_ORDER.SALES]?.amount / 10000).toFixed(2) }} 万元
-                    </span>
+                    <span class="col">订单量</span>
+                    <span class="col text-right"> {{ (time.calcu as any)[ENUM_ORDER.SALES]?.count }} 张 </span>
                 </div>
                 <div class="row">
-                    <span class="col">订单数量</span>
-                    <span class="col text-right" :class="index === 0 ? 'text-bold text-negative' : ''">
-                        {{ (time.calcu as any)[ENUM_ORDER.SALES]?.count }} 张
-                    </span>
+                    <span class="col">销售额</span>
+                    <span class="col text-right"> {{ Number((time.calcu as any)[ENUM_ORDER.SALES]?.amount / 10000).toFixed(2) }} 万元 </span>
                 </div>
             </q-card-section>
 
@@ -101,10 +97,10 @@
         <div class="col">
             <div class="text-h5 text-primary text-weight-bold q-mb-md q-pl-xs">快速操作</div>
             <div class="q-pb-md">
-                <q-btn class="full-width q-mb-sm text-body1" color="negative" square @click="$router.push('/wmss/trade/sale-create')">
+                <q-btn class="full-width q-mb-md text-body1" color="negative" square @click="$router.push('/wmss/trade/sale-create')">
                     <span>代客下单</span>
                 </q-btn>
-                <q-btn class="full-width q-mb-sm text-body1" square @click="$router.push('/wmss/system/corp')">
+                <q-btn class="full-width q-mb-md text-body1" square @click="$router.push('/wmss/system/corp')">
                     系统设置
                     <q-tooltip class="text-body1" anchor="center right" self="center right">
                         <div>* 前往修改公司信息</div>
@@ -120,7 +116,7 @@
                         <div>* 您将会看到每笔资金的发票情况</div>
                     </q-tooltip>
                 </q-btn> -->
-                <q-btn disable class="full-width q-mb-sm text-body1" square color="primary" flat>
+                <q-btn disable class="full-width q-mb-md text-body1" square color="primary" flat>
                     小程序商城 (敬请期待)
                     <q-tooltip class="text-body1" anchor="center right" self="center right">
                         <div>* 您的客户可以在微信小程序中，直接向您下单</div>

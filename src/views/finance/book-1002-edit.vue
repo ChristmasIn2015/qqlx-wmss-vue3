@@ -33,7 +33,7 @@
                     <q-tr>
                         <q-td key="code" :props="props" :style="NotifyStore.cellStyle">
                             <div>
-                                <q-badge class="q-mr-xs shadow-5" color="pink-6" rounded></q-badge>
+                                <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
                                 {{ props.row.code }}
                             </div>
                         </q-td>
@@ -99,7 +99,7 @@
                 <q-card-section class="text-grey text-body1">
                     <div class="row">
                         <div class="col">
-                            <q-badge class="q-mr-xs shadow-5" color="teal" rounded></q-badge>
+                            <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
                             正在确认
                         </div>
                         <div class="col text-right text-body1">

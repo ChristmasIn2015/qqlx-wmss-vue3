@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>大件商品</span>
             <q-space></q-space>
@@ -12,21 +12,6 @@
                         SkuStore.get(1);
                     }
                 "
-            />
-
-            <q-select
-                dense
-                filled
-                multiple
-                borderless
-                emit-value
-                map-options
-                class="q-ml-sm"
-                option-value="name"
-                display-value="自定义列内容"
-                options-selected-class="bg-primary text-body1 text-white"
-                v-model="visibleColumns"
-                :options="columns"
             />
         </div>
         <div class="text-option text-primary"></div>
@@ -92,6 +77,14 @@
                     >
                         <span>剩余</span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        <span class="q-ml-sm">
+                            <q-icon name="help_outline"></q-icon>
+                            <q-tooltip class="text-body1">
+                                <div>每个大件商品的最终库存重量</div>
+                                <div>= 入库重量 -领料重量</div>
+                                <div>* <span class="text-negative">不包括</span>发货中的重量</div>
+                            </q-tooltip>
+                        </span>
                     </q-th>
                     <q-th key="keyFeat" :props="props">
                         <q-input square filled dense clearable color="primary" placeholder="材质" v-model="SkuStore.search.keyFeat" @blur="SkuStore.get(1)" />
@@ -166,7 +159,22 @@
                         </q-btn>
                     </q-th>
                     <q-th key="orderId" :props="props">订单编号</q-th>
-                    <q-th key="_id" :props="props">操作</q-th>
+                    <q-th key="_id" :props="props">
+                        <q-select
+                            dense
+                            filled
+                            multiple
+                            borderless
+                            emit-value
+                            map-options
+                            class="q-ml-sm"
+                            option-value="name"
+                            display-value="列设置"
+                            options-selected-class="bg-primary text-body1 text-white"
+                            v-model="visibleColumns"
+                            :options="columns"
+                        />
+                    </q-th>
                 </q-tr>
             </template>
             <template v-slot:body="props">
@@ -206,7 +214,7 @@
                         <span v-else class="text-grey">批量导入</span>
                     </q-td>
                     <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
-                    <q-td key="_id" :props="props" style="padding: 0 4px">
+                    <q-td key="_id" :props="props" style="padding: 0 0 0 20px">
                         <span v-if="props.row.isConfirmed">
                             <q-btn
                                 dense
@@ -278,7 +286,7 @@
         <q-card class="w-400">
             <q-toolbar class="bg-primary text-white">
                 <q-toolbar-title>
-                    <q-badge rounded color="negative" class="shadow-5 q-mr-sm"> </q-badge>
+                    <q-badge rounded color="negative" class="shadow-2 q-mr-sm"> </q-badge>
                     领料
                 </q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
@@ -338,7 +346,7 @@ const columns = ref([
     { name: "orderId", field: "orderId", label: "订单编号", align: "left", style: NotifyStore.fontStyle },
     { name: "_id", field: "_id", label: "操作", align: "left", style: NotifyStore.fontStyle },
 ]);
-const visibleColumns = ref(columns.value.filter((e, i) => i < 9 || i === columns.value.length - 1).map((e) => e.name));
+const visibleColumns = ref(columns.value.filter((e, i) => i < 10 || i === columns.value.length - 1).map((e) => e.name));
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);

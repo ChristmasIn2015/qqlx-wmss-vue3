@@ -26,7 +26,9 @@ export const useAnalysisStore = defineStore("Analysis", {
     }),
     actions: {
         async set(dto: ViewOrderAna[]): Promise<ViewOrderAna[]> {
+            this.loadding = true;
             const res: getOrderAnalysisRes = await request.get(PATH_ORDER_ANALYSIS, { dto });
+            this.loadding = false;
             return dto.map((time, index) => ({ ...time, ...res[index] }));
         },
     },

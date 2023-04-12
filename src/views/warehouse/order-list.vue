@@ -1,7 +1,19 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>仓库订单</span>
+            <q-space></q-space>
+        </div>
+
+        <div class="text-option text-primary row items-center">
+            <div>
+                <span>
+                    当您对
+                    <span class="cursor-pointer text-negative" @click="$router.push('/wmss/trade/sale-list')">销售单</span>
+                    复核后，将会生成发货单。
+                </span>
+            </div>
+
             <q-space></q-space>
 
             <picker-range
@@ -13,19 +25,6 @@
                     }
                 "
             />
-            <!-- <q-btn
-                square
-                class="q-ml-sm"
-                label="最近删除"
-                :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
-                :text-color="OrderStore.search.isDisabled ? '' : 'primary'"
-                @click="
-                    () => {
-                        OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
-                        OrderStore.get(1, true);
-                    }
-                "
-            /> -->
             <q-btn
                 square
                 color="negative"
@@ -42,10 +41,9 @@
                     }
                 "
             >
-                添加 @{{ tab?.label }}
+                添加{{ tab?.label }}
             </q-btn>
         </div>
-        <div class="text-option text-primary"></div>
     </div>
 
     <q-card square>
@@ -58,11 +56,11 @@
 
             <template v-slot:after>
                 <q-table
-                    dense
-                    row-key="_id"
                     style="min-height: 630px"
+                    row-key="_id"
+                    dense
                     :rows="OrderStore.list"
-                    :rows-per-page-options="[OrderStore.page.pageSize]"
+                    :rows-per-page-options="[0]"
                     :columns="[
                         { name: 'code', field: 'code', label: '批次', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'contactId', field: 'contactId', label: '客户名称', align: 'left', style: NotifyStore.cellStyle },
@@ -135,7 +133,7 @@
                             "
                         >
                             <q-td key="code" :props="props">
-                                <q-badge rounded class="q-mr-sm shadow-5" :color="!props.row.isDisabled ? tab.color : 'grey'"></q-badge>
+                                <q-badge rounded class="q-mr-sm shadow-2" :color="!props.row.isDisabled ? tab.color : 'grey'"></q-badge>
                                 {{ props.row.code }}
                             </q-td>
                             <q-td key="contactId" :props="props">
@@ -246,7 +244,7 @@
                                                         <q-badge
                                                             rounded
                                                             :color="props.row.joinParentOrder?.length > 0 ? 'primary' : 'grey'"
-                                                            class="shadow-5 q-mr-sm"
+                                                            class="shadow-2 q-mr-sm"
                                                         >
                                                         </q-badge>
                                                         来源单据
@@ -358,10 +356,7 @@
     <q-dialog v-model="orderDialog">
         <q-card class="w-400">
             <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title>
-                    <q-badge rounded color="pink-6" class="shadow-5 q-mr-sm"> </q-badge>
-                    修改
-                </q-toolbar-title>
+                <q-toolbar-title> 修改 </q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
 
@@ -409,9 +404,9 @@ import { useOrderStore } from "@/stores/wmss/order";
 const route = useRoute();
 const tabs = ref([
     { label: "入库单", value: ENUM_ORDER.GETIN, icon: "playlist_add", color: "positive", comfirmed: "已入库" },
-    { label: "加工单", value: ENUM_ORDER.PROCESS, icon: "low_priority", color: "cyan", comfirmed: "已入库" },
+    { label: "加工单", value: ENUM_ORDER.PROCESS, icon: "low_priority", color: "positive", comfirmed: "已入库" },
     { label: "领料单", value: ENUM_ORDER.MATERIAL, icon: "content_cut", color: "orange", comfirmed: "已扣减" },
-    { label: "发货单", value: ENUM_ORDER.GETOUT, icon: "local_shipping", color: "pink-6", comfirmed: "已出库" },
+    { label: "发货单", value: ENUM_ORDER.GETOUT, icon: "local_shipping", color: "orange", comfirmed: "已出库" },
 ]);
 const tabIndex = ref(0);
 const tab = computed(() => tabs.value[tabIndex.value]);
@@ -458,6 +453,7 @@ onMounted(async () => {
     if (tab.value) {
         OrderStore.setEditor();
         OrderStore.search.type = tab.value.value;
+        OrderStore.search.contactId = "";
 
         // 根据条件设置搜索
         const { code } = route.query;

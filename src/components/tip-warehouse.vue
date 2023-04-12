@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mt-lg q-mb-md">
+    <!-- <div class="q-pl-xs q-mt-lg q-mb-md">
         <div class="text-h6 text-primary row items-center">
             <span>
                 系统如何
@@ -80,7 +80,7 @@
         <div class="col q-pr-md"></div>
         <div class="col q-pr-md"></div>
         <div class="col"></div>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts" setup>

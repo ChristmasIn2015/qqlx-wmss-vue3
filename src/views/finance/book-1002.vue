@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mb-md q-mt-sm">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row">
             <span>收款记录</span>
             <q-space></q-space>
@@ -65,8 +65,8 @@
         separator="cell"
         row-key="_id"
         dense
-        :rows-per-page-options="[BookStore.page.pageSize]"
         :rows="BookStore.list"
+        :rows-per-page-options="[0]"
         :columns="[
             { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left' },
             { name: 'code', field: 'code', label: '编号', align: 'left' },
@@ -104,7 +104,7 @@
                     <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-badge class="q-mr-xs shadow-5" color="teal" rounded></q-badge>
+                    <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
                     收款
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
@@ -230,7 +230,7 @@
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyOrigin }}</q-td>
                 <q-td key="keyHouse" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyHouse }}</q-td>
                 <q-td key="type" :style="NotifyStore.fontStyle">
-                    <!-- <q-badge class="q-mr-xs shadow-5" color="teal" rounded></q-badge> -->
+                    <!-- <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge> -->
                     收款
                 </q-td>
                 <q-td

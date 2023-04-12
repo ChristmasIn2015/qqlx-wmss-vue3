@@ -125,7 +125,7 @@
                 </div>
 
                 <!-- 主页面 -->
-                <div class="q-px-lg q-py-lg">
+                <div class="q-px-lg q-py-xl">
                     <router-view />
                 </div>
             </q-page>

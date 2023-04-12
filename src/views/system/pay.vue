@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mb-md q-mt-sm">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.push('/wmss')"></q-btn>
             <span>礼品卡</span>

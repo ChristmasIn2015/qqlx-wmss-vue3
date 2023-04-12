@@ -117,7 +117,7 @@
             <template v-slot:body="props">
                 <q-tr>
                     <q-td key="code" :props="props">
-                        <q-badge class="q-mr-xs shadow-5" color="pink-6" rounded></q-badge>
+                        <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
                         {{ props.row.code }}
                     </q-td>
                     <q-td key="contactId" :props="props">
@@ -251,6 +251,7 @@ onMounted(async () => {
 
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
     OrderStore.page.pageSize = 8;
+    OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;
     OrderStore.get(1, false, true);
 });

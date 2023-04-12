@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mb-md q-mt-sm">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row">
             <span>发票列表</span>
             <q-space></q-space>
@@ -50,8 +50,8 @@
         separator="cell"
         row-key="_id"
         dense
-        :rows-per-page-options="[BookStore.page.pageSize]"
         :rows="BookStore.list"
+        :rows-per-page-options="[0]"
         :columns="[
             { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left' },
             { name: 'code', field: 'code', label: '系统编号', align: 'left' },

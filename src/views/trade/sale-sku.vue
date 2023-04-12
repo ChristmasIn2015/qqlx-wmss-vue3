@@ -1,17 +1,17 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>库存明细</span>
-            <q-space></q-space>
+            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
+            <span>销售明细</span>
         </div>
         <div class="text-option text-primary row items-center">
             <div>
-                <span>库存明细包含（入库单，加工单，领料单，发货单）这四类仓库订单的商品明细。</span>
+                <span>销售明细包含（销售单）这类交易订单的商品明细，</span>
                 <span>
-                    当您对
-                    <span class="cursor-pointer text-negative" @click="$router.push('/wmss/trade/sale-list')">销售单</span>
-                    复核后，将会生成发货单。</span
-                >
+                    您可以前往
+                    <span class="text-negative cursor-pointer" @click="$router.push('/wmss/warehouse/sku-list')">库存明细</span>
+                    查看实际发货内容。
+                </span>
             </div>
 
             <q-space></q-space>
@@ -31,16 +31,7 @@
 
     <q-card square>
         <q-splitter v-model="splitIndex">
-            <template v-slot:before>
-                <!-- <q-tabs v-model="tabIndex" dense vertical class="text-primary">
-                    <q-tab :name="0">
-                        <span class="text-body1 q-my-sm">已处理</span>
-                    </q-tab>
-                    <q-tab :name="1">
-                        <span class="text-body1 q-my-sm">待处理</span>
-                    </q-tab>
-                </q-tabs> -->
-            </template>
+            <template v-slot:before> </template>
 
             <template v-slot:after>
                 <q-table
@@ -249,13 +240,12 @@
                             </q-td>
                             <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                             <q-td key="_id" :props="props">
-                                <span v-if="props.row.isConfirmed" class="text-grey"> 已{{ SkuStore.getLabelByType(props.row.type)?.text }} </span>
-                                <span v-else class="text-primary">
-                                    <q-icon name="help_outline"></q-icon>
+                                <span v-if="props.row.joinOrder?.managerId" class="text-grey"> 发货中 </span>
+                                <span v-else class="text-negative text-bold">
+                                    未发货
                                     <q-tooltip class="text-body1">
-                                        <div>每个大件商品的最终库存重量</div>
-                                        <div>= 入库重量 -领料重量</div>
-                                        <div>* <span class="text-negative">不包括</span>发货中的重量</div>
+                                        <div>* 销售单复核后，将会生成发货单，此商品将会变更为 “发货中”</div>
+                                        <div>* 发货商品可以和销售商品不一致，请注意检查</div>
                                     </q-tooltip>
                                 </span>
                             </q-td>
@@ -346,7 +336,7 @@ const columns = ref([
     { name: "orderId", field: "orderId", label: "订单编号", align: "left", style: NotifyStore.fontStyle },
     { name: "_id", field: "_id", label: "操作", align: "left", style: NotifyStore.fontStyle },
 ]);
-const visibleColumns = ref(columns.value.filter((e, i) => i < 9 || i === columns.value.length - 1).map((e) => e.name));
+const visibleColumns = ref(columns.value.filter((e, i) => i < 9 || i >= columns.value.length - 1).map((e) => e.name));
 
 const tabIndex = ref(0);
 const splitIndex = ref(0);
@@ -370,7 +360,7 @@ onMounted(() => {
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;
-    SkuStore.types = [ENUM_ORDER.GETIN, ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL, ENUM_ORDER.PROCESS];
+    SkuStore.types = [ENUM_ORDER.SALES];
 
     const { name, norm } = route.query;
     SkuStore.search.name = (name || "").toString();

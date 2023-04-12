@@ -126,9 +126,10 @@ export const useSkuStore = defineStore("Sku", {
         },
         getLabelByType(type: ENUM_ORDER) {
             if (type === ENUM_ORDER.GETIN) return { text: "入库", color: "positive" };
-            else if (type === ENUM_ORDER.PROCESS) return { text: "加工", color: "cyan" };
+            else if (type === ENUM_ORDER.PROCESS) return { text: "加工", color: "positive" };
             else if (type === ENUM_ORDER.MATERIAL) return { text: "领料", color: "orange" };
-            else if (type === ENUM_ORDER.GETOUT) return { text: "发货", color: "pink-6" };
+            else if (type === ENUM_ORDER.GETOUT) return { text: "发货", color: "orange" };
+            else if (type === ENUM_ORDER.SALES) return { text: "销售", color: "pink-6" };
             else return { text: "异常", color: "grey" };
         },
         setSkuPounds(sku: SkuJoined) {

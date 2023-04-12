@@ -1,5 +1,5 @@
 <template>
-    <q-btn square push color="white" text-color="black" class="q-ml-sm">
+    <q-btn square color="white" text-color="black" class="q-ml-sm">
         {{ time_range?.from }} ~ {{ time_range?.to }}
         <q-menu>
             <div class="row bg-grey-11">

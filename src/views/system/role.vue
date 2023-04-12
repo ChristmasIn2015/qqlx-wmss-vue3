@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pl-xs q-mb-md q-mt-sm">
+    <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row">
             <span>权限分配</span>
             <q-space></q-space>

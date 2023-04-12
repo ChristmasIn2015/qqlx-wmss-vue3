@@ -17,12 +17,12 @@
     </div>
 
     <q-table
-        dense
-        row-key="_id"
-        separator="cell"
         style="height: 380px"
+        separator="cell"
+        row-key="_id"
+        dense
         :rows="BookStore.list"
-        :rows-per-page-options="[BookStore.page.pageSize]"
+        :rows-per-page-options="[0]"
         :columns="[
             { name: 'code', field: 'code', label: '编号', align: 'left' },
             { name: 'keyOrigin', field: 'keyOrigin', label: '打款人', align: 'left' },
@@ -139,6 +139,7 @@
                 <q-td key="timeCreateString" :props="props" :style="NotifyStore.fontStyle">{{ props.row.timeCreateString }}</q-td>
             </q-tr>
         </template>
+
         <template v-slot:bottom="props">
             <q-pagination
                 size="17px"
