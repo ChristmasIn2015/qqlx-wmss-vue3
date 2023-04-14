@@ -139,7 +139,8 @@
                         </template>
                     </q-input>
                     <div class="row q-pl-lg q-ml-md q-mt-sm">
-                        已选金额 {{ amountBookPicking.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        已选金额
+                        <span class="text-underline q-mx-sm">{{ amountBookPicking.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</span>
 
                         <span class="text-purple cursor-pointer q-ml-sm" @click="BookStore.editor.amount = amountBookPicking">设为发票金额</span>
                     </div>

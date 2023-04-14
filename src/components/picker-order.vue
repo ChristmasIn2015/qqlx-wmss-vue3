@@ -226,16 +226,24 @@ const pick = (order: Order) => {
     const match = OrderStore.listPicked.findIndex((p) => p._id === order._id);
     match > -1 && OrderStore.listPicked.splice(match, 1);
 
-    // 2.设置此订单希望被确认的金额
+    // 2.设置结清金额
     const picking = cloneDeep(order);
-    const gap = BookStore.editor.amount - AmountOrderPicking.value;
-    if (gap <= 0) {
-        NotifyStore.fail(`请注意，资金使用率已满`);
+    if (picking.amountBookOfOrderRest <= 0) {
+        NotifyStore.fail(`此订单已收款 ${picking.amountBookOfOrder} 元，请注意重复结清`);
     }
-    picking.amountBookOfOrder = picking.amountBookOfOrderRest - gap;
+    picking.amountBookOfOrder = picking.amountBookOfOrderRest;
 
-    // 3.希望被确认的金额不能为0
-    picking.amountBookOfOrder <= 0 && (picking.amountBookOfOrder = 0);
+    // 3.不能超过打款金额
+    const gap = BookStore.editor.amount - AmountOrderPicking.value;
+    if (picking.amountBookOfOrder > gap) picking.amountBookOfOrder = gap;
+
+    // 4.剩余可用金额必须大于0
+    if (gap <= 0) {
+        picking.amountBookOfOrder = 0;
+        NotifyStore.fail(`资金使用率已满`);
+    }
+
+    // done
     OrderStore.listPicked.push(picking);
 };
 const AmountOrderPicking = computed(() => {
