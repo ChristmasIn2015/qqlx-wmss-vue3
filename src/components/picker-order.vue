@@ -235,7 +235,7 @@ const pick = (order: Order) => {
 
     // 3.不能超过打款金额
     const gap = BookStore.editor.amount - AmountOrderPicking.value;
-    if (picking.amountBookOfOrder > gap) picking.amountBookOfOrder = parseInt((gap * 100).toString()) * 100;
+    if (picking.amountBookOfOrder > gap) picking.amountBookOfOrder = parseInt((gap * 100).toString()) / 100;
 
     // 4.剩余可用金额必须大于0
     if (gap <= 0) {
