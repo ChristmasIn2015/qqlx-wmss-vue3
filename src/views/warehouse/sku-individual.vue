@@ -316,7 +316,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { useRouter, useRoute } from "vue-router";
 
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER } from "qqlx-core";
 
 import listContact from "@/components/list-contact.vue";
@@ -373,6 +373,7 @@ const contactPicked = ref(ContactStore.getSchema());
 
 const route = useRoute();
 const init = () => {
+    SkuStore.page = getPage(20);
     SkuStore.sortKey = "poundsFinal";
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.isConfirmed = true;

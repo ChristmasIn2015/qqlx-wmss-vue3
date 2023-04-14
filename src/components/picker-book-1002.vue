@@ -165,7 +165,7 @@
 import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, BookJoined, Book, OrderJoined } from "qqlx-core";
 
 import pickerRange from "@/components/picker-range.vue";
@@ -195,7 +195,7 @@ const match = { type: ENUM_BOOK_TYPE.YSZK, direction: ENUM_BOOK_DIRECTION.DAI };
 onMounted(async () => {
     // BookStore.setEditor(BookStore.getSchema(match));
     BookStore.search = BookStore.getSchema(match);
-    BookStore.page.pageSize = 8;
+    BookStore.page = getPage(8);
     BookStore.get(1);
 });
 </script>

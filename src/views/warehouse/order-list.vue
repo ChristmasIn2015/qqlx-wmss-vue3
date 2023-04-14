@@ -388,9 +388,8 @@
 import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, computed, watch } from "vue";
 import { cloneDeep, debounce } from "lodash";
-import * as XLSX from "xlsx";
 
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET, OrderJoined } from "qqlx-core";
 
 import pickerRange from "@/components/picker-range.vue";
@@ -454,6 +453,7 @@ onMounted(async () => {
         OrderStore.setEditor();
         OrderStore.search.type = tab.value.value;
         OrderStore.search.contactId = "";
+        OrderStore.page = getPage(20);
 
         // 根据条件设置搜索
         const { code } = route.query;

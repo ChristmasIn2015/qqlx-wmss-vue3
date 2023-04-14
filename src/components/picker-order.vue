@@ -194,7 +194,7 @@ import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_ORDER, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, Contact, Order } from "qqlx-core";
 
 import pickerRange from "./picker-range.vue";
@@ -258,7 +258,7 @@ onMounted(async () => {
     if (!edit._id) router.replace("/wmss/finance/book");
 
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
-    OrderStore.page.pageSize = 8;
+    OrderStore.page = getPage(8);
     OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;
     OrderStore.get(1, false, true);

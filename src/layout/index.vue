@@ -1,9 +1,9 @@
 <template>
     <q-layout container view="lHh Lpr lff">
         <q-drawer side="left" :width="180" show-if-above class="select-none hide-scrollbar shadow-15">
-            <div class="text-weight-bold text-h5 q-pl-md q-py-md text-primary">
+            <div class="text-weight-bold text-h5 q-pl-md q-py-md text-primary cursor-pointer" @click="goHome()">
                 <div>开单办公室</div>
-                <div class="text-caption">钢材行业专用@Copyright</div>
+                <div class="text-caption">钢材行业专用@{{ version }}</div>
             </div>
 
             <!-- 个人中心 -->
@@ -136,7 +136,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { getTimeGap } from "qqlx-cdk";
+import { getRangeMonth } from "qqlx-cdk";
 
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useUserStore } from "@/stores/user/user";
@@ -159,6 +159,14 @@ const swiperIndex = ref(0);
 const brandAnnounceShow = ref(true);
 const userDialog = ref(false);
 
+const goHome = () => window.open("https://qqlx.tech");
+const version = computed(() => {
+    const date = new Date();
+    const year = date.getFullYear() - 2020;
+    const month = date.getMonth() + 1;
+    const week = Math.ceil((Date.now() - getRangeMonth().startTime) / (86400000 * 7));
+    return `${year}.${month}.${week}`;
+});
 const nowCorpName = computed(() => CorpStore.picked?.name || "-");
 onMounted(async () => {
     try {

@@ -307,7 +307,7 @@
 import { onMounted, ref, computed, watch } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { useRouter, useRoute } from "vue-router";
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined, Cabinet, CabinetUnit } from "qqlx-core";
 
 import pickerRange from "@/components/picker-range.vue";
@@ -356,6 +356,7 @@ const contactPicked = ref(ContactStore.getSchema());
 
 const route = useRoute();
 onMounted(() => {
+    SkuStore.page = getPage(20);
     SkuStore.sortKey = "timeCreate";
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;

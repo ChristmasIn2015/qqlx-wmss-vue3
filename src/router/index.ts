@@ -42,12 +42,12 @@ const routes = [
                         component: () => import("@/views/system/corp.vue"),
                         meta: { icon: "group", color: "primary", show: false },
                     },
-                    // {
-                    //     path: "warehouse",
-                    //     name: "仓库详情",
-                    //     component: () => import("@/views/system/warehouse.vue"),
-                    //     meta: { icon: "group", color: "primary",  show: false },
-                    // },
+                    {
+                        path: "clue",
+                        name: "操作明细",
+                        component: () => import("@/views/system/clue.vue"),
+                        meta: { icon: "group", color: "primary", show: false },
+                    },
                 ],
             },
             {

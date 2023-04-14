@@ -52,9 +52,14 @@
             />
             <q-btn color="white" text-color="black" icon="more_vert" class="q-ml-sm">
                 <q-menu>
+                    <q-item clickable @click="$router.push('/wmss/system/clue')">
+                        <q-item-section>
+                            <div><q-icon name="subject" class="q-mr-xs" size="22px"></q-icon>操作记录</div>
+                        </q-item-section>
+                    </q-item>
                     <q-item clickable @click="$router.push('/wmss/trade/sale-sku')">
                         <q-item-section>
-                            <div><q-icon name="format_list_numbered" class="q-mr-xs" size="20px"></q-icon>销售明细</div>
+                            <div><q-icon name="format_list_bulleted" class="q-mr-xs" size="22px"></q-icon>销售明细</div>
                         </q-item-section>
                     </q-item>
                     <q-item clickable @click="downloadOrderList()">
@@ -803,8 +808,10 @@ import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
 import { useConfigStore } from "@/stores/brand/config";
+import { useClueStore } from "@/stores/wmss/clue";
 
 const NotifyStore = useNotifyStore();
+const ClueStore = useClueStore();
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
@@ -899,6 +906,7 @@ const skuPrinting = computed(() => {
 const printDialog = ref(false);
 const orderPrinting = ref(OrderStore.getSchema() as OrderJoined);
 const print = async () => {
+    ClueStore.post(orderPrinting.value); // async
     const dom = document.getElementById("order");
     callPrinter(dom as HTMLElement);
 };
@@ -944,7 +952,7 @@ onMounted(() => {
     // 清空订单
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
     OrderStore.search.contactId = "";
-    OrderStore.page.pageSize = 20;
+    OrderStore.page = getPage(20);
     // 根据路由进行搜索
     const { code } = route.query;
     code && (OrderStore.search.code = code as string);

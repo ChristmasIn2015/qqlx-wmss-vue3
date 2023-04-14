@@ -13,12 +13,12 @@
             <q-separator />
             <q-card-section class="text-primary">
                 <div class="row">
-                    <span class="col">订单量</span>
-                    <span class="col text-right"> {{ (time.calcu as any)[ENUM_ORDER.SALES]?.count }} 张 </span>
+                    <span class="col">销售额</span>
+                    <span class="col text-right"> {{ Number((time.calcu as any)[ENUM_ORDER.SALES]?.amount / 10000).toFixed(0) }} 万 </span>
                 </div>
                 <div class="row">
-                    <span class="col">销售额</span>
-                    <span class="col text-right"> {{ Number((time.calcu as any)[ENUM_ORDER.SALES]?.amount / 10000).toFixed(2) }} 万元 </span>
+                    <span class="col">订单量</span>
+                    <span class="col text-right"> {{ (time.calcu as any)[ENUM_ORDER.SALES]?.count }} 张 </span>
                 </div>
             </q-card-section>
 
@@ -143,7 +143,6 @@ const AnalysisStore = useAnalysisStore();
 const AnnounceStore = useAnnounceStore();
 const CabinetStore = useCabinetStore();
 
-// vue
 const time1 = ref({ ...getRangeDay(), text: "今日", calcu: {} });
 const time2 = ref({ ...getRangeMonth(), text: "本月", calcu: {} });
 const time3 = ref({ ...getRangeYear(), text: "本年", calcu: {} });
