@@ -100,7 +100,7 @@
                         @click="
                             () => {
                                 AnalysisStore.sortKey = 'amountBookOfOrderRest';
-                                AnalysisStore.sortValue = MongodbSort.DES ? MongodbSort.ASC : MongodbSort.DES;
+                                AnalysisStore.sortValue = AnalysisStore.sortValue === MongodbSort.DES ? MongodbSort.ASC : MongodbSort.DES;
                                 AnalysisStore.getContactAnalysis(1);
                             }
                         "
