@@ -48,6 +48,12 @@ const routes = [
                         component: () => import("@/views/system/clue.vue"),
                         meta: { icon: "group", color: "primary", show: false },
                     },
+                    {
+                        path: "analysis",
+                        name: "回款分析",
+                        component: () => import("@/views/system/analysis.vue"),
+                        meta: { icon: "group", color: "primary", show: false },
+                    },
                 ],
             },
             {

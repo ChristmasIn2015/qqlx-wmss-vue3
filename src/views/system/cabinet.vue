@@ -3,23 +3,6 @@
         <div class="text-h5 text-primary text-weight-bold row">
             <span>商品分类</span>
             <q-space></q-space>
-            <q-btn square class="q-ml-sm" color="primary">
-                <span>快速添加</span>
-                <q-menu>
-                    <q-item
-                        clickable
-                        v-for="recommand in CabinetStore.recommands"
-                        @click="
-                            () => {
-                                CabinetStore.setEditor(recommand);
-                                CabinetStore.post(); //async
-                            }
-                        "
-                    >
-                        <q-item-section>{{ recommand.name }}</q-item-section>
-                    </q-item>
-                </q-menu>
-            </q-btn>
             <q-btn
                 square
                 class="q-ml-sm"
@@ -50,6 +33,71 @@
             <template v-slot:after>
                 <q-splitter v-model="splitIndex2">
                     <template v-slot:before>
+                        <div class="q-px-md q-pt-sm text-primary">
+                            <div class="text-h6 q-pb-sm row">
+                                {{ nowCabinet?.name }}
+
+                                <q-space></q-space>
+                                <q-btn padding="xs" icon="more_horiz" flat style="margin-right: -8px">
+                                    <q-menu>
+                                        <q-item
+                                            clickable
+                                            v-close-popup
+                                            @click="
+                                                () => {
+                                                    CabinetStore.setEditor(nowCabinet);
+                                                    CabinetStore.patch();
+                                                }
+                                            "
+                                        >
+                                            <q-item-section>置顶</q-item-section>
+                                        </q-item>
+                                        <q-item
+                                            clickable
+                                            v-close-popup
+                                            @click="
+                                                () => {
+                                                    CabinetStore.setEditor(nowCabinet);
+                                                    dialogCabinet = true;
+                                                }
+                                            "
+                                        >
+                                            <q-item-section>修改</q-item-section>
+                                        </q-item>
+                                        <q-item clickable v-close-popup>
+                                            <q-item-section class="text-negative" @click="deleteConfirm(nowCabinet?._id)">删除</q-item-section>
+                                        </q-item>
+                                    </q-menu>
+                                </q-btn>
+                            </div>
+                            <div class="text-grey row">
+                                <div class="col">过磅方法</div>
+                                <div class="col text-right">
+                                    {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.text }}
+                                    <q-tooltip class="text-body1">
+                                        {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.tip }}
+                                    </q-tooltip>
+                                </div>
+                            </div>
+                            <div class="text-grey row">
+                                <div class="col">统计方法</div>
+                                <div class="col text-right">
+                                    {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
+                                    <q-tooltip class="text-body1">
+                                        {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.tip }}
+                                    </q-tooltip>
+                                </div>
+                            </div>
+                            <div class="text-grey row">
+                                <div class="col">单位</div>
+                                <div class="col text-right">{{ nowCabinet?.unit }}</div>
+                            </div>
+                            <div class="q-pt-md row">
+                                <q-space></q-space>
+                            </div>
+                        </div>
+                    </template>
+                    <template v-slot:after>
                         <q-table
                             style="min-height: 660px"
                             selection="multiple"
@@ -163,7 +211,7 @@
                                     </q-th>
                                 </q-tr>
                             </template>
-                            <template v-slot:bottom-row>
+                            <template v-slot:top-row>
                                 <q-tr>
                                     <q-td colspan="100%" class="text-center">
                                         <div v-if="CabinetUnitStore.listPicked.length > 0">
@@ -245,71 +293,6 @@
                             </template>
                         </q-table>
                     </template>
-                    <template v-slot:after>
-                        <div class="q-px-md q-pt-sm text-primary">
-                            <div class="text-h6 q-pb-sm row">
-                                {{ nowCabinet?.name }}
-
-                                <q-space></q-space>
-                                <q-btn padding="xs" icon="more_horiz" flat style="margin-right: -8px">
-                                    <q-menu>
-                                        <q-item
-                                            clickable
-                                            v-close-popup
-                                            @click="
-                                                () => {
-                                                    CabinetStore.setEditor(nowCabinet);
-                                                    CabinetStore.patch();
-                                                }
-                                            "
-                                        >
-                                            <q-item-section>置顶</q-item-section>
-                                        </q-item>
-                                        <q-item
-                                            clickable
-                                            v-close-popup
-                                            @click="
-                                                () => {
-                                                    CabinetStore.setEditor(nowCabinet);
-                                                    dialogCabinet = true;
-                                                }
-                                            "
-                                        >
-                                            <q-item-section>修改</q-item-section>
-                                        </q-item>
-                                        <q-item clickable v-close-popup>
-                                            <q-item-section class="text-negative" @click="deleteConfirm(nowCabinet?._id)">删除</q-item-section>
-                                        </q-item>
-                                    </q-menu>
-                                </q-btn>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">过磅方法</div>
-                                <div class="col text-right">
-                                    {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.text }}
-                                    <q-tooltip class="text-body1">
-                                        {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.tip }}
-                                    </q-tooltip>
-                                </div>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">统计方法</div>
-                                <div class="col text-right">
-                                    {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
-                                    <q-tooltip class="text-body1">
-                                        {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.tip }}
-                                    </q-tooltip>
-                                </div>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">单位</div>
-                                <div class="col text-right">{{ nowCabinet?.unit }}</div>
-                            </div>
-                            <div class="q-pt-md row">
-                                <q-space></q-space>
-                            </div>
-                        </div>
-                    </template>
                 </q-splitter>
             </template>
         </q-splitter>
@@ -318,6 +301,49 @@
             <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading>
     </q-card>
+
+    <div class="q-pl-xs q-my-lg">
+        <div class="text-h5 text-primary text-weight-bold row">
+            <span>常见分类</span>
+            <q-space></q-space>
+        </div>
+        <div class="text-option text-primary q-my-sm"></div>
+    </div>
+
+    <div class="q-pa-xs bg-white shadow-5">
+        <div class="row">
+            <div class="col q-pa-xs text-bold">名称</div>
+            <div class="col q-pa-xs text-bold text-right">过磅方法</div>
+            <div class="col q-pa-xs text-bold">库存方法</div>
+            <div class="col q-pa-xs text-bold">单位</div>
+            <div class="col q-pa-xs text-bold">操作</div>
+        </div>
+        <div class="row hover" v-for="recommand in RECOMAND_POUNDS_FORMULA">
+            <div class="col q-pa-xs">{{ recommand.name }}</div>
+            <div class="col q-pa-xs text-right" :class="recommand.formula > 1 ? 'text-negative' : 'text-grey'">
+                {{ MAP_ENUM_POUNDS_FORMULA.get(recommand.formula)?.text }}
+                <q-tooltip class="text-body1">
+                    {{ MAP_ENUM_POUNDS_FORMULA.get(recommand.formula)?.tip }}
+                </q-tooltip>
+            </div>
+            <div class="col q-pa-xs">{{ MAP_ENUM_LAYOUT_CABINET.get(recommand.layout)?.text }}</div>
+            <div class="col q-pa-xs">{{ recommand.unit }}</div>
+            <div class="col q-px-xs">
+                <q-btn
+                    padding="xs"
+                    flat
+                    color="negative"
+                    label="快速添加"
+                    @click="
+                        () => {
+                            CabinetStore.setEditor(recommand);
+                            CabinetStore.post(); //async
+                        }
+                    "
+                ></q-btn>
+            </div>
+        </div>
+    </div>
 
     <q-dialog v-model="dialogCabinet" persistent>
         <q-card class="w-400">
@@ -349,6 +375,9 @@
                         <q-icon name="" />
                     </template>
                 </q-select>
+                <div class="q-ml-lg q-pl-md q-mb-sm text-negative" v-if="CabinetStore.editor.formula === ENUM_POUNDS_FORMULA.TS_PLATE">
+                    <div>{{ MAP_ENUM_POUNDS_FORMULA.get(CabinetStore.editor.formula)?.tip }}</div>
+                </div>
                 <q-select
                     filled
                     label="统计方法"
@@ -427,7 +456,7 @@ import * as XLSX from "xlsx";
 import { MongodbSort } from "qqlx-cdk";
 import { cloneDeep, debounce } from "lodash";
 import { onMounted, watch, ref, computed } from "vue";
-import { ENUM_LAYOUT_CABINET, MAP_ENUM_LAYOUT_CABINET, MAP_ENUM_POUNDS_FORMULA } from "qqlx-core";
+import { ENUM_LAYOUT_CABINET, ENUM_POUNDS_FORMULA, MAP_ENUM_LAYOUT_CABINET, MAP_ENUM_POUNDS_FORMULA, RECOMAND_POUNDS_FORMULA } from "qqlx-core";
 
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
@@ -436,7 +465,7 @@ import { useCabinetUnitStore } from "@/stores/wmss/cabinetUnit";
 const layoutOptions = [...MAP_ENUM_LAYOUT_CABINET].map((e) => e[1]);
 const formulaOptions = [...MAP_ENUM_POUNDS_FORMULA].map((e) => e[1]);
 const splitIndex = ref(10);
-const splitIndex2 = ref(80);
+const splitIndex2 = ref(25);
 const tabIndex = ref(0);
 const nowCabinet = computed(() => (CabinetStore.list[tabIndex.value] ? CabinetStore.list[tabIndex.value] : CabinetStore.list[0]));
 
@@ -501,4 +530,10 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="sass"></style>
+<style lang="scss">
+.hover {
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.125);
+    }
+}
+</style>

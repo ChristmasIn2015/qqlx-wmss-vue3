@@ -40,7 +40,6 @@
         <div class="text-h5 text-primary text-weight-bold">购买记录</div>
     </div>
     <q-table
-        class="w-1000"
         dense
         row-key="_id"
         :columns="[

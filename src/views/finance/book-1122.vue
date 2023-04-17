@@ -4,7 +4,6 @@
             <span>发票列表</span>
             <q-space></q-space>
             <q-btn
-                push
                 square
                 label="最近删除"
                 :color="BookStore.search.isDisabled ? 'purple' : 'white'"
@@ -26,8 +25,26 @@
                     }
                 "
             />
+            <span v-if="BookStore.listExcel.length > 0">
+                <q-btn square color="negative" class="q-ml-sm" :loading="BookStore.loadding" @click="() => BookStore.post()">
+                    保存 {{ BookStore.listExcel.length }} 项
+                </q-btn>
+            </span>
+            <q-btn square color="white" class="q-ml-sm" text-color="primary" label="批量导入">
+                <q-menu>
+                    <q-list>
+                        <q-item clickable @click="NotifyStore.download()">
+                            <q-item-section>下载模板</q-item-section>
+                        </q-item>
+                        <q-item clickable>
+                            <q-item-section>
+                                <q-file dense borderless accept=".xlsx, .xls" v-model="filePicking" label="选择文件" @update:model-value="filePickNext" />
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
+            </q-btn>
             <q-btn
-                push
                 square
                 label="继续添加"
                 class="q-ml-sm"
@@ -65,6 +82,61 @@
             { name: '_id', field: '_id', label: '操作', align: 'left' },
         ]"
     >
+        <template v-slot:top-row>
+            <q-tr v-for="(schema, index) in BookStore.listExcel">
+                <q-td :style="NotifyStore.fontStyle">
+                    <a class="text-body1 text-teal cursor-pointer text-underline">
+                        {{ schema.timeCreateString }}
+                        <q-menu>
+                            <q-date
+                                minimal
+                                color="primary"
+                                first-day-of-week="1"
+                                v-model="schema.timeCreateString"
+                                @update:model-value="($event) => (schema.timeCreate = new Date($event).getTime())"
+                            />
+                        </q-menu>
+                    </a>
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="发票号码" v-model="schema.keyCode" />
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-select
+                        dense
+                        square
+                        filled
+                        emit-value
+                        map-options
+                        color="purple"
+                        class="q-mb-sm"
+                        placeholder="请选择抬头"
+                        :options="(nowCorps as any)"
+                        v-model="BookStore.editor.keyHouse"
+                    >
+                    </q-select>
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="客户" v-model="schema.keyOrigin" />
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-badge class="q-mr-xs shadow-2" color="purple" rounded></q-badge>
+                    发票（销项）
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入备注" v-model="schema.remark" />
+                </q-td>
+                <q-td :style="NotifyStore.fontStyle">
+                    <q-btn icon="close" dense class="text-negative" flat @click="() => BookStore.listExcel.splice(index, 1)"> </q-btn>
+                </q-td>
+            </q-tr>
+        </template>
+
         <template v-slot:header="props">
             <q-tr>
                 <q-th
@@ -134,9 +206,17 @@
                 <q-th key="remark" :props="props">
                     <q-input square filled dense clearable color="purple" placeholder="搜索备注" v-model="BookStore.search.remark" @blur="BookStore.get(1)" />
                 </q-th>
-                <q-th key="_id" :props="props">操作</q-th>
+                <q-th key="_id" :props="props">
+                    <span v-if="BookStore.listExcel.length > 0">
+                        <q-btn padding="xs" icon="close" text-color="negative" square :loading="BookStore.loadding" @click="BookStore.listExcel = []">
+                            <q-tooltip class="text-body1">清空</q-tooltip>
+                        </q-btn>
+                    </span>
+                    <span v-else>操作</span>
+                </q-th>
             </q-tr>
         </template>
+
         <template v-slot:body="props">
             <q-tr
                 class="cursor-crosshair select-none"
@@ -155,13 +235,13 @@
                     }
                 "
             >
-                <q-td key="timeCreateString" :props="props" :style="NotifyStore.cellStyle">{{ props.row.timeCreateString }}</q-td>
-                <q-td key="code" :props="props" :style="NotifyStore.cellStyle">{{ props.row.code }}</q-td>
+                <q-td key="timeCreateString" :props="props" :style="NotifyStore.cellStyle" class="text-grey">{{ props.row.timeCreateString }}</q-td>
+                <q-td key="code" :props="props" :style="NotifyStore.cellStyle" class="text-grey">{{ props.row.code }}</q-td>
                 <q-td key="keyCode" :props="props" :style="NotifyStore.cellStyle">{{ props.row.keyCode }}</q-td>
                 <q-td key="keyHouse" :props="props" :style="NotifyStore.cellStyle" style="min-width: 188px">{{ props.row.keyHouse }}</q-td>
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.cellStyle">{{ props.row.keyOrigin }}</q-td>
-                <q-td key="type" :style="NotifyStore.cellStyle"> 销项 </q-td>
-                <q-td key="amount" :props="props" :style="NotifyStore.cellStyle">
+                <q-td key="type" :style="NotifyStore.cellStyle" class="text-grey"> 销项 </q-td>
+                <q-td key="amount" :props="props" :style="NotifyStore.cellStyle" class="text-grey">
                     {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                 </q-td>
                 <q-td
@@ -199,7 +279,7 @@
                     </span>
                 </q-td>
                 <q-td key="_id" :props="props" :style="NotifyStore.cellStyle">
-                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-purple" @click="toEdit(props.row)"> 修改 </span>
+                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-purple" @click="toEdit(props.row)"> 编辑 </span>
                 </q-td>
             </q-tr>
         </template>
@@ -242,11 +322,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import * as XLSX from "xlsx";
+import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { cloneDeep, debounce } from "lodash";
 
-import { MongodbSort } from "qqlx-cdk";
+import { MongodbSort, getTime } from "qqlx-cdk";
 import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, BookJoined, Book, Order, OrderJoined } from "qqlx-core";
 
 import pickerRange from "@/components/picker-range.vue";
@@ -261,9 +342,55 @@ const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
 const ConfigStore = useConfigStore();
 const BookStore = useBookStore();
+const nowCorps = computed(() => {
+    const nowCorp = CorpStore.picked;
+    const list: string[] = [nowCorp.name, ...ConfigStore.titles.map((e) => e.text)];
+    return list;
+});
 
 const startIndex = ref(-1);
 const endIndex = ref(-1);
+const filePicking = ref(null);
+const filePickNext = async (file: File) => {
+    if (!file) return;
+    const reader = new FileReader(); // WebAPI
+    reader.onload = async () => {
+        try {
+            const workbook = XLSX.read(reader.result, { type: "binary" });
+            const sheet = workbook.Sheets["发票导入"];
+            if (!sheet) throw new Error(`找不到表格 [发票导入] !`);
+            const rowJsonList: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet);
+
+            // 1.批量上传打款人
+            const uploading = [];
+            for (let i in rowJsonList) {
+                const row = rowJsonList[i];
+                const schema = BookStore.getSchema({ type: BookStore.search.type, direction: BookStore.search.direction });
+                schema.keyHouse = String(row["@抬头"] || "");
+                schema.keyCode = String(row["@发票号码"] || "");
+                schema.keyOrigin = String(row["@客户名称"] || "");
+                schema.amount = Number(row["@金额"] || 0) || 0;
+                schema.remark = String(row["@备注"] || "");
+
+                const date = row["@日期"] || "";
+                if (typeof date === "string") {
+                    const _date = new Date(date);
+                    schema.timeCreate = _date.getTime();
+                    schema.timeCreateString = getTime(schema.timeCreate).text;
+                } else if (typeof date === "number") {
+                    const time = new Date(new Date("1900/1/1 00:00:00").getTime() + (date - 2) * 86400000 + 1000 * 60 * 60);
+                    schema.timeCreate = time.getTime();
+                    schema.timeCreateString = getTime(schema.timeCreate).text;
+                }
+                uploading.push(schema);
+            }
+            BookStore.listExcel = uploading;
+        } catch (error) {
+            NotifyStore.fail((error as Error).message);
+        }
+    };
+    reader.readAsBinaryString(file);
+};
 const toEdit = (invoice: BookJoined) => {
     const _invoice = cloneDeep(invoice);
     BookStore.setEditor(_invoice);
@@ -290,6 +417,7 @@ onMounted(async () => {
     BookStore.setEditor(BookStore.getSchema(match));
     BookStore.search = BookStore.getSchema(match);
     BookStore.page.pageSize = 20;
+    BookStore.listExcel = [];
 
     // 根据路由进行搜索
     const { code } = route.query;

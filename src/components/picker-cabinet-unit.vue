@@ -2,7 +2,7 @@
     <q-card>
         <q-splitter v-model="splitIndex" horizontal>
             <template v-slot:before>
-                <div class="row">
+                <div class="row no-wrap">
                     <q-tabs v-model="tabIndex" dense class="text-primary">
                         <q-tab v-for="(cabinet, index) in CabinetStore.list" :name="index">
                             <span class="text-body1 q-my-sm">{{ cabinet.name }}</span>

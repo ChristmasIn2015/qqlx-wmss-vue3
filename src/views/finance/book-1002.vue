@@ -4,7 +4,6 @@
             <span>收款记录</span>
             <q-space></q-space>
             <q-btn
-                push
                 square
                 label="最近删除"
                 :color="BookStore.search.isDisabled ? 'teal' : 'white'"
@@ -27,11 +26,10 @@
                 "
             />
             <span v-if="BookStore.listExcel.length > 0">
-                <q-btn push square color="teal" class="q-ml-sm" :loading="BookStore.loadding" @click="() => BookStore.post()">
+                <q-btn square color="negative" class="q-ml-sm" :loading="BookStore.loadding" @click="() => BookStore.post()">
                     保存 {{ BookStore.listExcel.length }} 项
                 </q-btn>
-                <q-btn push square label="清空" class="q-ml-sm" color="white" text-color="negative" @click="() => (BookStore.listExcel = [])" />
-                <q-btn push square color="white" class="q-ml-sm" text-color="primary" label="批量导入">
+                <q-btn square color="white" class="q-ml-sm" text-color="primary" label="批量导入">
                     <q-menu>
                         <q-list>
                             <q-item clickable @click="NotifyStore.download()">
@@ -51,7 +49,6 @@
                 class="q-ml-sm"
                 color="teal"
                 :loading="BookStore.loadding"
-                push
                 square
                 label="继续添加"
                 @click="() => BookStore.listExcel.push(BookStore.getSchema())"
@@ -83,7 +80,7 @@
         <template v-slot:top-row>
             <q-tr v-for="(schema, index) in BookStore.listExcel">
                 <q-td :style="NotifyStore.fontStyle">
-                    <a class="text-body1 text-teal cursor-pointer">
+                    <a class="text-body1 text-teal cursor-pointer text-underline">
                         {{ schema.timeCreateString }}
                         <q-menu>
                             <q-date
@@ -185,7 +182,14 @@
                 <q-th key="remark" :props="props">
                     <q-input square filled dense clearable color="teal" placeholder="搜索备注" v-model="BookStore.search.remark" @blur="BookStore.get(1)" />
                 </q-th>
-                <q-th key="_id" :props="props">操作</q-th>
+                <q-th key="_id" :props="props">
+                    <span v-if="BookStore.listExcel.length > 0">
+                        <q-btn padding="xs" icon="close" text-color="negative" square :loading="BookStore.loadding" @click="BookStore.listExcel = []">
+                            <q-tooltip class="text-body1">清空</q-tooltip>
+                        </q-btn>
+                    </span>
+                    <span v-else>操作</span>
+                </q-th>
             </q-tr>
         </template>
 
@@ -206,8 +210,7 @@
                 "
             >
                 <q-td key="timeCreateString" :props="props" :style="NotifyStore.fontStyle">
-                    <a class="text-body1 text-underline cursor-pointer">
-                        {{ props.row.timeCreateString }}
+                    <q-icon name="edit" color="teal" class="cursor-pointer" style="margin-left: -5px">
                         <q-menu
                             @hide="
                                 async () => {
@@ -224,15 +227,13 @@
                                 @update:model-value="($event) => (props.row.timeCreate = new Date($event).getTime())"
                             />
                         </q-menu>
-                    </a>
+                    </q-icon>
+                    <span class="text-grey q-mx-sm">{{ props.row.timeCreateString }}</span>
                 </q-td>
                 <q-td key="code" class="text-grey" :props="props" :style="NotifyStore.fontStyle">{{ props.row.code }}</q-td>
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyOrigin }}</q-td>
                 <q-td key="keyHouse" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyHouse }}</q-td>
-                <q-td key="type" :style="NotifyStore.fontStyle">
-                    <!-- <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge> -->
-                    收款
-                </q-td>
+                <q-td key="type" :style="NotifyStore.fontStyle" class="text-grey">收款 </q-td>
                 <q-td
                     key="amount"
                     :props="props"
@@ -285,6 +286,7 @@
                 </q-td>
             </q-tr>
         </template>
+
         <template v-slot:bottom="props">
             <q-pagination
                 size="17px"
@@ -300,9 +302,8 @@
             />
             <q-space></q-space>
             <div>
-                <span v-show="endIndex !== -1 && endIndex - startIndex >= 0">
-                    已选择 {{ endIndex - startIndex + 1 }} 项
-
+                <span v-if="endIndex !== -1 && endIndex - startIndex >= 0">
+                    已选择 {{ endIndex - startIndex + 1 }} 项，
                     <a
                         class="q-ml-sm text-body1 text-weight-bold text-negative cursor-pointer"
                         @click="
@@ -315,11 +316,14 @@
                     >
                         点击{{ BookStore.search.isDisabled ? "恢复" : "删除" }}
                     </a>
-                    ，
+                    ， 合计
+                    <span class="text-body1 text-weight-bold text-negative q-mx-sm">
+                        {{ amountPicking.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </span>
+                    元
                 </span>
-                <span>
+                <span v-else>
                     合计
-
                     <span class="text-body1 text-weight-bold text-negative q-mx-sm">
                         {{ BookStore.amountTotal.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </span>
@@ -332,7 +336,7 @@
 
 <script lang="ts" setup>
 import * as XLSX from "xlsx";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { cloneDeep, debounce } from "lodash";
 
@@ -393,6 +397,13 @@ const filePickNext = async (file: File) => {
 
 const OrderStore = useOrderStore();
 const BookStore = useBookStore();
+const amountPicking = computed(() => {
+    let amount = 0;
+    BookStore.list.slice(startIndex.value, endIndex.value + 1).map((e) => {
+        amount += e.amount;
+    });
+    return amount;
+});
 const toEdit = (book: BookJoined) => {
     const _book = cloneDeep(book);
     BookStore.setEditor(_book);
@@ -419,6 +430,7 @@ onMounted(() => {
     BookStore.setEditor(BookStore.getSchema(match));
     BookStore.search = BookStore.getSchema(match);
     BookStore.page.pageSize = 20;
+    BookStore.listExcel = [];
 
     // 根据路由进行搜索
     const { code } = route.query;

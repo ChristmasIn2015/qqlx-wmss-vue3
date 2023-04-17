@@ -133,20 +133,75 @@ export const useSkuStore = defineStore("Sku", {
             else return { text: "异常", color: "grey" };
         },
         setSkuPounds(sku: SkuJoined) {
-            if (sku.formula === ENUM_POUNDS_FORMULA.STEEL_PLATE) {
-                sku.pounds = this.getNormPounds_1(sku.norm, sku.count);
-            }
+            sku.pounds = this.getNormPounds(sku.norm, sku.count, sku.formula);
         },
-        /** 根据 厚度mm *宽度mm *长度mm 计算板材重量（吨）
-         */
-        getNormPounds_1(norm: string, count: number): number {
+        getNormPounds(norm: string, count: number, formula: ENUM_POUNDS_FORMULA): number {
+            const VOLUME = 0.00785; // g/cm^3
+            const PAI = 3.1415926; // 圆周率
             norm = String(norm).replace(/s/g, "");
             count = Number(count) || 0;
 
             let POUNDS = 0;
-            let VOLUME = 7.85; // 1t = 1000kg = 1000000g，钢材密度 7.85g/cm^3
-            norm.split("*").map((MM) => (VOLUME = VOLUME * (Number(MM) / 10))); // 1m = 100cm = 1000mm
-            POUNDS = (VOLUME / 1000 / 1000) * Number(count); // 吨
+            switch (formula) {
+                case ENUM_POUNDS_FORMULA.TS_PLATE: {
+                    let _VOLUME = 7.85; // 1t = 1000kg = 1000000g，钢材密度 7.85g/cm^3
+                    norm.split("*").map((MM) => (_VOLUME = _VOLUME * (Number(MM) / 10))); // 1m = 100cm = 1000mm
+                    POUNDS = (VOLUME / 1000 / 1000) * Number(count); // 吨
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_WFGG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const D = norms[0]; // 外直径
+                    const h = norms[1]; // 厚度
+                    POUNDS = (D - h) * h * VOLUME * PAI * count; // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_FG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const W = norms[0];
+                    const h = norms[1];
+                    POUNDS = W * 4 * h * VOLUME * count; // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_JXFG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const W = norms[0];
+                    const H = norms[1];
+                    const h = norms[2];
+                    POUNDS = (((W + H) * 2) / PAI - h) * h * VOLUME * PAI * count; // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_DBJG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const H = norms[0];
+                    const h1 = norms[1];
+                    POUNDS = (H + H - h1) * h1 * VOLUME * Number(count); // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_BDBJG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const H = norms[0];
+                    const B = norms[1];
+                    const h1 = norms[2];
+                    POUNDS = (H + B - h1) * h1 * VOLUME * Number(count); // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_HXG: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const H = norms[0];
+                    const B = norms[1];
+                    const h1 = norms[2];
+                    const b1 = norms[3];
+                    POUNDS = ((H - b1 * 2) * h1 + 2 * B * b1) * VOLUME * Number(count); // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+            }
 
             return parseInt(Math.round((POUNDS || 0) * 1000).toString()) / 1000;
         },

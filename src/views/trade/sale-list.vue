@@ -199,7 +199,7 @@
                     "
                 >
                     <q-td key="code" :props="props">
-                        <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
+                        <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
                         <span>{{ props.row.code }}</span>
                         <q-tooltip class="text-body1">销售单</q-tooltip>
                     </q-td>

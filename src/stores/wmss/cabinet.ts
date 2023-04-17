@@ -30,19 +30,6 @@ function getSchema(): Cabinet {
     };
 }
 
-const recommand1 = getSchema();
-recommand1.name = "冷轧卷";
-recommand1.unit = "个";
-recommand1.layout = ENUM_LAYOUT_CABINET.INDIVIDUAL;
-
-const recommand2 = getSchema();
-recommand2.name = "冷轧板";
-recommand2.unit = "张";
-recommand2.formula = ENUM_POUNDS_FORMULA.STEEL_PLATE;
-
-const recommand3 = getSchema();
-recommand3.name = "费用";
-
 export const useCabinetStore = defineStore("Cabinet", {
     state: () => ({
         picked: getSchema(),
@@ -50,8 +37,6 @@ export const useCabinetStore = defineStore("Cabinet", {
         search: getSchema(),
         list: [] as Cabinet[],
         loadding: false,
-        //
-        recommands: [recommand1, recommand2, recommand3],
     }),
     actions: {
         async get() {
