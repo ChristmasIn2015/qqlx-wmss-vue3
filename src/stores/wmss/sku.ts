@@ -146,7 +146,7 @@ export const useSkuStore = defineStore("Sku", {
                 case ENUM_POUNDS_FORMULA.TS_PLATE: {
                     let _VOLUME = 7.85; // 1t = 1000kg = 1000000g，钢材密度 7.85g/cm^3
                     norm.split("*").map((MM) => (_VOLUME = _VOLUME * (Number(MM) / 10))); // 1m = 100cm = 1000mm
-                    POUNDS = (VOLUME / 1000 / 1000) * Number(count); // 吨
+                    POUNDS = (_VOLUME / 1000 / 1000) * Number(count); // 吨
                     break;
                 }
                 case ENUM_POUNDS_FORMULA.TS_WFGG: {
