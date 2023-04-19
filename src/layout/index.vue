@@ -2,7 +2,7 @@
     <q-layout container view="lHh Lpr lff">
         <q-drawer side="left" :width="180" show-if-above class="select-none hide-scrollbar shadow-15">
             <div class="text-weight-bold text-h5 q-pl-md q-py-md text-primary cursor-pointer" @click="goHome()">
-                <div>开单办公室</div>
+                <div>钢材办公室</div>
                 <div class="text-caption">钢材行业专用@{{ version }}</div>
             </div>
 

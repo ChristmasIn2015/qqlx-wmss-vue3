@@ -72,8 +72,18 @@ export const useOrderStore = defineStore("Order", {
         requireManagerId: false,
         requireAccounterId: false,
 
-        // 资金用于结清
+        // 用于结清资金
         listPicked: [] as OrderJoined[],
+
+        // 打印列设置
+        columnNameShow: true,
+        columnCountShow: true,
+        columnUnitShow: true,
+        columnPoundsShow: true,
+        columnPriceShow: true,
+        columnPriceAllShow: true,
+        columnPriceReverseShow: false, // 从售价数量，逆向推断单价
+        columnRemarkShow: true,
     }),
     actions: {
         /** @viewcatch */

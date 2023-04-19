@@ -48,13 +48,13 @@ export const useConfigStore = defineStore("ConfigStore", {
                 this.editor.titles = this.titles.map((e) => e.text).toString();
                 const dto: postConfigDto = this.editor;
                 const res: postConfigRes = await request.post(PATH_BRAND_CONFIG, { dto });
-                await this.get();
 
                 NotifyStore.success("保存成功");
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {
                 this.loadding = false;
+                this.get();
             }
         },
         getSchema() {

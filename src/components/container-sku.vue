@@ -1,7 +1,7 @@
 <template>
     <q-card>
         <q-table
-            style="min-height: 475px"
+            style="min-height: 375px"
             separator="cell"
             row-key="_id"
             dense
@@ -34,6 +34,7 @@
                     <q-th key="timeCreateString" :props="props">操作</q-th>
                 </q-tr>
             </template>
+
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td
@@ -202,7 +203,8 @@
                     </q-td>
                 </q-tr>
             </template>
-            <template v-slot:no-data="{ icon, message }"> </template>
+
+            <!-- <template v-slot:bottom> 12 </template> -->
         </q-table>
 
         <q-inner-loading :showing="OrderStore.loadding">

@@ -89,6 +89,7 @@
             :rows="OrderStore.list"
             :rows-per-page-options="[0]"
             :columns="[
+                { name: 'timeCreateString', field: 'timeCreateString', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'code', field: 'code', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'amount', field: 'amount', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
@@ -101,12 +102,19 @@
                     style: NotifyStore.fontStyle + ';width: 155px; padding-right: 48px;',
                 },
                 { name: '_id', field: '_id', label: '', align: 'left' },
-                { name: 'timeCreateString', field: 'timeCreateString', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
         >
             <template v-slot:header="props">
                 <q-tr>
+                    <q-th
+                        class="text-left cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
+                        @click="OrderStore.sort('timeCreate')"
+                    >
+                        <span>时间 </span>
+                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    </q-th>
                     <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
                         <q-input
                             square
@@ -176,14 +184,6 @@
                             @blur="OrderStore.get(1)"
                         />
                     </q-th>
-                    <q-th
-                        class="text-left cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
-                        @click="OrderStore.sort('timeCreate')"
-                    >
-                        <span>时间 </span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-                    </q-th>
                 </q-tr>
             </template>
 
@@ -198,6 +198,9 @@
                         }
                     "
                 >
+                    <q-td key="timeCreateString" :props="props">
+                        {{ props.row.timeCreateString }}
+                    </q-td>
                     <q-td key="code" :props="props">
                         <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
                         <span>{{ props.row.code }}</span>
@@ -291,9 +294,6 @@
                         >
                             {{ props.row.remark || "点击修改" }}
                         </span>
-                    </q-td>
-                    <q-td key="timeCreateString" :props="props">
-                        {{ props.row.timeCreateString }}
                     </q-td>
                 </q-tr>
 
@@ -528,6 +528,18 @@
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
+                    <div class="text-body1 q-mb-md q-ml-xs text-bold">列设置</div>
+                    <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
+                    <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
+                </q-card-section>
+                <q-separator></q-separator>
+                <q-card-section>
                     <div class="text-body1 q-mb-md q-ml-xs text-bold">公司别称</div>
                     <q-input
                         filled
@@ -543,6 +555,7 @@
                             <q-btn
                                 v-if="index === 0"
                                 fab
+                                outline
                                 padding="sm"
                                 icon="add"
                                 color="primary"
@@ -669,30 +682,36 @@
                         </div>
                         <table class="full-width">
                             <tr>
-                                <th>品名规格</th>
-                                <th>数量</th>
-                                <th>单位</th>
-                                <th>过磅称重</th>
-                                <th>单价/元</th>
-                                <th>售价/元</th>
-                                <th>备注</th>
+                                <th v-if="OrderStore.columnNameShow">品名规格</th>
+                                <th v-if="OrderStore.columnCountShow">数量</th>
+                                <th v-if="OrderStore.columnUnitShow">单位</th>
+                                <th v-if="OrderStore.columnPoundsShow">过磅称重</th>
+                                <th v-if="OrderStore.columnPriceShow">单价/元</th>
+                                <th v-if="OrderStore.columnPriceReverseShow">* 单价/元</th>
+                                <th v-if="OrderStore.columnPriceAllShow">售价/元</th>
+                                <th v-if="OrderStore.columnRemarkShow">备注</th>
                             </tr>
                             <tr v-for="(sku, i) in skuPrinting">
-                                <td>{{ sku.name }} {{ sku.norm }}</td>
-                                <td>
+                                <td v-if="OrderStore.columnNameShow">{{ sku.name }} {{ sku.norm }}</td>
+                                <td v-if="OrderStore.columnCountShow">
                                     <span v-show="sku.name && sku.norm">{{ sku.count }}</span>
                                 </td>
-                                <td>{{ sku.unit }}</td>
-                                <td>
+                                <td v-if="OrderStore.columnUnitShow">{{ sku.unit }}</td>
+                                <td v-if="OrderStore.columnPoundsShow">
                                     <span v-show="sku.isPriceInPounds && sku.pounds > 0">{{ sku.pounds.toFixed(3) }} 吨</span>
                                 </td>
-                                <td>
+                                <td v-if="OrderStore.columnPriceShow">
                                     <span v-show="sku.name && sku.norm">{{ sku.price.toFixed(2) }}</span>
                                 </td>
-                                <td>
+                                <td v-if="OrderStore.columnPriceReverseShow">
+                                    <span v-show="sku.name && sku.norm">
+                                        {{ ((sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)) / sku.count).toFixed(2) }}
+                                    </span>
+                                </td>
+                                <td v-if="OrderStore.columnPriceAllShow">
                                     <span v-show="sku.name && sku.norm">{{ (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2) }}</span>
                                 </td>
-                                <td>{{ sku.remark }}</td>
+                                <td v-if="OrderStore.columnRemarkShow">{{ sku.remark }}</td>
                             </tr>
                         </table>
                         <div class="order-table-line row">
