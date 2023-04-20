@@ -524,7 +524,7 @@
 
     <q-dialog v-model="printDialog">
         <div class="row" style="min-width: 1330px">
-            <q-card class="w-350 q-mr-sm" id="order-config">
+            <q-card class="w-350" id="order-config">
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
@@ -657,6 +657,7 @@
                 </q-card-section>
             </q-card>
 
+            <q-space></q-space>
             <q-card class="print-container">
                 <q-card-section>
                     <div id="order">
