@@ -947,6 +947,7 @@ const copy = async () => {
             const _ = blob as Blob;
             const data = [new ClipboardItem({ [type]: _ })];
             await navigator.clipboard.write(data);
+            NotifyStore.success("复制成功");
         } catch (error) {
             NotifyStore.fail((error as Error).message);
         }
