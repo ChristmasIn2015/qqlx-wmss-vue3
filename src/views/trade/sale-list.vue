@@ -523,7 +523,7 @@
     </q-dialog>
 
     <q-dialog v-model="printDialog">
-        <div class="row justify-center" style="min-width: 1330px">
+        <div class="row" style="min-width: 1330px">
             <q-card class="w-350 q-mr-sm" id="order-config">
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
@@ -1060,9 +1060,9 @@ onMounted(() => {
         }
     }
 }
-@media screen and (max-width: 1200px) {
-    #order-config {
-        display: none;
-    }
-}
+// @media screen and (max-width: 1200px) {
+//     #order-config {
+//         display: none;
+//     }
+// }
 </style>
