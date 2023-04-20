@@ -523,8 +523,8 @@
     </q-dialog>
 
     <q-dialog v-model="printDialog">
-        <div class="row" style="min-width: 1330px">
-            <q-card class="w-350">
+        <div class="row justify-center" style="min-width: 1330px">
+            <q-card class="w-350 q-mr-sm" id="order-config">
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
@@ -657,7 +657,6 @@
                 </q-card-section>
             </q-card>
 
-            <q-space></q-space>
             <q-card class="print-container">
                 <q-card-section>
                     <div id="order">
@@ -741,6 +740,10 @@
                 <div class="row q-px-md q-pb-sm">
                     <div class="col"></div>
                     <div class="col text-right">
+                        <q-btn v-if="copyAllow" class="q-ml-sm" label="复制" color="primary" @click.stop="copy()" />
+                        <q-btn v-else label="复制" disable>
+                            <q-tooltip class="text-body1">此浏览器不支持复制功能</q-tooltip>
+                        </q-btn>
                         <q-btn class="q-ml-sm" label="关闭" v-close-popup />
                         <q-btn class="q-ml-sm" label="打印" color="primary" @click.stop="print()" />
                     </div>
@@ -813,6 +816,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { callPrinter } from "call-printer";
 import * as XLSX from "xlsx";
+import html2canvas from "html2canvas";
 
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET } from "qqlx-core";
 import type { Order, OrderJoined } from "qqlx-core";
@@ -929,6 +933,25 @@ const print = async () => {
     const dom = document.getElementById("order");
     callPrinter(dom as HTMLElement);
 };
+const { ClipboardItem } = window;
+const copyAllow = computed(() => !!navigator.clipboard && !!ClipboardItem);
+const copy = async () => {
+    const dom = document.getElementById("order");
+    const canvas = await html2canvas(dom as HTMLElement);
+
+    canvas.toBlob(async (blob) => {
+        try {
+            const CBD = navigator.clipboard;
+            if (!CBD || !ClipboardItem) throw new Error("您的浏览器不允许此次操作");
+            const type = blob?.type as string;
+            const _ = blob as Blob;
+            const data = [new ClipboardItem({ [type]: _ })];
+            await navigator.clipboard.write(data);
+        } catch (error) {
+            NotifyStore.fail((error as Error).message);
+        }
+    });
+};
 
 const UserStore = useUserStore();
 const setManager = async (order: OrderJoined, toClear = false) => {
@@ -1034,6 +1057,11 @@ onMounted(() => {
         &:last-child {
             border-bottom: 1px solid black;
         }
+    }
+}
+@media screen and (max-width: 1200px) {
+    #order-config {
+        display: none;
     }
 }
 </style>

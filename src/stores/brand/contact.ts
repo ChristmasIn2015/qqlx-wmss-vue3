@@ -77,13 +77,14 @@ export const useContactStore = defineStore("Contact", {
                     const dto: postContactDto = { excels: excels.splice(0, 80) };
                     const res: postContactRes = await request.post(PATH_BRAND_CONTACT, { dto });
                 }
-                await this.get(1);
 
                 this.setEditor();
-                this.listExcel = [];
                 NotifyStore.success("添加成功");
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
+            } finally {
+                this.get(1);
+                this.listExcel = [];
             }
         },
         /** @viewcatch */
@@ -94,10 +95,12 @@ export const useContactStore = defineStore("Contact", {
                 const res: patchContactRes = await request.patch(PATH_BRAND_CONTACT, { dto });
 
                 this.setEditor();
-                await this.get(1);
                 NotifyStore.success("修改成功");
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
+            } finally {
+                this.get();
+                this.listExcel = [];
             }
         },
         /** @viewcatch */

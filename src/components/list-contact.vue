@@ -157,17 +157,17 @@
             </q-toolbar>
 
             <q-card-section>
-                <q-input filled label="客户名称" v-model="ContactStore.editor.name" color="primary">
+                <q-input class="q-mb-sm" filled label="客户名称" v-model="ContactStore.editor.name" color="primary">
                     <template v-slot:before>
                         <q-icon name="person" />
                     </template>
                 </q-input>
-                <q-input filled label="联系方式" v-model="ContactStore.editor.address" color="primary">
+                <q-input class="q-mb-sm" filled label="联系方式" v-model="ContactStore.editor.address" color="primary">
                     <template v-slot:before>
                         <q-icon name="" />
                     </template>
                 </q-input>
-                <q-input filled label="备注" v-model="ContactStore.editor.remark" color="primary">
+                <q-input class="q-mb-sm" filled label="备注" v-model="ContactStore.editor.remark" color="primary">
                     <template v-slot:before>
                         <q-icon name="" />
                     </template>
