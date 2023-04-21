@@ -1,11 +1,11 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
-        <div class="text-h5 text-primary text-weight-bold row">
+    <div class="q-pl-xs q-mb-sm">
+        <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>权限分配</span>
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn square color="negative" @click="openBrandRole()">加入我们</q-btn>
         </div>
-        <div class="text-option text-primary q-my-sm"></div>
     </div>
 
     <q-card class="q-py-md" square>
@@ -123,6 +123,7 @@ import type { BrandRole } from "qqlx-core";
 import { onMounted, ref, computed } from "vue";
 import { ENUM_BRAND_ROLE, MAP_ENUM_BRAND_ROLE } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import { useUserStore } from "@/stores/user/user";
 import { useCorpStore } from "@/stores/brand/corp";
 import { useBrandRoleStore } from "@/stores/brand/role";

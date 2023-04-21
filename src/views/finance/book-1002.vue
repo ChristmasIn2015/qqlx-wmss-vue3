@@ -1,7 +1,9 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
-        <div class="text-h5 text-primary text-weight-bold row">
+    <div class="q-pl-xs q-mb-sm">
+        <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>收款记录</span>
+
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn
                 square
@@ -343,6 +345,7 @@ import { cloneDeep, debounce } from "lodash";
 import { MongodbSort, getTime } from "qqlx-cdk";
 import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, BookJoined, Order, OrderJoined } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useBookStore } from "@/stores/wmss/book";

@@ -1,7 +1,8 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>代客下单</span>
+            <dialog-intro />
         </div>
     </div>
 
@@ -50,6 +51,7 @@
 import { onMounted, ref } from "vue";
 import { ENUM_ORDER } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
 import containerSku from "@/components/container-sku.vue";
 import listContact from "@/components/list-contact.vue";

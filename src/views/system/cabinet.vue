@@ -1,7 +1,8 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
-        <div class="text-h5 text-primary text-weight-bold row">
+    <div class="q-pl-xs q-mb-sm">
+        <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>商品分类</span>
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn square class="q-ml-sm" color="primary">
                 常见分类
@@ -36,7 +37,6 @@
                 添加新分类
             </q-btn>
         </div>
-        <div class="text-option text-primary q-my-sm"></div>
     </div>
 
     <q-card square>
@@ -91,7 +91,7 @@
                             </div>
                             <div class="text-grey row">
                                 <div class="col">过磅方法</div>
-                                <div class="col text-right" :class="nowCabinet.formula > 1 ? 'text-negative' : 'text-grey'">
+                                <div class="col text-right" :class="nowCabinet?.formula > 1 ? 'text-negative' : 'text-grey'">
                                     {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.text }}
                                     <q-tooltip class="text-body1">
                                         {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.tip }}
@@ -100,7 +100,7 @@
                             </div>
                             <div class="text-grey row">
                                 <div class="col">统计方法</div>
-                                <div class="col text-right" :class="nowCabinet.layout > 1 ? 'text-negative' : 'text-grey'">
+                                <div class="col text-right" :class="nowCabinet?.layout > 1 ? 'text-negative' : 'text-grey'">
                                     {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
                                     <q-tooltip class="text-body1">
                                         {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.tip }}
@@ -434,6 +434,7 @@ import { cloneDeep, debounce } from "lodash";
 import { onMounted, watch, ref, computed } from "vue";
 import { ENUM_LAYOUT_CABINET, ENUM_POUNDS_FORMULA, MAP_ENUM_LAYOUT_CABINET, MAP_ENUM_POUNDS_FORMULA, RECOMAND_POUNDS_FORMULA } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
 import { useCabinetUnitStore } from "@/stores/wmss/cabinetUnit";
@@ -460,7 +461,7 @@ const deleteConfirm = (cabinetId: string) => {
 
 const CabinetUnitStore = useCabinetUnitStore();
 watch(
-    () => nowCabinet.value,
+    () => nowCabinet?.value,
     (cabinet) => {
         CabinetUnitStore.page.pageSize = 15;
         CabinetUnitStore.listExcel = [];

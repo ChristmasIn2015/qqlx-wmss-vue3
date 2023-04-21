@@ -2,6 +2,7 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>大件商品</span>
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
 
             <picker-range
@@ -14,7 +15,6 @@
                 "
             />
         </div>
-        <div class="text-option text-primary"></div>
     </div>
 
     <q-card>
@@ -319,6 +319,7 @@ import { useRouter, useRoute } from "vue-router";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";
 import { useContactStore } from "@/stores/brand/contact";

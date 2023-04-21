@@ -1,5 +1,9 @@
 <template>
-    <div class="text-h5 text-primary text-weight-bold q-mb-md q-pl-xs">销售指标</div>
+    <div class="text-h5 text-primary row items-center text-weight-bold q-pl-xs q-mb-sm">
+        <span>销售指标</span>
+        <dialog-intro />
+    </div>
+
     <div class="row q-pb-md">
         <q-card class="q-mx-xs q-mb-md text-body1 full-height text-primary col" square v-for="(time, index) in times">
             <q-card-section class="text-caption">
@@ -79,6 +83,7 @@ import { onMounted, ref, computed } from "vue";
 import { ENUM_ORDER } from "qqlx-core";
 import { getTime, getRangeDay, getRangeWeek, getRangeMonth, getRangeYear } from "qqlx-cdk";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
 import { useAnnounceStore } from "@/stores/brand/announce";
 import { useAnalysisStore } from "@/stores/wmss/analysis";

@@ -2,30 +2,17 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>库存明细</span>
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
-        </div>
-        <div class="text-option text-primary row items-center">
-            <div>
-                <span>库存明细包含（入库单，加工单，领料单，发货单）这四类仓库订单的商品明细。</span>
-                <span>
-                    当您对
-                    <span class="cursor-pointer text-negative" @click="$router.push('/wmss/trade/sale-list')">销售单</span>
-                    复核后，将会生成发货单。</span
-                >
-            </div>
-
-            <q-space></q-space>
-            <div style="float: right">
-                <picker-range
-                    @change="
-                        ($event) => {
-                            SkuStore.page.startTime = $event.startTime;
-                            SkuStore.page.endTime = $event.endTime;
-                            SkuStore.get(1);
-                        }
-                    "
-                />
-            </div>
+            <picker-range
+                @change="
+                    ($event) => {
+                        SkuStore.page.startTime = $event.startTime;
+                        SkuStore.page.endTime = $event.endTime;
+                        SkuStore.get(1);
+                    }
+                "
+            />
         </div>
     </div>
 
@@ -290,8 +277,6 @@
         </q-inner-loading>
     </q-card>
 
-    <tip-warehouse></tip-warehouse>
-
     <q-dialog v-model="contactDialog" position="bottom">
         <q-card class="w-1000">
             <q-toolbar class="bg-green-6 text-white">
@@ -320,8 +305,8 @@ import { useRouter, useRoute } from "vue-router";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined, Cabinet, CabinetUnit } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
-import tipWarehouse from "@/components/tip-warehouse.vue";
 import listContact from "@/components/list-contact.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";

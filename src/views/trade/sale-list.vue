@@ -2,14 +2,7 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>销售单列表</span>
-        </div>
-        <div class="text-option text-primary row items-center">
-            <div>
-                销售单复核后首先将会通知仓库装货，并生成发货单。您可以通过
-
-                <span class="text-negative cursor-pointer" @click="$router.push('/wmss/trade/sale-sku')">销售明细</span>
-                查看哪些商品正在发货。
-            </div>
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn
                 square
@@ -503,7 +496,7 @@
 
     <q-dialog v-model="contactDialog" position="bottom">
         <q-card class="w-1000">
-            <q-toolbar class="bg-green-6 text-white">
+            <q-toolbar class="bg-primary text-white">
                 <q-toolbar-title class="text-weight-bold">通讯录</q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
@@ -822,6 +815,7 @@ import html2canvas from "html2canvas";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET } from "qqlx-core";
 import type { Order, OrderJoined } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";

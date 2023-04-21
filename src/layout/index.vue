@@ -112,8 +112,12 @@
                 <!-- 店铺公告 -->
                 <div class="bg-orange row items-center" v-if="brandAnnounceShow && AnnounceStore.list.length">
                     <div class="col-10 q-pl-lg">
-                        <q-carousel v-model="swiperIndex" vertical animated infinite :autoplay="5000" height="40px">
-                            <q-carousel-slide v-for="(announce, index) in AnnounceStore.list" :name="index" class="row bg-orange items-center q-pa-none">
+                        <q-carousel v-model="swiperIndex" vertical animated infinite :autoplay="4000" height="40px">
+                            <q-carousel-slide
+                                v-for="(announce, index) in AnnounceStore.list"
+                                :name="index"
+                                class="row bg-orange items-center no-wrap q-pa-none"
+                            >
                                 <q-icon name="campaign" size="22px" class="q-mr-md"></q-icon>
                                 <span class="ellipsis text-body1">{{ announce.content }}</span>
                             </q-carousel-slide>
@@ -142,8 +146,8 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useUserStore } from "@/stores/user/user";
 import { useCorpStore } from "@/stores/brand/corp";
 import { useMarketScoAnalysisStore } from "@/stores/market/analysis";
-import { useAnalysisStore } from "@/stores/wmss/analysis";
 import { useAnnounceStore } from "@/stores/brand/announce";
+import { useIntroGroupStore } from "@/stores/market/introGroup";
 
 const router = useRouter();
 const routes = router.options.routes[0].children;
@@ -152,7 +156,7 @@ const NotifyStore = useNotifyStore();
 const UserStore = useUserStore();
 const CorpStore = useCorpStore();
 const MarketScoAnalysisStore = useMarketScoAnalysisStore();
-const AnalysisStore = useAnalysisStore();
+const IntroGroupStore = useIntroGroupStore();
 const AnnounceStore = useAnnounceStore();
 
 const swiperIndex = ref(0);

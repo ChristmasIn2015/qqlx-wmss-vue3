@@ -280,8 +280,6 @@
         </q-inner-loading>
     </q-card>
 
-    <tip-warehouse></tip-warehouse>
-
     <q-dialog v-model="contactDialog" position="bottom">
         <q-card class="w-1000">
             <q-toolbar class="bg-green-6 text-white">
@@ -311,7 +309,6 @@ import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined, Cabinet, CabinetUnit } from "qqlx-core";
 
 import pickerRange from "@/components/picker-range.vue";
-import tipWarehouse from "@/components/tip-warehouse.vue";
 import listContact from "@/components/list-contact.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";

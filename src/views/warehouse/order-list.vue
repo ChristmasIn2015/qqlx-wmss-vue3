@@ -2,18 +2,7 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>仓库订单</span>
-            <q-space></q-space>
-        </div>
-
-        <div class="text-option text-primary row items-center">
-            <div>
-                <span>
-                    当您对
-                    <span class="cursor-pointer text-negative" @click="$router.push('/wmss/trade/sale-list')">销售单</span>
-                    复核后，将会生成发货单。
-                </span>
-            </div>
-
+            <dialog-intro></dialog-intro>
             <q-space></q-space>
 
             <picker-range
@@ -331,8 +320,6 @@
         </q-inner-loading>
     </q-card>
 
-    <tip-warehouse />
-
     <q-dialog v-model="contactDialog" position="bottom">
         <q-card class="w-1000">
             <q-toolbar class="bg-green-6 text-white">
@@ -392,9 +379,9 @@ import { cloneDeep, debounce } from "lodash";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET, OrderJoined } from "qqlx-core";
 
+import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
 import listContact from "@/components/list-contact.vue";
-import tipWarehouse from "@/components/tip-warehouse.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
