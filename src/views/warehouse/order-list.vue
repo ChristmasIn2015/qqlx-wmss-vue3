@@ -53,8 +53,7 @@
                     :columns="[
                         { name: 'code', field: 'code', label: '批次', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'contactId', field: 'contactId', label: '客户名称', align: 'left', style: NotifyStore.cellStyle },
-                        { name: 'amount', field: 'amount', label: '金额', style: NotifyStore.cellStyle },
-                        { name: 'pounds', field: 'pounds', label: '来源', align: 'left', style: NotifyStore.cellStyle },
+                        { name: 'amount', field: 'amount', label: '商品数量', style: NotifyStore.cellStyle },
                         { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'remark', field: 'remark', label: '备注', align: 'left', style: NotifyStore.fontStyle },
                     ]"
@@ -95,8 +94,7 @@
                                     <q-icon name="close"></q-icon>
                                 </q-btn>
                             </q-th>
-                            <q-th class="text-right" key="amount">金额</q-th>
-                            <q-th class="text-left">来源</q-th>
+                            <q-th class="text-right" key="amount">商品数量</q-th>
                             <q-th class="text-left">备注</q-th>
                             <q-th
                                 class="text-left cursor-pointer"
@@ -136,9 +134,6 @@
                                 <span v-else class="text-grey"> 0</span>
                                 项
                             </q-td>
-                            <q-td key="pounds" :props="props">
-                                {{ props.row.joinParentOrder && props.row.joinParentOrder[0] ? `${props.row.joinParentOrder[0]?.code}` : "" }}
-                            </q-td>
                             <q-td key="remark" :props="props">
                                 <span
                                     class="cursor-pointer"
@@ -173,7 +168,7 @@
                                                 { name: 'pounds', field: 'pounds', label: '过磅' },
                                                 { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
                                                 { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
-                                                { name: 'keyHouse', field: 'keyHouse', label: '仓库', align: 'left' },
+                                                { name: 'areaId', field: 'areaId', label: '货位', align: 'left' },
                                                 { name: 'price', field: 'price', label: '单价' },
                                                 { name: 'remark', field: 'remark', label: '备注' },
                                                 { name: '_id', field: '_id', label: '当前状态', align: 'left' },
@@ -199,7 +194,10 @@
                                                     </q-td>
                                                     <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.keyFeat || "-" }}</q-td>
                                                     <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.keyOrigin || "-" }}</q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.keyHouse || "-" }}</q-td>
+                                                    <q-td :_props="_props" style="font-size: 16px">
+                                                        {{ _props.row.joinArea?.name }}
+                                                        <q-tooltip class="text-body1">{{ _props.row.joinArea?.joinWarehouse?.name }}</q-tooltip>
+                                                    </q-td>
                                                     <q-td :_props="_props" :style="NotifyStore.fontStyle" class="text-right">
                                                         {{ _props.row.price.toFixed(2) }}
                                                     </q-td>
@@ -242,7 +240,42 @@
                                                         <a
                                                             v-if="props.row.joinParentOrder?.length > 0"
                                                             class="cursor-pointer text-negative text-underline"
-                                                            @click="() => $router.push(`/wmss/trade/sale-list?code=${props.row.joinParentOrder[0]?.code}`)"
+                                                            @click="
+                                                                () => {
+                                                                    if (props.row.joinParentOrder[0]?.type === ENUM_ORDER.MATERIAL) {
+                                                                        OrderStore.search.code = props.row.joinParentOrder[0]?.code;
+                                                                        tabIndex = 2;
+                                                                    } else {
+                                                                        $router.push(`/wmss/trade/sale-list?code=${props.row.joinParentOrder[0]?.code}`);
+                                                                    }
+                                                                }
+                                                            "
+                                                        >
+                                                            查看
+                                                        </a>
+                                                        <span v-else class="text-bold">无</span>
+                                                    </span>
+                                                </div>
+                                                <div class="row text-body1 q-mt-xs" v-if="props.row.type === ENUM_ORDER.MATERIAL">
+                                                    <span class="col text-grey">
+                                                        <q-badge
+                                                            rounded
+                                                            :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'"
+                                                            class="shadow-2 q-mr-sm"
+                                                        >
+                                                        </q-badge>
+                                                        加工单
+                                                    </span>
+                                                    <span class="col text-right text-weight-bold">
+                                                        <a
+                                                            v-if="props.row.joinChildOrder?.length > 0"
+                                                            class="cursor-pointer text-negative text-underline"
+                                                            @click="
+                                                                () => {
+                                                                    OrderStore.search.code = props.row.joinChildOrder[0]?.code || '';
+                                                                    tabIndex = 1;
+                                                                }
+                                                            "
                                                         >
                                                             查看
                                                         </a>
@@ -270,7 +303,7 @@
                                                     {{ props.row.isDisabled ? "恢复" : "删除" }}
                                                 </q-btn>
                                                 <q-btn
-                                                    v-if="!props.row.isDisabled && props.row.type !== ENUM_ORDER.MATERIAL"
+                                                    v-if="!props.row.isDisabled && [ENUM_ORDER.GETIN, ENUM_ORDER.GETOUT].includes(props.row.type)"
                                                     :disabled="!!props.row.managerId || !!props.row.accounterId"
                                                     class="q-ml-sm"
                                                     text-color="primary"

@@ -36,12 +36,12 @@ const routes = [
                         component: () => import("@/views/system/pay.vue"),
                         meta: { icon: "group", color: "primary", show: false },
                     },
-                    {
-                        path: "corp",
-                        name: "公司详情",
-                        component: () => import("@/views/system/corp.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
-                    },
+                    // {
+                    //     path: "corp",
+                    //     name: "公司详情",
+                    //     component: () => import("@/views/system/corp.vue"),
+                    //     meta: { icon: "group", color: "primary", show: false },
+                    // },
                     {
                         path: "clue",
                         name: "操作明细",

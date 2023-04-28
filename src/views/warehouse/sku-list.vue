@@ -4,7 +4,7 @@
             <span>库存明细</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
-            <picker-range
+            <!-- <picker-range
                 @change="
                     ($event) => {
                         SkuStore.page.startTime = $event.startTime;
@@ -12,7 +12,7 @@
                         SkuStore.get(1);
                     }
                 "
-            />
+            /> -->
         </div>
     </div>
 
@@ -120,12 +120,29 @@
                                     dense
                                     clearable
                                     color="primary"
-                                    placeholder="产地/钢厂"
+                                    placeholder="钢厂"
                                     v-model="SkuStore.search.keyOrigin"
                                     @blur="SkuStore.get(1)"
                                 />
                             </q-th>
-                            <q-th key="keyHouse" :props="props">当前仓库</q-th>
+                            <q-th key="areaId" :props="props">
+                                <q-select
+                                    dense
+                                    square
+                                    filled
+                                    clearable
+                                    emit-value
+                                    map-options
+                                    label="货位"
+                                    option-value="_id"
+                                    option-label="name"
+                                    placeholder="请选择货位"
+                                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
+                                    v-model="SkuStore.search.areaId"
+                                    @update:model-value="SkuStore.get(1)"
+                                >
+                                </q-select>
+                            </q-th>
                             <q-th key="keyCode" :props="props">
                                 <q-input
                                     square
@@ -226,7 +243,9 @@
                             </q-td>
                             <q-td key="keyFeat" :props="props" class="text-grey"> {{ props.row.keyFeat }} </q-td>
                             <q-td key="keyOrigin" :props="props" class="text-grey"> {{ props.row.keyOrigin }} </q-td>
-                            <q-td key="keyHouse" :props="props" class="text-grey"> - </q-td>
+                            <q-td key="areaId" :props="props" class="text-grey">
+                                {{ props.row.joinArea?.name }}-{{ props.row.joinArea?.joinWarehouse?.name }}
+                            </q-td>
                             <q-td key="keyCode" :props="props" class="text-grey"> {{ props.row.keyCode }} </q-td>
                             <q-td key="price" :props="props" class="text-grey"> {{ props.row.price.toFixed(2) }} 元</q-td>
                             <q-td key="remark" :props="props" class="text-grey ellipsis">{{ props.row.remark }} </q-td>
@@ -311,6 +330,7 @@ import listContact from "@/components/list-contact.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
+import { useAreaStore } from "@/stores/brand/area";
 
 const NotifyStore = useNotifyStore();
 const columns = ref([
@@ -323,7 +343,7 @@ const columns = ref([
     { name: "pounds", field: "pounds", label: "重量", style: NotifyStore.fontStyle },
     { name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: NotifyStore.fontStyle },
     { name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: NotifyStore.fontStyle },
-    { name: "keyHouse", field: "keyHouse", label: "仓库", align: "left", style: NotifyStore.fontStyle },
+    { name: "areaId", field: "areaId", label: "货位", align: "left", style: NotifyStore.cellStyle },
     { name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: NotifyStore.fontStyle },
     { name: "price", field: "price", label: "单价", style: NotifyStore.fontStyle },
     { name: "remark", field: "remark", label: "备注", style: NotifyStore.fontStyle },
@@ -331,11 +351,12 @@ const columns = ref([
     { name: "orderId", field: "orderId", label: "订单编号", align: "left", style: NotifyStore.fontStyle },
     { name: "_id", field: "_id", label: "操作", align: "left", style: NotifyStore.fontStyle },
 ]);
-const visibleColumns = ref(columns.value.filter((e, i) => i < 9 || i === columns.value.length - 1).map((e) => e.name));
+const visibleColumns = ref(columns.value.filter((e, i) => i < 10 || i === columns.value.length - 1).map((e) => e.name));
 
 const tabIndex = ref(0);
 const splitIndex = ref(0);
 const SkuStore = useSkuStore();
+const AreaStore = useAreaStore();
 watch(
     () => tabIndex.value,
     (index) => {
@@ -356,6 +377,7 @@ onMounted(() => {
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;
+    SkuStore.page.startTime = 0;
     SkuStore.types = [ENUM_ORDER.GETIN, ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL, ENUM_ORDER.PROCESS];
 
     const { name, norm } = route.query;

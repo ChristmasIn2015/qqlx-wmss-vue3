@@ -40,6 +40,7 @@ function getSchema(): Sku {
 
         corpId: "",
         warehouseId: "",
+        areaId: "",
         orderId: "",
         orderContactId: "",
         orderIsDisabled: false,
@@ -111,6 +112,11 @@ export const useSkuStore = defineStore("Sku", {
                 this.loadding = false;
             }
         },
+        async getSkuRelaOrder(deductionSkuId: string): Promise<SkuJoined[]> {
+            const dto = { deductionSkuId };
+            const res: SkuJoined[] = await request.get(PATH_SKU + "/rela-order", { dto });
+            return res;
+        },
         getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {
             const schema: Sku = getSchema();
             schema.type = type;
@@ -130,6 +136,7 @@ export const useSkuStore = defineStore("Sku", {
             else if (type === ENUM_ORDER.MATERIAL) return { text: "领料", color: "orange" };
             else if (type === ENUM_ORDER.GETOUT) return { text: "发货", color: "orange" };
             else if (type === ENUM_ORDER.SALES) return { text: "销售", color: "pink-6" };
+            else if (type === ENUM_ORDER.PURCHASE) return { text: "采购", color: "cyan" };
             else return { text: "异常", color: "grey" };
         },
         setSkuPounds(sku: SkuJoined) {

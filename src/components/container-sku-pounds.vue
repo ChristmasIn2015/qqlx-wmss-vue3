@@ -13,10 +13,10 @@
                 { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'count', field: 'count', label: '数量', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'pounds', field: 'pounds', label: '过磅', align: 'left', style: NotifyStore.fontStyle },
-                { name: 'price', field: 'price', label: '单价', style: NotifyStore.fontStyle },
-                { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.fontlStyle },
-                { name: 'remark', field: 'remark', label: '备注', align: 'left', style: NotifyStore.fontStyle },
-                { name: 'timeCreateString', field: 'timeCreateString', align: 'left', label: '操作', style: NotifyStore.fontStyle },
+                { name: 'keyHouse', field: 'keyHouse', label: '产地', style: NotifyStore.fontStyle },
+                { name: 'keyFeat', field: 'keyFeat', label: '材质', style: NotifyStore.fontStyle },
+                { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.cellStyle },
+                { name: '_id', field: '_id', align: 'left', label: '操作', style: NotifyStore.fontStyle },
             ]"
         >
             <template v-slot:header="props">
@@ -26,14 +26,10 @@
                     <q-th key="norm" :props="props">规格</q-th>
                     <q-th key="count" :props="props">数量</q-th>
                     <q-th key="pounds" :props="props">过磅</q-th>
-                    <q-th key="price" :props="props">
-                        <span>共</span>
-                        <span class="q-mx-sm text-h6 text-negative text-weight-bold">{{ listPickedPriceTotal }}</span>
-                        <span>元</span>
-                    </q-th>
                     <q-th key="areaId" :props="props">货位</q-th>
-                    <q-th key="remark" :props="props">备注</q-th>
-                    <q-th key="timeCreateString" :props="props">操作</q-th>
+                    <q-th key="keyHouse" :props="props">产地</q-th>
+                    <q-th key="keyFeat" :props="props">材质</q-th>
+                    <q-th key="_id" :props="props">操作</q-th>
                 </q-tr>
             </template>
 
@@ -129,24 +125,6 @@
                             </q-input>
                         </div>
                     </q-td>
-                    <q-td style="min-width: 188px; padding: 0 4px 0">
-                        <q-input
-                            dense
-                            square
-                            filled
-                            clearable
-                            type="number"
-                            input-class="text-body1 text-right"
-                            placeholder="请输入单价"
-                            v-model="props.row.price"
-                            color="negative"
-                        >
-                            <template v-slot:after>
-                                <span class="text-body1">元 / {{ props.row.isPriceInPounds ? "吨" : props.row.unit }}</span>
-                            </template>
-                        </q-input>
-                    </q-td>
-
                     <q-td>
                         <q-select
                             dense
@@ -164,17 +142,20 @@
                         >
                         </q-select>
                     </q-td>
-                    <q-td>
+                    <q-td :style="myTableCellStyle">
                         <q-input
                             dense
                             square
+                            filled
                             clearable
-                            borderless
-                            placeholder="请输入备注"
+                            placeholder="请输入钢厂"
                             input-class="text-body1"
-                            v-model="props.row.remark"
+                            v-model="props.row.keyOrigin"
                             color="negative"
                         />
+                    </q-td>
+                    <q-td :style="myTableCellStyle">
+                        <q-input dense filled square clearable placeholder="请输入材质" input-class="text-body1" v-model="props.row.keyFeat" color="negative" />
                     </q-td>
                     <q-td style="padding: 0 4px 0">
                         <q-btn dense icon="more_vert" flat>
@@ -187,31 +168,22 @@
                                             filled
                                             clearable
                                             class="q-mb-sm"
-                                            placeholder="请输入钢厂"
-                                            input-class="text-body1"
-                                            v-model="props.row.keyOrigin"
-                                            color="negative"
-                                        />
-                                        <q-input
-                                            dense
-                                            filled
-                                            square
-                                            clearable
-                                            class="q-mb-sm"
-                                            placeholder="请输入材质"
-                                            input-class="text-body1"
-                                            v-model="props.row.keyFeat"
-                                            color="negative"
-                                        />
-                                        <q-input
-                                            dense
-                                            square
-                                            filled
-                                            clearable
-                                            class="q-mb-sm"
+                                            label="编号"
                                             placeholder="请输入编号"
                                             input-class="text-body1"
                                             v-model="props.row.keyCode"
+                                            color="negative"
+                                        />
+                                        <q-input
+                                            dense
+                                            square
+                                            filled
+                                            clearable
+                                            class="q-mb-sm"
+                                            label="备注"
+                                            placeholder="请输入备注"
+                                            input-class="text-body1"
+                                            v-model="props.row.remark"
                                             color="negative"
                                         />
                                     </q-card-section>
@@ -223,8 +195,6 @@
                     </q-td>
                 </q-tr>
             </template>
-
-            <!-- <template v-slot:bottom> 12 </template> -->
         </q-table>
 
         <q-inner-loading :showing="OrderStore.loadding">
@@ -236,19 +206,19 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { cloneDeep } from "lodash";
 
 import { ENUM_LAYOUT_CABINET } from "qqlx-core";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
-import { cloneDeep } from "lodash";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useAreaStore } from "@/stores/brand/area";
 
 const route = useRoute();
-const NotifyStore = useNotifyStore();
-const AreaStore = useAreaStore();
 const SkuStore = useSkuStore();
 const OrderStore = useOrderStore();
+const NotifyStore = useNotifyStore();
+const AreaStore = useAreaStore();
 
 const myTableCellStyle = ref({ "min-width": "177px", "max-width": "177px" });
 const listPickedPriceTotal = computed(() => {

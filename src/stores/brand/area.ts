@@ -2,41 +2,46 @@ import { defineStore } from "pinia";
 import { cloneDeep } from "lodash";
 
 import { getMongodbBase } from "qqlx-cdk";
-import { PATH_BRAND_WAREHOUSE } from "qqlx-core";
+import { PATH_BRAND_AREA } from "qqlx-core";
 
-import type { postWarehouseDto, postWarehouseRes, getWarehouseDto, getWarehouseRes, patchWarehouseDto, patchWarehouseRes, Warehouse } from "qqlx-core";
+import type { postAreaDto, postAreaRes, getAreaDto, getAreaRes, patchAreaDto, patchAreaRes, Area } from "qqlx-core";
 
 import { request } from "@/lib";
 import { useNotifyStore } from "@/stores/quasar/notify";
+import { useWarehouseStore } from "@/stores/brand/warehouse";
 const NotifyStore = useNotifyStore();
+const WarehouseStore = useWarehouseStore();
 
-function getSchema(): Warehouse {
+function getSchema(): Area {
     return {
         corpId: "",
+        houseId: "",
         name: "",
-        address: "",
+        desc: "",
         isDisabled: false,
         ...getMongodbBase(),
     };
 }
 
-export const useWarehouseStore = defineStore("Warehouse", {
+export const useAreaStore = defineStore("Area", {
     state: () => ({
-        picked: getSchema(),
         editor: getSchema(),
-        list: [] as Warehouse[],
+        list: [] as Area[],
     }),
     actions: {
         async get() {
-            const dto: getWarehouseDto = null;
-            const res: getWarehouseRes = await request.get(PATH_BRAND_WAREHOUSE);
-            this.list = res;
+            const dto: getAreaDto = null;
+            const res: getAreaRes = await request.get(PATH_BRAND_AREA);
+            this.list = res.map((e) => {
+                e.joinWarehouse && (e.name += ` @${e.joinWarehouse?.name}`);
+                return e;
+            });
         },
         /** @viewcatch */
         async post() {
             try {
-                const dto: postWarehouseDto = this.editor;
-                const res: postWarehouseRes = await request.post(PATH_BRAND_WAREHOUSE, { dto });
+                const dto: postAreaDto = this.editor;
+                const res: postAreaRes = await request.post(PATH_BRAND_AREA, { dto });
                 await this.get();
                 NotifyStore.success("添加成功");
             } catch (error) {
@@ -46,25 +51,21 @@ export const useWarehouseStore = defineStore("Warehouse", {
         /** @viewcatch */
         async patch() {
             try {
-                const dto: patchWarehouseDto = this.editor;
-                const res: patchWarehouseRes = await request.patch(PATH_BRAND_WAREHOUSE, { dto });
+                const dto: patchAreaDto = this.editor;
+                const res: patchAreaRes = await request.patch(PATH_BRAND_AREA, { dto });
                 await this.get();
                 NotifyStore.success("修改成功");
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             }
         },
-        pick(house?: Warehouse) {
-            if (!house) return;
-            this.picked = cloneDeep(house);
-            NotifyStore.success(`正在使用 @${this.picked.name}`);
-        },
         getSchema() {
-            const schema: Warehouse = getSchema();
+            const schema: Area = getSchema();
             return schema;
         },
-        setEditor(target?: Warehouse) {
+        setEditor(target?: Area) {
             const schema = target ? cloneDeep(target) : this.getSchema();
+            !target && (schema.houseId = WarehouseStore.picked?._id || "");
             this.editor = schema;
         },
     },

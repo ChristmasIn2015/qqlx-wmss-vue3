@@ -11,9 +11,13 @@ import { request } from "@/lib";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useWarehouseStore } from "@/stores/brand/warehouse";
 import { useMarketScoAnalysisStore } from "@/stores/market/analysis";
+import { useAnnounceStore } from "@/stores/brand/announce";
+import { useAreaStore } from "@/stores/brand/area";
 
 const NotifyStore = useNotifyStore();
+const AnnounceStore = useAnnounceStore();
 const WarehouseStore = useWarehouseStore();
+const AreaStore = useAreaStore();
 const MarketScoAnalysisStore = useMarketScoAnalysisStore();
 
 function getSchema(): Corp {
@@ -79,13 +83,13 @@ export const useCorpStore = defineStore("Corp", {
                 this.picked = cloneDeep(corp);
                 document.title = this.picked.name;
                 localStorage.setItem("qqlx-corp-id", this.picked._id);
-                NotifyStore.success(`切换 @${this.picked.name} 成功`);
+                NotifyStore.success(`正在使用 @${this.picked.name}`);
 
                 await WarehouseStore.get();
                 WarehouseStore.pick(WarehouseStore.list.find((e) => e.isDisabled === false));
-
-                // 获取当前主体剩余时间
+                await AnnounceStore.get();
                 await MarketScoAnalysisStore.get();
+                await AreaStore.get();
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             }

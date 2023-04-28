@@ -27,6 +27,7 @@
                         { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'countFinal', field: 'countFinal', label: '库存', style: NotifyStore.cellStyle },
+                        { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.cellStyle },
                         { name: 'price', field: 'price', label: '推荐单价', style: NotifyStore.cellStyle },
                         { name: 'timeCreateString', field: 'timeCreateString', label: '时间', style: NotifyStore.fontStyle },
                         { name: 'actions', field: 'actions', label: '操作', style: 'width: 0px' },
@@ -79,6 +80,26 @@
                                     <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                 </span>
                             </q-th>
+
+                            <q-th :props="props" key="areaId">
+                                <q-select
+                                    dense
+                                    square
+                                    filled
+                                    clearable
+                                    emit-value
+                                    map-options
+                                    label="货位"
+                                    color="purple"
+                                    option-value="_id"
+                                    option-label="name"
+                                    placeholder="请选择货位"
+                                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
+                                    v-model="CabinetUnitStore.search.areaId"
+                                    @update:model-value="CabinetUnitStore.get(nowCabinet, 1)"
+                                >
+                                </q-select>
+                            </q-th>
                             <q-th
                                 :props="props"
                                 key="price"
@@ -113,7 +134,7 @@
                                         :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"
                                         @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
                                     >
-                                        {{ (props.row.poundsFinal / 1000).toFixed(3) }} 吨
+                                        {{ props.row.poundsFinal }} 吨
                                     </span>
                                     <span
                                         v-else
@@ -124,7 +145,11 @@
                                     </span>
                                 </a>
                             </q-td>
-                            <q-td key="price" :props="props" :class="{}"> {{ props.row.price / 100 }} 元 </q-td>
+                            <q-td key="areaId" :props="props">
+                                {{ props.row.joinArea?.name || "-" }}
+                                <q-tooltip class="text-body1">{{ props.row.joinArea?.joinWarehouse?.name || "-" }}</q-tooltip>
+                            </q-td>
+                            <q-td key="price" :props="props" :class="{}"> {{ props.row.price }} 元 </q-td>
                             <q-td key="timeCreateString" :props="props">
                                 <div class="row">
                                     <a class="text-body1 cursor-pointer text-negative" @click.capture="pushSku(props.row)">开单</a>
@@ -182,6 +207,7 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
 import { useCabinetUnitStore } from "@/stores/wmss/cabinetUnit";
 import { useSkuStore } from "@/stores/wmss/sku";
+import { useAreaStore } from "@/stores/brand/area";
 
 const route = useRoute();
 const NotifyStore = useNotifyStore();
@@ -193,11 +219,11 @@ const tabIndex = ref(0);
 const nowCabinet = computed(() => (CabinetStore.list[tabIndex.value] ? CabinetStore.list[tabIndex.value] : CabinetStore.list[0]));
 
 const CabinetUnitStore = useCabinetUnitStore();
+const AreaStore = useAreaStore();
 watch(
     () => nowCabinet.value,
     (cabinet) => {
         CabinetUnitStore.page.pageSize = 8;
-        CabinetUnitStore.listPicked = [];
         CabinetUnitStore.get(cabinet, 1);
     }
 );
@@ -208,12 +234,13 @@ const pushSku = (unit: CabinetUnit) => {
     const schema = SkuStore.getSchema() as SkuJoined;
     schema.name = unit.name;
     schema.norm = unit.norm;
+    schema.areaId = unit.areaId || "";
     schema.unit = nowCabinet.value?.unit;
 
     //@ts-ignore
     schema.count = null;
     //@ts-ignore
-    schema.price = unit.price ? Number(unit.price || 0) / 100 : (null as number);
+    schema.price = unit.price ? Number(unit.price || 0) : (null as number);
 
     schema.formula = nowCabinet.value?.formula;
     schema.layout = nowCabinet.value?.layout;

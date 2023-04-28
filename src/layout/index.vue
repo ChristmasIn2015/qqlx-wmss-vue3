@@ -47,8 +47,8 @@
                         <div class="q-px-sm">
                             <q-input readonly label="当前公司" class="q-mb-sm" v-model="nowCorpName">
                                 <template v-slot:append>
-                                    <q-btn fab flat v-close-popup icon="sync_alt" color="primary" @click="$router.push('/wmss/system/corp')">
-                                        <q-tooltip class="text-body1"> 切换 </q-tooltip>
+                                    <q-btn fab flat v-close-popup icon="chevron_right" color="primary" @click="$router.push('/wmss/system/dashboard')">
+                                        <q-tooltip class="text-body1"> 去切换 </q-tooltip>
                                     </q-btn>
                                 </template>
                             </q-input>
@@ -61,8 +61,8 @@
                                 :input-class="MarketScoAnalysisStore.isOverdue ? 'text-negative' : 'text-primary'"
                             >
                                 <template v-slot:append>
-                                    <q-btn fab flat v-close-popup icon="chevron_right" color="primary" @click="$router.push('/wmss/system/pay')">
-                                        <q-tooltip class="text-body1">去充值</q-tooltip>
+                                    <q-btn fab flat v-close-popup icon="card_giftcard" color="primary" @click="$router.push('/wmss/system/pay')">
+                                        <q-tooltip class="text-body1">去购买</q-tooltip>
                                     </q-btn>
                                 </template>
                             </q-input>
@@ -147,17 +147,19 @@ import { useUserStore } from "@/stores/user/user";
 import { useCorpStore } from "@/stores/brand/corp";
 import { useMarketScoAnalysisStore } from "@/stores/market/analysis";
 import { useAnnounceStore } from "@/stores/brand/announce";
-import { useIntroGroupStore } from "@/stores/market/introGroup";
+import { useCabinetStore } from "@/stores/wmss/cabinet";
+import { useAreaStore } from "@/stores/brand/area";
 
 const router = useRouter();
 const routes = router.options.routes[0].children;
 
 const NotifyStore = useNotifyStore();
 const UserStore = useUserStore();
-const CorpStore = useCorpStore();
 const MarketScoAnalysisStore = useMarketScoAnalysisStore();
-const IntroGroupStore = useIntroGroupStore();
+const CorpStore = useCorpStore();
 const AnnounceStore = useAnnounceStore();
+const CabinetStore = useCabinetStore();
+const AreaStore = useAreaStore();
 
 const swiperIndex = ref(0);
 const brandAnnounceShow = ref(true);
@@ -176,15 +178,18 @@ onMounted(async () => {
     try {
         // user
         await UserStore.transformAuthorization();
-        // corp
+        // brand
         await CorpStore.get();
         const corpIdPicked = localStorage.getItem("qqlx-corp-id");
         const match = CorpStore.list.find((e) => e._id === corpIdPicked);
         const first = CorpStore.list.find((e) => e.isDisabled === false);
         CorpStore.pick(match || first);
-        // config
-        AnnounceStore.get();
+        // AnnounceStore.get();
+        // AreaStore.get();
+        // market
         MarketScoAnalysisStore.get();
+        // wmss
+        // CabinetStore.get();
     } catch (error) {
         NotifyStore.fail((error as Error).message);
     }

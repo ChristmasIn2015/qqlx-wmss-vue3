@@ -26,6 +26,7 @@ function getSchema(): CabinetUnit {
     return {
         corpId: "",
         cabinetId: "",
+        areaId: "",
         name: "",
         norm: "",
         poundsFinal: 0,
@@ -40,7 +41,6 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
         search: getSchema() as CabinetUnit,
         editor: getSchema() as CabinetUnit,
         list: [] as CabinetUnitJoined[],
-        listPicked: [] as CabinetUnitJoined[],
         listExcel: [] as CabinetUnit[],
 
         sortKey: "timeCreate",
@@ -107,13 +107,15 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
             }
         },
         /** @viewcatch */
-        async patch(cabinet: Cabinet, price: number) {
+        async patch(cabinet: Cabinet, price: number, areaId: string = "", picking: CabinetUnit[]) {
             try {
-                const list = cloneDeep(this.listPicked) as CabinetUnit[];
-                list.forEach((e) => (e.price = Number(price) || 0));
+                const list = cloneDeep(picking || []) as CabinetUnit[];
+                list.forEach((e) => {
+                    e.price = Number(price) || 0;
+                    e.areaId = areaId;
+                });
                 const dto: patchCabinetUnitDto = { excels: list };
                 const res: patchCabinetUnitRes = await request.patch(PATH_CABINET_UNIT, { dto });
-                this.listPicked = [];
 
                 await this.get(cabinet, 1);
                 NotifyStore.success("修改成功");
@@ -122,13 +124,12 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
             }
         },
         /** @viewcatch */
-        async delete(cabinet: Cabinet) {
+        async delete(cabinet: Cabinet, picking: CabinetUnit[]) {
             try {
-                for (let unit of this.listPicked) {
+                for (let unit of picking) {
                     const dto: deleteCabinetUnitDto = { cabinetUnitId: unit._id };
                     const res: deleteCabinetUnitRes = await request.delete(PATH_CABINET_UNIT, { dto });
                 }
-                this.listPicked = [];
                 await this.get(cabinet, 1);
 
                 NotifyStore.success("删除成功");
@@ -141,7 +142,6 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
             try {
                 const dto: deleteCabinetUnitDto = { cabinetUnitId: unit._id };
                 const res: deleteCabinetUnitRes = await request.delete(PATH_CABINET_UNIT, { dto });
-                this.listPicked = [];
                 await this.get(cabinet, 1);
 
                 NotifyStore.success("删除成功");

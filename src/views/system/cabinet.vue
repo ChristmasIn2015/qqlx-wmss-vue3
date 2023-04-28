@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="text-grey row">
-                                <div class="col">统计方法</div>
+                                <div class="col">类型</div>
                                 <div class="col text-right" :class="nowCabinet?.layout > 1 ? 'text-negative' : 'text-grey'">
                                     {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
                                     <q-tooltip class="text-body1">
@@ -119,49 +119,33 @@
                     <template v-slot:before>
                         <q-table
                             style="min-height: 660px"
-                            selection="multiple"
                             separator="cell"
                             row-key="_id"
                             dense
                             :rows="CabinetUnitStore.list"
                             :rows-per-page-options="[0]"
-                            v-model:selected="CabinetUnitStore.listPicked"
                             :columns="[
+                                { name: '_id', field: '_id', label: '操作', style: 'width: 20px' },
                                 { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.cellStyle },
                                 { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
                                 {
                                     name: 'countFinal',
                                     field: 'countFinal',
                                     label: '库存',
-                                    format: (countFinal, row) =>
-                                        nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL
-                                            ? `${(row.poundsFinal / 1000).toFixed(3)} 吨`
-                                            : `${parseInt(countFinal.toString())} ${nowCabinet?.unit}`,
-                                    style: (row) =>
-                                        ((nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? row.poundsFinal : row.countFinal) <= 0
-                                            ? `color: #9e9e9e;`
-                                            : 'color: #C10015;') + NotifyStore.cellStyle,
+                                    style: NotifyStore.cellStyle,
                                 },
+                                { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.cellStyle },
                                 {
                                     name: 'price',
                                     field: 'price',
                                     label: '推荐单价',
-                                    format: (price) => `${price / 100} 元`,
-                                    style: (row) => (row.price <= 0 ? `color: #9e9e9e;` : 'color: #C10015;') + NotifyStore.cellStyle,
+                                    style: NotifyStore.cellStyle,
                                 },
                                 { name: 'timeCreateString', field: 'timeCreateString', label: '创建时间', style: NotifyStore.cellStyle },
                             ]"
                         >
                             <template v-slot:header="props">
                                 <q-tr :props="props">
-                                    <q-th>
-                                        <q-checkbox
-                                            size="sm"
-                                            style="transform: translateX(-9px)"
-                                            v-model="selectingAll"
-                                            @update:model-value="(bool) => (CabinetUnitStore.listPicked = bool ? cloneDeep(CabinetUnitStore.list) : [])"
-                                        ></q-checkbox>
-                                    </q-th>
                                     <q-th>
                                         <q-input
                                             square
@@ -211,6 +195,25 @@
                                             <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                         </span>
                                     </q-th>
+                                    <q-th :props="props" key="areaId">
+                                        <q-select
+                                            dense
+                                            square
+                                            filled
+                                            clearable
+                                            emit-value
+                                            map-options
+                                            label="货位"
+                                            color="purple"
+                                            option-value="_id"
+                                            option-label="name"
+                                            placeholder="请选择货位"
+                                            :options="AreaStore.list.filter((e) => e.isDisabled === false)"
+                                            v-model="CabinetUnitStore.search.areaId"
+                                            @update:model-value="CabinetUnitStore.get(nowCabinet, 1)"
+                                        >
+                                        </q-select>
+                                    </q-th>
                                     <q-th
                                         :props="props"
                                         key="price"
@@ -231,18 +234,44 @@
                                         <span>创建时间</span>
                                         <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                     </q-th>
+                                    <q-th>操作</q-th>
                                 </q-tr>
                             </template>
+
                             <template v-slot:top-row>
                                 <q-tr>
                                     <q-td colspan="100%" class="text-center">
-                                        <div v-if="CabinetUnitStore.listPicked.length > 0">
-                                            <q-btn flat color="negative" @click="CabinetUnitStore.delete(nowCabinet)">
-                                                删除 {{ CabinetUnitStore.listPicked.length }} 项
+                                        <div v-if="unitPicking.length > 0">
+                                            <q-btn
+                                                flat
+                                                padding="sm"
+                                                color="negative"
+                                                @click="
+                                                    async () => {
+                                                        await CabinetUnitStore.delete(nowCabinet, unitPicking);
+                                                        startIndex = -1;
+                                                        endIndex = -1;
+                                                    }
+                                                "
+                                            >
+                                                删除 {{ unitPicking.length }} 项
                                             </q-btn>
-                                            <q-btn color="primary" @click="dialogPatching = true"> 修改单价 </q-btn>
+                                            <q-btn color="primary" padding="sm" flat @click="dialogPatching = true"> 批量修改 </q-btn>
+                                            <q-btn
+                                                padding="sm"
+                                                color="primary"
+                                                flat
+                                                @click="
+                                                    () => {
+                                                        startIndex = -1;
+                                                        endIndex = -1;
+                                                    }
+                                                "
+                                            >
+                                                取消
+                                            </q-btn>
                                         </div>
-                                        <div v-else-if="CabinetUnitStore.listPicked.length === 0">
+                                        <div v-else-if="unitPicking.length === 0">
                                             <q-btn
                                                 flat
                                                 padding="sm"
@@ -269,30 +298,87 @@
                                                     </q-item>
                                                 </q-menu>
                                             </q-btn>
-                                        </div>
-                                        <div v-if="CabinetUnitStore.listExcel.length > 0">
-                                            <q-btn label="清空" flat color="primary" padding="sm" @click="() => (CabinetUnitStore.listExcel = [])" />
-                                            <q-btn square class="q-ma-sm" color="primary" @click="() => CabinetUnitStore.post(nowCabinet)">
-                                                <span>保存到 @{{ nowCabinet?.name }}</span>
-                                            </q-btn>
+                                            <span v-if="CabinetUnitStore.listExcel.length > 0">
+                                                <q-btn label="清空" flat color="primary" padding="sm" @click="() => (CabinetUnitStore.listExcel = [])" />
+                                                <q-btn square class="q-ma-sm" color="negative" @click="() => CabinetUnitStore.post(nowCabinet)">
+                                                    <span>保存到 @{{ nowCabinet?.name }}</span>
+                                                </q-btn>
+                                            </span>
                                         </div>
                                     </q-td>
                                 </q-tr>
                                 <q-tr v-for="(schema, index) in CabinetUnitStore.listExcel">
-                                    <q-td>
-                                        <q-btn dense icon="close" class="text-negative" flat @click="() => CabinetUnitStore.listExcel.splice(index, 1)" />
-                                    </q-td>
                                     <q-td>
                                         <q-input square filled v-model="schema.name" dense clearable placeholder="请输入品名" />
                                     </q-td>
                                     <q-td>
                                         <q-input square filled v-model="schema.norm" dense clearable placeholder="请输入规格" />
                                     </q-td>
-                                    <q-td class="text-center">自动计算</q-td>
+                                    <q-td>自动计算</q-td>
+                                    <q-td>
+                                        <q-select
+                                            dense
+                                            square
+                                            filled
+                                            clearable
+                                            emit-value
+                                            map-options
+                                            label="货位"
+                                            option-value="_id"
+                                            option-label="name"
+                                            placeholder="请选择货位"
+                                            :options="AreaStore.list.filter((e) => e.isDisabled === false)"
+                                            v-model="schema.areaId"
+                                        >
+                                        </q-select>
+                                    </q-td>
                                     <q-td class="text-right">
                                         <q-input square filled v-model="schema.price" type="number" dense input-class="text-right" />
                                     </q-td>
-                                    <q-td> </q-td>
+                                    <q-td>自动计算</q-td>
+                                    <q-td>
+                                        <q-btn dense icon="close" class="text-negative" flat @click="() => CabinetUnitStore.listExcel.splice(index, 1)" />
+                                    </q-td>
+                                </q-tr>
+                            </template>
+
+                            <template v-slot:body="props">
+                                <q-tr
+                                    class="cursor-crosshair"
+                                    :class="{ 'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex }"
+                                    @mousedown.capture.stop="
+                                        () => {
+                                            endIndex = props.rowIndex;
+                                            startIndex = props.rowIndex;
+                                        }
+                                    "
+                                    @mouseup.capture.stop="
+                                        () => {
+                                            endIndex = props.rowIndex > startIndex ? props.rowIndex : startIndex;
+                                        }
+                                    "
+                                >
+                                    <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
+                                    <q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
+                                    <q-td
+                                        key="countFinal"
+                                        :props="props"
+                                        :class="
+                                            (nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? props.row.poundsFinal : props.row.countFinal) <= 0
+                                                ? 'text-grey'
+                                                : 'text-negative'
+                                        "
+                                    >
+                                        {{
+                                            nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL
+                                                ? `${props.row.poundsFinal.toFixed(3)} 吨`
+                                                : `${parseInt(props.row.countFinal.toString())} ${nowCabinet?.unit}`
+                                        }}
+                                    </q-td>
+                                    <q-td key="areaId" :props="props"> {{ props.row.joinArea?.name || "-" }}</q-td>
+                                    <q-td key="price" :props="props" :class="{ 'text-grey': props.row.price <= 1 }"> {{ props.row.price }} 元 </q-td>
+                                    <q-td key="timeCreateString" :props="props" class="text-grey"> {{ props.row.timeCreateString }} </q-td>
+                                    <q-td key="_id" :props="props"> </q-td>
                                 </q-tr>
                             </template>
 
@@ -308,7 +394,13 @@
                                     v-model="CabinetUnitStore.page.page"
                                     :max-pages="10"
                                     :max="Math.ceil(CabinetUnitStore.total / CabinetUnitStore.page.pageSize)"
-                                    @update:model-value="(value) => CabinetUnitStore.get(nowCabinet, value)"
+                                    @update:model-value="
+                                        (value) => {
+                                            startIndex = -1;
+                                            endIndex = -1;
+                                            CabinetUnitStore.get(nowCabinet, value);
+                                        }
+                                    "
                                 />
                                 <q-space></q-space>
                                 <span>共 {{ CabinetUnitStore.total }} 项</span>
@@ -360,7 +452,7 @@
                 </div>
                 <q-select
                     filled
-                    label="统计方法"
+                    label="类型"
                     class="q-mb-sm"
                     v-model="CabinetStore.editor.layout"
                     emit-value
@@ -405,21 +497,40 @@
     <q-dialog v-model="dialogPatching">
         <q-card class="w-400">
             <q-toolbar>
-                <q-toolbar-title>批量修改单价</q-toolbar-title>
+                <q-toolbar-title>批量修改（{{ unitPicking.length }}项）</q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
             <q-separator />
 
             <q-card-section>
-                <q-input square filled v-model="pricePatching" type="number" dense clearable />
+                <q-input square class="q-mb-sm" label="推荐单价" filled v-model="pricePatching" type="number" clearable />
+                <q-select
+                    square
+                    filled
+                    clearable
+                    emit-value
+                    map-options
+                    label="货位"
+                    option-value="_id"
+                    option-label="name"
+                    placeholder="请选择货位"
+                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
+                    v-model="areaIdPatching"
+                >
+                </q-select>
             </q-card-section>
             <q-card-actions>
                 <q-space></q-space>
                 <q-btn
+                    v-close-popup
                     @click="
                         async () => {
-                            await CabinetUnitStore.patch(nowCabinet, pricePatching);
-                            dialogPatching = false;
+                            await CabinetUnitStore.patch(nowCabinet, pricePatching, areaIdPatching, unitPicking);
+
+                            areaIdPatching = '';
+                            pricePatching = 0;
+                            startIndex = -1;
+                            endIndex = -1;
                         }
                     "
                     color="primary"
@@ -442,6 +553,7 @@ import dialogIntro from "@/components/dialog-intro.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
 import { useCabinetUnitStore } from "@/stores/wmss/cabinetUnit";
+import { useAreaStore } from "@/stores/brand/area";
 
 const layoutOptions = [...MAP_ENUM_LAYOUT_CABINET].map((e) => e[1]);
 const formulaOptions = [...MAP_ENUM_POUNDS_FORMULA].map((e) => e[1]);
@@ -453,6 +565,7 @@ const nowCabinet = computed(() => (CabinetStore.list[tabIndex.value] ? CabinetSt
 const NotifyStore = useNotifyStore();
 const $q = NotifyStore.getQuasarStore();
 
+const AreaStore = useAreaStore();
 const CabinetStore = useCabinetStore();
 const dialogCabinet = ref(false);
 const deleteConfirm = (cabinetId: string) => {
@@ -467,9 +580,10 @@ const CabinetUnitStore = useCabinetUnitStore();
 watch(
     () => nowCabinet?.value,
     (cabinet) => {
+        startIndex.value = -1;
+        endIndex.value = -1;
         CabinetUnitStore.page.pageSize = 15;
         CabinetUnitStore.listExcel = [];
-        CabinetUnitStore.listPicked = [];
         CabinetUnitStore.get(cabinet, 1);
     }
 );
@@ -501,9 +615,15 @@ const filePickNext = async (file: File) => {
     };
     reader.readAsBinaryString(file);
 };
-const selectingAll = ref(false);
+
+const startIndex = ref(-1);
+const endIndex = ref(-1);
 const pricePatching = ref(0);
+const areaIdPatching = ref("");
 const dialogPatching = ref(false);
+const unitPicking = computed(() => {
+    return CabinetUnitStore.list.slice(startIndex.value, endIndex.value + 1);
+});
 
 // action
 onMounted(async () => {

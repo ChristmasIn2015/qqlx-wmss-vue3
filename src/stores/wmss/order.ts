@@ -101,6 +101,7 @@ export const useOrderStore = defineStore("Order", {
                     requireAccounterId: this.requireAccounterId,
                     sortKey: this.sortKey,
                     sortValue: this.sortValue,
+                    joinSku: ![ENUM_ORDER.PURCHASE, ENUM_ORDER.SALES].includes(this.search.type),
                 };
                 const res: getOrderRes = await request.get(PATH_ORDER, { dto });
                 this.list = res.list;
@@ -110,18 +111,6 @@ export const useOrderStore = defineStore("Order", {
                 NotifyStore.fail((error as Error).message);
             } finally {
                 this.loadding = false;
-            }
-        },
-        timeChange(event: string) {
-            if (typeof event === "string") {
-                this.timeQuasarPicked = { from: event, to: event };
-                this.page.startTime = new Date(event + " 00:00:00").getTime();
-                this.page.endTime = new Date(event + " 23:59:59").getTime();
-                this.get(1);
-            } else if (this.timeQuasarPicked) {
-                this.page.startTime = new Date(this.timeQuasarPicked.from + " 00:00:00").getTime();
-                this.page.endTime = new Date(this.timeQuasarPicked.to + " 23:59:59").getTime();
-                this.get(1);
             }
         },
         async geOrderWidthSku(): Promise<OrderJoined[]> {
@@ -153,28 +142,36 @@ export const useOrderStore = defineStore("Order", {
             this.get(1, joinSku); // async
         },
         /** @viewcatch */
-        async post(skuList?: Sku[]) {
+        async post(skuList?: Sku[]): Promise<{ _id: string; code: string }> {
+            const info = {
+                _id: "",
+                code: "",
+            };
             try {
                 this.loadding = true;
                 const dto: postOrderDto = { schema: this.editor, skuList };
                 const res: postOrderRes = await request.post(PATH_ORDER, { dto });
+                info._id = res._id;
+                info.code = res.code;
                 this.loadding = false;
 
                 NotifyStore.success("创建成功");
 
-                SkuStore.setEditor();
+                // SkuStore.setEditor();
+                SkuStore.listPicked = [];
                 // await AnalysisStore.get();
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {
                 this.loadding = false;
+                return info;
             }
         },
         /** @viewcatch */
         async put(entity?: OrderJoined, skuList?: Sku[]) {
             let code = "";
             try {
-                // this.loadding = true;
+                this.loadding = true;
                 const target = entity || this.editor;
                 const dto: putOrderDto = { entity: target, skuList };
                 const res: putOrderRes = await request.put(PATH_ORDER, { dto });
@@ -185,7 +182,7 @@ export const useOrderStore = defineStore("Order", {
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {
-                // this.loadding = false;
+                this.loadding = false;
                 return code;
             }
         },

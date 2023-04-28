@@ -170,19 +170,19 @@
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder')"
+                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder') }"
+                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder')"
                     >
-                        <span>{{ isInvoice ? "已开发票" : "已收款" }}</span>
+                        <span>{{ isInvoice ? "可开票" : "已收款" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
                         style="padding-right: 48px"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest')"
+                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest') }"
+                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest')"
                     >
-                        <span>{{ isInvoice ? "可开票" : "还应收款" }}</span>
+                        <span>{{ isInvoice ? "已开发票" : "还应收款" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th class="text-left">操作</q-th>
@@ -242,7 +242,7 @@
                             'text-through': props.row.accounterId,
                         }"
                     >
-                        {{ (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrder).toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        {{ (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrder).toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td
                         key="amountBookOfOrderRest"
@@ -250,13 +250,13 @@
                         :props="props"
                         :class="{
                             'text-through': props.row.accounterId,
-                            'text-grey': (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
-                            'text-weight-bold': (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) >= 1,
+                            'text-grey': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
+                            'text-weight-bold': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) >= 1,
                             'text-purple': isInvoice,
                         }"
                     >
                         {{
-                            (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest).toLocaleString("zh", {
+                            (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest).toLocaleString("zh", {
                                 minimumFractionDigits: 2,
                             })
                         }}
@@ -334,7 +334,7 @@
                                         { name: 'pounds', field: 'pounds', label: '过磅' },
                                         { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
                                         { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
-                                        { name: 'keyHouse', field: 'keyHouse', label: '仓库', align: 'left' },
+                                        { name: 'areaId', field: 'areaId', label: '仓库', align: 'left' },
                                         { name: 'price', field: 'price', label: '单价' },
                                         { name: 'remark', field: 'remark', label: '备注', align: 'left' },
                                     ]"
@@ -359,7 +359,10 @@
                                             </q-td>
                                             <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
                                             <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyOrigin || "-" }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyHouse || "-" }}</q-td>
+                                            <q-td :_props="_props" style="font-size: 16px">
+                                                {{ _props.row.joinArea?.name }}
+                                                <q-tooltip class="text-body1">{{ _props.row.joinArea?.joinWarehouse?.name }}</q-tooltip>
+                                            </q-td>
                                             <q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
                                             <q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
                                         </q-tr>
@@ -377,7 +380,7 @@
                                             </div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">客户信息</span>
-                                                <span class="col-9 text-right text-weight-bold">{{ props.row.joinContact?.name || "无" }}</span>
+                                                <span class="col-9 text-right text-weight-bold ellipsis">{{ props.row.joinContact?.name || "无" }}</span>
                                             </div>
                                         </q-card-section>
                                         <q-card-actions>
@@ -665,59 +668,13 @@
                 <q-card-section>
                     <div class="text-body1 q-mb-md q-ml-xs text-bold row">
                         <span>提货仓库</span>
-                        <a class="cursor-pointer q-ml-auto text-negative" @click="warehouseIsDisabled = !warehouseIsDisabled">
-                            {{ warehouseIsDisabled ? "返回" : "最近删除" }}
-                        </a>
                     </div>
-                    <div class="q-mb-sm row items-center" v-for="house in WarehouseStore.list.filter((e) => e.isDisabled === warehouseIsDisabled)">
+                    <div class="q-mb-sm row items-center" v-for="house in WarehouseStore.list.filter((e) => e.isDisabled === false)">
                         <q-card class="col-10">
                             <q-item class="col">
                                 <q-item-section>
                                     <q-item-label>{{ house.name }}</q-item-label>
                                     <q-item-label caption>{{ house.address }}</q-item-label>
-                                </q-item-section>
-                                <q-item-section side>
-                                    <q-btn padding="sm" fab flat icon="more_vert">
-                                        <q-menu>
-                                            <q-item clickable>
-                                                <q-item-section
-                                                    @click="
-                                                        () => {
-                                                            WarehouseStore.setEditor();
-                                                            warehouseDialog = true;
-                                                        }
-                                                    "
-                                                >
-                                                    添加新仓库
-                                                </q-item-section>
-                                            </q-item>
-                                            <q-item clickable>
-                                                <q-item-section
-                                                    @click="
-                                                        () => {
-                                                            WarehouseStore.setEditor(house);
-                                                            warehouseDialog = true;
-                                                        }
-                                                    "
-                                                >
-                                                    修改
-                                                </q-item-section>
-                                            </q-item>
-                                            <q-item
-                                                clickable
-                                                class="text-negative"
-                                                @click="
-                                                    () => {
-                                                        WarehouseStore.setEditor(house);
-                                                        WarehouseStore.editor.isDisabled = !WarehouseStore.editor.isDisabled;
-                                                        WarehouseStore.patch();
-                                                    }
-                                                "
-                                            >
-                                                <q-item-section>{{ house.isDisabled ? "恢复" : "删除" }}</q-item-section>
-                                            </q-item>
-                                        </q-menu>
-                                    </q-btn>
                                 </q-item-section>
                             </q-item>
                         </q-card>
@@ -864,29 +821,6 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
-
-    <q-dialog v-model="warehouseDialog">
-        <q-card class="w-400">
-            <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title>
-                    <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
-                    提货仓库
-                </q-toolbar-title>
-                <q-btn dense flat icon="close" v-close-popup></q-btn>
-            </q-toolbar>
-
-            <q-card-section>
-                <q-input filled label="请输入仓库名称" v-model="WarehouseStore.editor.name" color="primary" class="q-mb-md" />
-                <q-input filled label="请输入地址" v-model="WarehouseStore.editor.address" color="primary" />
-            </q-card-section>
-
-            <q-card-actions>
-                <q-space></q-space>
-                <q-btn v-if="WarehouseStore.editor._id" color="primary" v-close-popup @click="WarehouseStore.patch()"> 保存 </q-btn>
-                <q-btn v-else color="primary" v-close-popup @click="WarehouseStore.post()"> 新增 </q-btn>
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -992,8 +926,6 @@ const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
 
 const WarehouseStore = useWarehouseStore();
-const warehouseIsDisabled = ref(false);
-const warehouseDialog = ref(false);
 
 const CorpStore = useCorpStore();
 const ConfigStore = useConfigStore();

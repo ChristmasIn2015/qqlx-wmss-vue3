@@ -1,12 +1,12 @@
 <template>
-    <div class="q-pl-xs q-mb-lg">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
             <span>修改{{ nowOrderEditorTrans?.text }}</span>
         </div>
     </div>
 
-    <container-sku />
+    <container-sku-pounds />
 
     <div class="q-py-md row">
         <q-space></q-space>
@@ -38,7 +38,7 @@ import { useRouter, useRoute } from "vue-router";
 import { ENUM_ORDER, MAP_ENUM_ORDER, SkuJoined } from "qqlx-core";
 
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
-import containerSku from "@/components/container-sku.vue";
+import containerSkuPounds from "@/components/container-sku-pounds.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";

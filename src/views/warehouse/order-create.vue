@@ -1,16 +1,16 @@
 <template>
-    <div class="q-pl-xs q-mb-lg">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
             <span>创建{{ nowOrderEditorTrans?.text }}</span>
         </div>
     </div>
 
-    <container-sku />
+    <container-sku-pounds />
 
-    <div class="q-py-md row">
+    <div class="q-py-md row items-start">
         <q-space></q-space>
-        <q-btn class="q-ml-sm" square label="批量导入">
+        <q-btn class="q-ml-sm" square label="批量导入" color="white" text-color="primary">
             <q-menu>
                 <q-list>
                     <q-item clickable @click="NotifyStore.download()">
@@ -24,25 +24,80 @@
                 </q-list>
             </q-menu>
         </q-btn>
-        <q-btn v-if="nowOrderEditorTrans" push square class="q-ml-sm" color="negative" :loading="OrderStore.loadding" @click="createOrder()">
+        <span v-if="skuIndividualPicking.deductionSkuId" class="row">
+            <div style="width: 288px">
+                <q-input
+                    class="q-ml-sm"
+                    square
+                    filled
+                    dense
+                    borderless
+                    :hint="`${skuIndividualPicking.name} / ${skuIndividualPicking.norm} / 当前剩余${skuIndividualPicking.poundsFinal}吨`"
+                    type="number"
+                    color="negative"
+                    input-class="text-body1"
+                    v-model="skuIndividualPicking.pounds"
+                >
+                    <template v-slot:after>
+                        <q-btn padding="sm" square icon="close" flat fab @click="skuIndividualPicking = SkuStore.getSchema()">
+                            <q-tooltip class="text-body1">选择其他大件商品</q-tooltip>
+                        </q-btn>
+                    </template>
+                    <template v-slot:prepend>
+                        <span class="text-body1">加工后剩余</span>
+                    </template>
+                    <template v-slot:append>
+                        <span class="text-body1">吨</span>
+                    </template>
+                </q-input>
+            </div>
+        </span>
+        <q-btn v-else square class="q-ml-sm" color="primary" @click="dialogSkuIndividual = true">
+            选择大件商品
+            <q-tooltip class="text-body1">此大件商品将作为加工商品的原材料，并扣减库存</q-tooltip>
+        </q-btn>
+        <q-btn square v-if="nowOrderEditorTrans" push class="q-ml-sm" color="negative" :loading="OrderStore.loadding" @click="createOrder()">
             创建 {{ nowOrderEditorTrans?.text }}
         </q-btn>
     </div>
 
     <picker-cabinet-unit />
+
+    <q-dialog v-model="dialogSkuIndividual" maximized>
+        <q-card>
+            <q-toolbar class="bg-primary text-white">
+                <q-toolbar-title class="text-weight-bold">大件商品</q-toolbar-title>
+                <q-btn dense flat icon="close" v-close-popup></q-btn>
+            </q-toolbar>
+            <q-separator class="q-mb-md" />
+            <list-sku-individual
+                label="选择"
+                @pick="
+                    (sku) => {
+                        sku.deductionSkuId = sku._id;
+                        sku._id = '';
+                        sku.pounds = sku.poundsFinal;
+                        skuIndividualPicking = sku;
+                    }
+                "
+            />
+        </q-card>
+    </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import * as XLSX from "xlsx";
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { MAP_ENUM_ORDER, ENUM_ORDER, SkuJoined } from "qqlx-core";
+import { MAP_ENUM_ORDER, ENUM_ORDER, SkuJoined, Order } from "qqlx-core";
 
+import listSkuIndividual from "@/components/list-sku-individual.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
-import containerSku from "@/components/container-sku.vue";
+import containerSkuPounds from "@/components/container-sku-pounds.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
+import { cloneDeep } from "lodash";
 
 const router = useRouter();
 
@@ -88,10 +143,31 @@ const filePickNext = async (file: File) => {
 };
 
 const SkuStore = useSkuStore();
+const dialogSkuIndividual = ref(false);
+const skuIndividualPicking = ref(SkuStore.getSchema());
 const OrderStore = useOrderStore();
 const createOrder = async () => {
-    await OrderStore.post(SkuStore.listPicked);
-    router.push("/wmss/warehouse/order-list");
+    const material = { _id: "", code: "" };
+    const skus = cloneDeep(SkuStore.listPicked);
+
+    // 创建领料单
+    if (skuIndividualPicking.value?.deductionSkuId) {
+        const individual = cloneDeep(skuIndividualPicking.value);
+        individual.pounds = individual.poundsFinal - individual.pounds;
+        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.MATERIAL));
+        const result = await OrderStore.post([individual]);
+        material._id = result._id;
+        material.code = result.code;
+    }
+
+    // 创建加工单
+    OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PROCESS));
+    if (material._id) {
+        OrderStore.editor.parentOrderId = material._id;
+        OrderStore.editor.parentOrderType = ENUM_ORDER.MATERIAL;
+    }
+    await OrderStore.post(skus);
+    router.push(`/wmss/warehouse/order-list?code=${material.code}`);
 };
 
 const nowOrderEditorTrans = computed(() => MAP_ENUM_ORDER.get(OrderStore.editor.type));
