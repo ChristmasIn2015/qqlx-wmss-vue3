@@ -1,7 +1,8 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>收款记录</span>
+            <q-btn icon="arrow_back" padding="xs" flat style="margin-left: -4px; margin-right: 4px" @click="$router.back()"></q-btn>
+            <span>付款记录</span>
 
             <dialog-intro></dialog-intro>
             <q-space></q-space>
@@ -69,7 +70,7 @@
         :columns="[
             { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left' },
             { name: 'code', field: 'code', label: '编号', align: 'left' },
-            { name: 'keyOrigin', field: 'keyOrigin', label: '打款人', align: 'left' },
+            { name: 'keyOrigin', field: 'keyOrigin', label: '收款人', align: 'left' },
             { name: 'keyHouse', field: 'keyHouse', label: '银行', align: 'left' },
             { name: 'type', field: 'type', label: '分类', align: 'left' },
             { name: 'amount', field: 'amount', label: '' },
@@ -97,15 +98,12 @@
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入打款人" v-model="schema.keyOrigin" />
+                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入收款人" v-model="schema.keyOrigin" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle">
-                    <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
-                    收款
-                </q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-grey"> <q-badge class="q-mr-xs shadow-2" color="cyan" rounded></q-badge>付款 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
                 </q-td>
@@ -142,7 +140,7 @@
                         dense
                         clearable
                         color="teal"
-                        placeholder="搜索打款人"
+                        placeholder="搜索收款人"
                         v-model="BookStore.search.keyOrigin"
                         @blur="BookStore.get(1)"
                     />
@@ -235,7 +233,7 @@
                 <q-td key="code" class="text-grey" :props="props" :style="NotifyStore.fontStyle">{{ props.row.code }}</q-td>
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyOrigin }}</q-td>
                 <q-td key="keyHouse" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyHouse }}</q-td>
-                <q-td key="type" :style="NotifyStore.fontStyle" class="text-grey">收款 </q-td>
+                <q-td key="type" :style="NotifyStore.fontStyle" class="text-grey"> <q-badge class="q-mr-xs shadow-2" color="cyan" rounded></q-badge>付款 </q-td>
                 <q-td
                     key="amount"
                     :props="props"
@@ -263,7 +261,7 @@
                 </q-td>
                 <q-td key="remark" :props="props" :style="NotifyStore.fontStyle">
                     <span class="cursor-pointer" :class="props.row.remark ? '' : 'text-grey'">
-                        {{ props.row.remark || "修改" }}
+                        {{ props.row.remark || "备注" }}
                         <q-menu anchor="top left" @hide="BookStore.put(props.row)">
                             <q-card class="w-400">
                                 <q-toolbar class="bg-teal text-white">
@@ -284,7 +282,10 @@
                     </span>
                 </q-td>
                 <q-td key="_id" :props="props" :style="NotifyStore.fontStyle">
-                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-teal" @click="toEdit(props.row)"> 去使用 </span>
+                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-teal row items-center no-wrap" @click="toEdit(props.row)">
+                        采购结清
+                        <q-icon name="chevron_right"></q-icon>
+                    </span>
                 </q-td>
             </q-tr>
         </template>
@@ -300,7 +301,13 @@
                 v-model="BookStore.page.page"
                 :max-pages="10"
                 :max="Math.ceil(BookStore.total / BookStore.page.pageSize)"
-                @update:model-value="(value) => BookStore.get(value)"
+                @update:model-value="
+                    (value) => {
+                        startIndex = -1;
+                        endIndex = -1;
+                        BookStore.get(value);
+                    }
+                "
             />
             <q-space></q-space>
             <div>
@@ -368,11 +375,11 @@ const filePickNext = async (file: File) => {
             if (!sheet) throw new Error(`找不到表格 [资金导入] !`);
             const rowJsonList: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet);
 
-            // 1.批量上传打款人
+            // 1.批量上传收款人
             const uploading = [];
             for (let i in rowJsonList) {
                 const row = rowJsonList[i];
-                const schema = BookStore.getSchema({ type: BookStore.search.type, direction: BookStore.search.direction });
+                const schema = BookStore.getSchema(match);
                 schema.keyOrigin = String(row["@客户名称"] || "");
                 schema.keyHouse = String(row["@银行"] || "");
                 schema.amount = Number(row["@金额"] || 0) || 0;
@@ -422,12 +429,12 @@ const toEdit = (book: BookJoined) => {
         }
     });
     OrderStore.listPicked = cloneDeep(orders);
-    router.push("/wmss/finance/book-1002-edit");
+    router.push("/wmss/finance/book-220201-edit");
 };
 
 const match = {
-    type: ENUM_BOOK_TYPE.YSZK,
-    direction: ENUM_BOOK_DIRECTION.DAI,
+    type: ENUM_BOOK_TYPE.YFZK,
+    direction: ENUM_BOOK_DIRECTION.JIE,
 };
 onMounted(() => {
     BookStore.setEditor(BookStore.getSchema(match));

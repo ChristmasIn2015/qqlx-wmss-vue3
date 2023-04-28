@@ -1,7 +1,7 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>销售开单</span>
+            <span>创建采购清单</span>
             <dialog-intro />
         </div>
     </div>
@@ -10,25 +10,23 @@
 
     <div class="q-py-md row">
         <q-space></q-space>
-        <q-btn class="q-ml-sm" push square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
+        <q-btn class="q-ml-sm" square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
         <q-btn
-            v-if="contactPicked._id"
             color="negative"
             class="q-ml-sm"
             square
-            push
             :loading="OrderStore.loadding"
             @click="
                 async () => {
                     OrderStore.setEditor();
-                    OrderStore.editor.type = ENUM_ORDER.SALES;
+                    OrderStore.editor.type = ENUM_ORDER.PURCHASE;
                     OrderStore.editor.contactId = contactPicked._id;
                     await OrderStore.post(SkuStore.listPicked);
-                    $router.push('/wmss/trade/sale-list');
+                    $router.push('/wmss/purchase/list');
                 }
             "
         >
-            创建销售单
+            创建采购清单
         </q-btn>
     </div>
 

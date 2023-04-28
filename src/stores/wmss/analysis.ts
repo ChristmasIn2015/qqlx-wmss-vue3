@@ -36,6 +36,8 @@ function getSchema(): ContactAnalysis {
         amountOrder: 0,
         amountBookOfOrder: 0,
         amountBookOfOrderRest: 0,
+        amountBookOfOrderVAT: 0,
+        amountBookOfOrderVATRest: 0,
         ...getMongodbBase(),
     };
 }

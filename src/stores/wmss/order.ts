@@ -17,8 +17,8 @@ import type {
     OrderJoined,
     Order,
     Sku,
-    getSkuByOrderDto,
-    getSkuByOrderRes,
+    getOrderInfoDto,
+    getOrderInfoRes,
 } from "qqlx-core";
 
 import { request } from "@/lib";
@@ -50,6 +50,8 @@ function getSchema(): Order {
 
         amountBookOfOrder: 0,
         amountBookOfOrderRest: 0,
+        amountBookOfOrderVAT: 0,
+        amountBookOfOrderVATRest: 0,
         ...getMongodbBase(),
     };
 }
@@ -99,11 +101,6 @@ export const useOrderStore = defineStore("Order", {
                     requireAccounterId: this.requireAccounterId,
                     sortKey: this.sortKey,
                     sortValue: this.sortValue,
-                    joinContact: true,
-                    joinAccounter: !simple,
-                    joinManager: !simple,
-                    joinCreator: !simple,
-                    joinSku,
                 };
                 const res: getOrderRes = await request.get(PATH_ORDER, { dto });
                 this.list = res.list;
@@ -141,11 +138,6 @@ export const useOrderStore = defineStore("Order", {
                 requireAccounterId: this.requireAccounterId,
                 sortKey: this.sortKey,
                 sortValue: this.sortValue,
-                joinContact: true,
-                joinAccounter: false,
-                joinManager: false,
-                joinCreator: false,
-                joinSku: true,
             };
             const res: getOrderRes = await request.get(PATH_ORDER, { dto });
             return res.list;
@@ -212,8 +204,8 @@ export const useOrderStore = defineStore("Order", {
             }
         },
         async getSku(order: Order) {
-            const dto: getSkuByOrderDto = { orderId: order._id };
-            const res: getSkuByOrderRes = await request.get(PATH_ORDER + "/info", { dto });
+            const dto: getOrderInfoDto = { orderId: order._id };
+            const res: getOrderInfoRes = await request.get(PATH_ORDER + "/info", { dto });
             return res;
         },
         getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {

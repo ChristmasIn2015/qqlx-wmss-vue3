@@ -1,8 +1,8 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
-            <span>修改发票明细</span>
+            <q-btn icon="arrow_back" padding="xs" flat style="margin-left: -4px; margin-right: 4px" @click="$router.back()"></q-btn>
+            <span>修改（销项）发票明细</span>
         </div>
         <div class="text-option text-primary"></div>
     </div>
@@ -15,22 +15,33 @@
                 class="full-height"
                 separator="cell"
                 :rows-per-page-options="[0]"
-                :rows="BookStore.listPicked"
+                :rows="OrderStore.listPicked"
                 :columns="[
-                    { name: 'code', field: 'code', label: '打款编号', align: 'left' },
-                    { name: 'keyOrigin', field: 'keyOrigin', label: '打款人', align: 'left' },
-                    { name: 'amount', field: 'amount', label: '打款金额', align: 'right' },
-                    { name: 'amountBookOfSelf', field: 'amountBookOfSelf', label: '开票金额', align: 'right', style: NotifyStore.cellStyle },
-                    { name: 'remark', field: 'remark', label: '备注', align: 'left' },
+                    { name: 'code', field: 'code', label: '订单信息', align: 'left' },
+                    { name: 'contactId', field: 'contactId', label: '客户', align: 'left' },
+                    { name: 'amount', field: 'amount', label: '订单金额' },
+                    { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '开票金额' },
+                    { name: 'remark', field: 'remark', label: '订单备注', align: 'left' },
                     { name: '_id', field: '_id', align: 'left', label: '操作' },
                 ]"
             >
                 <template v-slot:body="props">
                     <q-tr>
-                        <q-td key="code" :props="props" :style="NotifyStore.fontStyle">{{ props.row.code }}</q-td>
-                        <q-td key="keyOrigin" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyOrigin }}</q-td>
-                        <q-td key="amount" :props="props" :style="NotifyStore.fontStyle">{{ props.row.amount.toFixed(2) }}</q-td>
-                        <q-td key="amountBookOfSelf" :style="NotifyStore.cellStyle">
+                        <q-td key="code" :props="props" :style="NotifyStore.cellStyle">
+                            <div>
+                                {{ props.row.code }}
+                            </div>
+                        </q-td>
+                        <q-td key="contactId" :props="props" :style="NotifyStore.fontStyle">
+                            <div>
+                                <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
+                                {{ props.row.joinContact?.name }}
+                            </div>
+                        </q-td>
+                        <q-td key="amount" :props="props" class="text-right" :style="NotifyStore.fontStyle">
+                            {{ props.row.amount.toFixed(2) }}
+                        </q-td>
+                        <q-td key="amountBookOfOrderVAT" :style="NotifyStore.cellStyle">
                             <q-input
                                 dense
                                 square
@@ -38,13 +49,17 @@
                                 type="number"
                                 input-class="text-body1 text-right"
                                 placeholder="请输入金额"
-                                v-model="props.row.amountBookOfSelf"
-                                color="purple"
-                            />
+                                v-model="props.row.amountBookOfOrderVAT"
+                                color="pink-6"
+                            >
+                                <template v-slot:append>
+                                    <span class="text-body1">元</span>
+                                </template>
+                            </q-input>
                         </q-td>
-                        <q-td key="remark" :props="props" :style="NotifyStore.fontStyle">{{ props.row.remark }}</q-td>
-                        <q-td key="_id">
-                            <q-btn dense class="text-negative" icon="close" flat @click="() => BookStore.listPicked.splice(props.rowIndex, 1)"> </q-btn>
+                        <q-td key="remark" :props="props" class="ellipsis" :style="NotifyStore.fontStyle">{{ props.row.remark || "无" }}</q-td>
+                        <q-td key="_id" style="padding: 0 4px 0 0">
+                            <q-btn dense class="text-negative" icon="close" flat @click="() => OrderStore.listPicked.splice(props.rowIndex, 1)"> </q-btn>
                         </q-td>
                     </q-tr>
                 </template>
@@ -150,13 +165,13 @@
                 <q-card-actions>
                     <q-space></q-space>
                     <q-btn square @click="$router.back()">返回</q-btn>
-                    <q-btn square color="purple" :loading="BookStore.loadding" @click="action()">保存</q-btn>
+                    <q-btn square push color="purple" :loading="BookStore.loadding" @click="action()">保存发票</q-btn>
                 </q-card-actions>
             </q-card>
         </div>
     </div>
 
-    <pickerBook1002 />
+    <picker-book-order :type="ENUM_ORDER.SALES" :is-invoice="true" />
 </template>
 
 <script lang="ts" setup>
@@ -165,9 +180,9 @@ import { useRouter } from "vue-router";
 import { cloneDeep, debounce } from "lodash";
 
 import { MongodbSort } from "qqlx-cdk";
-import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
+import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, ENUM_ORDER } from "qqlx-core";
 
-import pickerBook1002 from "@/components/picker-book-1002.vue";
+import pickerBookOrder from "@/components/picker-order.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCorpStore } from "@/stores/brand/corp";
 import { useConfigStore } from "@/stores/brand/config";
@@ -178,23 +193,17 @@ const router = useRouter();
 const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
 const Config = useConfigStore();
+const OrderStore = useOrderStore();
 const BookStore = useBookStore();
 
 const action = async () => {
     try {
         // 记得把金额换回来
-        const books = cloneDeep(BookStore.listPicked);
-        books.forEach((o) => (o.amount = o.amountBookOfSelf));
-        BookStore.listPicked = [];
+        const orders = cloneDeep(OrderStore.listPicked);
+        orders.forEach((o) => (o.amount = o.amountBookOfOrderVAT));
+        OrderStore.listPicked = [];
 
-        if (BookStore.editor._id) {
-            await BookStore.put(BookStore.editor, [], books);
-        } else {
-            const create = await BookStore.post(BookStore.editor);
-            if (create && create[0]) {
-                await BookStore.put(create[0], [], books);
-            }
-        }
+        await BookStore.put(BookStore.editor, orders);
         router.back();
     } catch (error) {
         NotifyStore.fail((error as Error).message);
@@ -208,7 +217,7 @@ const nowCorps = computed(() => {
 });
 const amountBookPicking = computed(() => {
     let amount = 0;
-    BookStore.listPicked.map((e) => (amount += Number(e.amountBookOfSelf)));
+    OrderStore.listPicked.map((e) => (amount += Number(e.amountBookOfOrderVAT)));
     return Number(parseInt((amount * 100).toString()) / 100);
 });
 </script>

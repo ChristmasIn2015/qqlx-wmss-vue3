@@ -10,7 +10,9 @@
                         </q-tab>
                     </q-tabs>
                     <q-space></q-space>
-                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/system/cabinet')"></q-btn>
+                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/system/cabinet')">
+                        <q-tooltip class="text-body1">去设置商品</q-tooltip>
+                    </q-btn>
                 </div>
             </template>
             <template v-slot:after>
@@ -26,7 +28,8 @@
                         { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'countFinal', field: 'countFinal', label: '库存', style: NotifyStore.cellStyle },
                         { name: 'price', field: 'price', label: '推荐单价', style: NotifyStore.cellStyle },
-                        { name: 'timeCreateString', field: 'timeCreateString', label: '时间', style: 'font-size: 16px' },
+                        { name: 'timeCreateString', field: 'timeCreateString', label: '时间', style: NotifyStore.fontStyle },
+                        { name: 'actions', field: 'actions', label: '操作', style: 'width: 0px' },
                     ]"
                 >
                     <template v-slot:header="props">
@@ -96,6 +99,7 @@
                                 <span>时间</span>
                                 <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                             </q-th>
+                            <q-th></q-th>
                         </q-tr>
                     </template>
                     <template v-slot:body="props">
@@ -127,6 +131,15 @@
                                     <q-space></q-space>
                                     <span>{{ props.row.timeCreateString }}</span>
                                 </div>
+                            </q-td>
+                            <q-td key="actions" :props="props" style="padding: 0 4px">
+                                <q-btn flat padding="xs" icon="more_vert" square>
+                                    <q-menu>
+                                        <q-item clickable v-close-popup class="text-negative" @click="CabinetUnitStore.deleteOne(nowCabinet, props.row)">
+                                            <q-item-section>删除</q-item-section>
+                                        </q-item>
+                                    </q-menu>
+                                </q-btn>
                             </q-td>
                         </q-tr>
                     </template>

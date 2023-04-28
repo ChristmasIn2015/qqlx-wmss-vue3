@@ -1,7 +1,7 @@
 <template>
     <div class="q-pl-xs q-py-md">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>销售单（未结清）</span>
+            <span>{{ MAP_ENUM_ORDER.get(vue_props.type)?.text }}（未结清）</span>
             <q-space></q-space>
             <picker-range
                 @change="
@@ -87,18 +87,19 @@
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
-                        @click="OrderStore.sort('amountBookOfOrder', true)"
+                        :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder') }"
+                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder', true)"
                     >
-                        <span>已收款</span>
+                        <span v-if="vue_props.type === ENUM_ORDER.SALES">{{ vue_props.isInvoice ? "已开发票" : "已收款" }}</span>
+                        <span v-else-if="vue_props.type === ENUM_ORDER.PURCHASE">{{ vue_props.isInvoice ? "已收发票" : "已付款" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
-                        @click="OrderStore.sort('amountBookOfOrderRest', true)"
+                        :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderRestVAT' : 'amountBookOfOrderRest') }"
+                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderRestVAT' : 'amountBookOfOrderRest', true)"
                     >
-                        <span>还应确认</span>
+                        <span>{{ vue_props.isInvoice ? "可开票" : "还应确认" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th class="text-left">操作</q-th>
@@ -117,7 +118,7 @@
             <template v-slot:body="props">
                 <q-tr>
                     <q-td key="code" :props="props">
-                        <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
+                        <q-badge class="q-mr-xs shadow-2" :color="type === ENUM_ORDER.SALES ? 'pink-6' : 'cyan'" rounded></q-badge>
                         {{ props.row.code }}
                     </q-td>
                     <q-td key="contactId" :props="props">
@@ -135,7 +136,11 @@
                         {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td key="amountBookOfOrder" :props="props" class="text-grey">
-                        {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        {{
+                            (vue_props.isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrder).toLocaleString("zh", {
+                                minimumFractionDigits: 2,
+                            })
+                        }}
                     </q-td>
                     <q-td
                         key="amountBookOfOrderRest"
@@ -143,11 +148,16 @@
                         :props="props"
                         :class="{
                             'text-through': props.row.accounterId,
-                            'text-grey': props.row.amountBookOfOrderRest < 1 || props.row.accounterId,
-                            'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
+                            'text-grey':
+                                (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
+                            'text-weight-bold': (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) >= 1,
                         }"
                     >
-                        {{ props.row.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        {{
+                            (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest).toLocaleString("zh", {
+                                minimumFractionDigits: 2,
+                            })
+                        }}
                     </q-td>
                     <q-td key="_id" :props="props">
                         <span
@@ -195,7 +205,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 
 import { MongodbSort, getPage } from "qqlx-cdk";
-import { ENUM_ORDER, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, Contact, Order } from "qqlx-core";
+import { ENUM_ORDER, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, Contact, Order, MAP_ENUM_ORDER } from "qqlx-core";
 
 import pickerRange from "./picker-range.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
@@ -226,21 +236,25 @@ const pick = (order: Order) => {
     const match = OrderStore.listPicked.findIndex((p) => p._id === order._id);
     match > -1 && OrderStore.listPicked.splice(match, 1);
 
-    // 2.设置结清金额
     const picking = cloneDeep(order);
-    if (picking.amountBookOfOrderRest <= 0) {
-        NotifyStore.fail(`此订单已收款 ${picking.amountBookOfOrder} 元，请注意重复结清`);
-    }
-    picking.amountBookOfOrder = picking.amountBookOfOrderRest;
+    if (vue_props.isInvoice) {
+        picking.amountBookOfOrderVAT = picking.amountBookOfOrderVATRest;
+    } else {
+        // 2.设置结清金额
+        if (picking.amountBookOfOrderRest <= 0) {
+            NotifyStore.fail(`此订单已收款 ${picking.amountBookOfOrder} 元，请注意重复结清`);
+        }
+        picking.amountBookOfOrder = picking.amountBookOfOrderRest;
 
-    // 3.不能超过打款金额
-    const gap = BookStore.editor.amount - AmountOrderPicking.value;
-    if (picking.amountBookOfOrder > gap) picking.amountBookOfOrder = parseInt((gap * 100).toString()) / 100;
+        // 3.不能超过打款金额
+        const gap = BookStore.editor.amount - AmountOrderPicking.value;
+        if (picking.amountBookOfOrder > gap) picking.amountBookOfOrder = parseInt((gap * 100).toString()) / 100;
 
-    // 4.剩余可用金额必须大于0
-    if (gap <= 0) {
-        picking.amountBookOfOrder = 0;
-        NotifyStore.fail(`资金使用率已满`);
+        // 4.剩余可用金额必须大于0
+        if (gap <= 0) {
+            picking.amountBookOfOrder = 0;
+            NotifyStore.fail(`资金使用率已满`);
+        }
     }
 
     // done
@@ -253,11 +267,21 @@ const AmountOrderPicking = computed(() => {
 });
 
 const router = useRouter();
+const vue_props = defineProps({
+    type: {
+        type: Number,
+        default: ENUM_ORDER.SALES,
+    },
+    isInvoice: {
+        type: Boolean,
+        default: false,
+    },
+});
 onMounted(async () => {
     const edit = BookStore.editor;
     if (!edit._id) router.replace("/wmss/finance/book");
 
-    OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
+    OrderStore.setEditor(OrderStore.getSchema(vue_props.type));
     OrderStore.page = getPage(8);
     OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;

@@ -5,7 +5,7 @@ import { MongodbSort, getMongodbBase, getPage } from "qqlx-cdk";
 import { ENUM_ORDER, ENUM_LAYOUT_CABINET, ENUM_POUNDS_FORMULA, PATH_SKU } from "qqlx-core";
 
 import type { Page } from "qqlx-cdk";
-import type { getSkuDto, getSkuRes, patchSkuDto, patchSkuRes, SkuJoined, getSkuByOrderDto, getSkuByOrderRes, Sku, Order } from "qqlx-core";
+import type { getSkuDto, getSkuRes, patchSkuDto, patchSkuRes, SkuJoined, getOrderInfoDto, getOrderInfoRes, Sku, Order } from "qqlx-core";
 
 import { request } from "@/lib";
 import { useNotifyStore } from "@/stores/quasar/notify";

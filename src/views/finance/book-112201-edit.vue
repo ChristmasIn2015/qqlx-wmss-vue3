@@ -1,10 +1,10 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
+            <q-btn icon="arrow_back" padding="xs" flat style="margin-left: -4px; margin-right: 4px" @click="$router.back()"></q-btn>
             <span>修改收款明细 </span>
         </div>
-        <div class="text-option text-primary">
+        <div class="text-option text-primary q-mt-sm">
             对以下
             <span class="text-negative">{{ OrderStore.listPicked.length }}张</span>
             订单，您已确认实际收到货款 {{ nowAmount }} / {{ BookStore.editor.amount }} 元。 （{{ ((nowAmount * 100) / BookStore.editor.amount).toFixed(2) }}%）
@@ -33,12 +33,14 @@
                     <q-tr>
                         <q-td key="code" :props="props" :style="NotifyStore.cellStyle">
                             <div>
-                                <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
                                 {{ props.row.code }}
                             </div>
                         </q-td>
                         <q-td key="contactId" :props="props" :style="NotifyStore.fontStyle">
-                            <div>{{ props.row.joinContact?.name }}</div>
+                            <div>
+                                <q-badge class="q-mr-xs shadow-2" color="pink-6" rounded></q-badge>
+                                {{ props.row.joinContact?.name }}
+                            </div>
                         </q-td>
                         <q-td key="amount" :props="props" class="text-right" :style="NotifyStore.fontStyle">
                             {{ props.row.amount.toFixed(2) }}
@@ -119,13 +121,13 @@
                 <q-card-actions>
                     <q-space></q-space>
                     <q-btn square push @click="router.back()">返回</q-btn>
-                    <q-btn square push color="teal" :loading="BookStore.loadding" @click="put()">确认</q-btn>
+                    <q-btn square push color="teal" :loading="BookStore.loadding" @click="put()">确认结清</q-btn>
                 </q-card-actions>
             </q-card>
         </div>
     </div>
 
-    <picker-book-order />
+    <picker-book-order :type="ENUM_ORDER.SALES" :is-invoice="false" />
 </template>
 
 <script lang="ts" setup>
@@ -133,7 +135,7 @@ import { useRouter } from "vue-router";
 import { onMounted, ref, computed } from "vue";
 import { clone, cloneDeep, debounce } from "lodash";
 
-import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION } from "qqlx-core";
+import { ENUM_ORDER } from "qqlx-core";
 
 import pickerBookOrder from "@/components/picker-order.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";

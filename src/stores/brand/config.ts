@@ -33,7 +33,10 @@ export const useConfigStore = defineStore("ConfigStore", {
                 const res: getConfigRes = await request.get(PATH_BRAND_CONFIG);
                 this.editor = res;
 
-                this.titles = res.titles.split(",").map((e: string) => ({ text: e }));
+                this.titles = res.titles
+                    .split(",")
+                    .filter((e) => e)
+                    .map((e: string) => ({ text: e }));
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {

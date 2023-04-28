@@ -109,7 +109,7 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
         /** @viewcatch */
         async patch(cabinet: Cabinet, price: number) {
             try {
-                const list = JSON.parse(JSON.stringify(this.listPicked)) as CabinetUnit[];
+                const list = cloneDeep(this.listPicked) as CabinetUnit[];
                 list.forEach((e) => (e.price = Number(price) || 0));
                 const dto: patchCabinetUnitDto = { excels: list };
                 const res: patchCabinetUnitRes = await request.patch(PATH_CABINET_UNIT, { dto });
@@ -128,6 +128,19 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
                     const dto: deleteCabinetUnitDto = { cabinetUnitId: unit._id };
                     const res: deleteCabinetUnitRes = await request.delete(PATH_CABINET_UNIT, { dto });
                 }
+                this.listPicked = [];
+                await this.get(cabinet, 1);
+
+                NotifyStore.success("删除成功");
+            } catch (error) {
+                NotifyStore.fail((error as Error).message);
+            }
+        },
+        /** @viewcatch */
+        async deleteOne(cabinet: Cabinet, unit: CabinetUnit) {
+            try {
+                const dto: deleteCabinetUnitDto = { cabinetUnitId: unit._id };
+                const res: deleteCabinetUnitRes = await request.delete(PATH_CABINET_UNIT, { dto });
                 this.listPicked = [];
                 await this.get(cabinet, 1);
 

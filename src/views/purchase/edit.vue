@@ -1,8 +1,11 @@
 <template>
-    <div class="q-pl-xs q-mb-sm">
+    <div class="q-pl-xs q-mb-lg">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>销售开单</span>
-            <dialog-intro />
+            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
+            <span>修改采购清单</span>
+        </div>
+        <div class="text-option text-primary">
+            <span>您正在修改采购单据 {{ OrderStore.editor?.code }}</span>
         </div>
     </div>
 
@@ -11,24 +14,8 @@
     <div class="q-py-md row">
         <q-space></q-space>
         <q-btn class="q-ml-sm" push square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
-        <q-btn
-            v-if="contactPicked._id"
-            color="negative"
-            class="q-ml-sm"
-            square
-            push
-            :loading="OrderStore.loadding"
-            @click="
-                async () => {
-                    OrderStore.setEditor();
-                    OrderStore.editor.type = ENUM_ORDER.SALES;
-                    OrderStore.editor.contactId = contactPicked._id;
-                    await OrderStore.post(SkuStore.listPicked);
-                    $router.push('/wmss/trade/sale-list');
-                }
-            "
-        >
-            创建销售单
+        <q-btn v-if="contactPicked._id" class="q-ml-sm" square push color="negative" :loading="OrderStore.loadding" @click="putOrder()">
+            修改 {{ OrderStore.editor.code }}
         </q-btn>
     </div>
 
@@ -48,26 +35,41 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import { ENUM_ORDER } from "qqlx-core";
+import { onMounted, ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { ENUM_ORDER, MAP_ENUM_ORDER } from "qqlx-core";
 
-import dialogIntro from "@/components/dialog-intro.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
 import containerSku from "@/components/container-sku.vue";
 import listContact from "@/components/list-contact.vue";
-
+import { useNotifyStore } from "@/stores/quasar/notify";
+import { useCorpStore } from "@/stores/brand/corp";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useContactStore } from "@/stores/brand/contact";
 import { useOrderStore } from "@/stores/wmss/order";
 
+const NotifyStore = useNotifyStore();
+const CorpStore = useCorpStore();
 const SkuStore = useSkuStore();
+const ContactStore = useContactStore();
 const OrderStore = useOrderStore();
 
-const ContactStore = useContactStore();
 const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
 
-onMounted(async () => {
-    SkuStore.setEditor();
+const router = useRouter();
+const putOrder = async () => {
+    OrderStore.editor.contactId = contactPicked.value._id;
+    const code = await OrderStore.put(OrderStore.editor, SkuStore.listPicked);
+    router.push(`/wmss/purchase/list?code=${code}`);
+};
+
+onMounted(() => {
+    // 进入页面之前会对 SkuStore OrderStore 预设置值
+    if (OrderStore.editor._id) {
+        contactPicked.value = OrderStore.editor.joinContact || ContactStore.getSchema();
+    } else {
+        router.push("/wmss/system/dashboard");
+    }
 });
 </script>

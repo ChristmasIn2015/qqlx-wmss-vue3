@@ -1,11 +1,10 @@
 <template>
-    <div class="q-pl-xs q-mb-md">
+    <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
+            <q-btn icon="arrow_back" fab flat style="margin-left: -14px" @click="$router.back()"></q-btn>
             <span>回款分析</span>
             <q-space></q-space>
         </div>
-        <div class="text-option text-primary q-my-sm"></div>
     </div>
 
     <q-card square>
@@ -17,11 +16,12 @@
             :rows="AnalysisStore.listContact"
             :rows-per-page-options="[0]"
             :columns="[
-                { name: 'contactId', field: 'contactId', label: '', align: 'left' },
-                { name: 'count', field: 'count', label: '', align: 'right' },
-                { name: 'amountOrder', field: 'amountOrder', label: '', align: 'right' },
-                { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '', align: 'right' },
-                { name: 'amountBookOfOrderRest', field: 'amountBookOfOrderRest', label: '', align: 'right' },
+                { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
+                { name: 'count', field: 'count', label: '', align: 'right', style: NotifyStore.cellStyle },
+                { name: 'amountOrder', field: 'amountOrder', label: '', align: 'right', style: NotifyStore.cellStyle },
+                { name: 'rate', field: 'rate', label: '', align: 'right', style: NotifyStore.cellStyle },
+                { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '', align: 'right', style: NotifyStore.cellStyle },
+                { name: 'amountBookOfOrderRest', field: 'amountBookOfOrderRest', label: '', align: 'right', style: NotifyStore.cellStyle },
             ]"
         >
             <template v-slot:header="props">
@@ -78,6 +78,9 @@
                         <span>累计应收款</span>
                         <q-icon :name="AnalysisStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
+                    <q-th key="rate" class="text-right">
+                        <span>收款进度</span>
+                    </q-th>
                     <q-th
                         key="amountBookOfOrder"
                         class="text-right cursor-pointer"
@@ -115,9 +118,18 @@
                 <q-tr>
                     <q-td key="contactId" :props="props">{{ props.row.joinContact?.name }} </q-td>
                     <q-td key="count" :props="props">{{ props.row.count }} </q-td>
-                    <q-td key="amountOrder" :props="props">{{ props.row.amountOrder.toFixed(2) }} </q-td>
-                    <q-td key="amountBookOfOrder" :props="props">{{ props.row.amountBookOfOrder.toFixed(2) }} </q-td>
-                    <q-td key="amountBookOfOrderRest" :props="props">{{ props.row.amountBookOfOrderRest.toFixed(2) }} </q-td>
+                    <q-td key="amountOrder" :props="props" :class="props.row.amountOrder <= 1 ? 'text-grey' : ''">
+                        {{ props.row.amountOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td key="rate" :props="props">
+                        <span v-if="props.row.amountOrder > 0"> {{ Math.ceil((props.row.amountBookOfOrder / props.row.amountOrder) * 100) }}% </span>
+                    </q-td>
+                    <q-td key="amountBookOfOrder" :props="props" class="text-grey">
+                        {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td key="amountBookOfOrderRest" :props="props" :class="props.row.amountBookOfOrderRest <= 1 ? 'text-grey' : 'text-negative text-bold'">
+                        {{ props.row.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
                 </q-tr>
             </template>
             <template v-slot:bottom="props">

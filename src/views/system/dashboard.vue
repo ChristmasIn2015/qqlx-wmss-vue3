@@ -63,13 +63,12 @@
         </div>
         <div class="col q-px-xs">
             <q-btn class="full-width q-mb-sm text-body1" color="negative" square @click="$router.push('/wmss/trade/sale-create')">
-                <span>代客下单</span>
+                <span>销售开单</span>
             </q-btn>
             <q-btn disable class="full-width q-mb-sm text-body1" square>
-                小程序商城 (敬请期待)
-                <q-tooltip class="text-body1" anchor="center right" self="center right">
-                    <div>* 您的客户可以在微信小程序中，直接向您下单</div>
-                    <div>* 您的客户将会直接向您的银行卡账户进行付款</div>
+                移动端 (敬请期待)
+                <q-tooltip class="text-body1">
+                    <div>* 您可以在微信小程序中，销售开单</div>
                 </q-tooltip>
             </q-btn>
         </div>

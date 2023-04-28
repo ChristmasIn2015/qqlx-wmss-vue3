@@ -1,7 +1,8 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>发票列表</span>
+            <q-btn icon="arrow_back" padding="xs" flat style="margin-left: -4px; margin-right: 4px" @click="$router.back()"></q-btn>
+            <span>增值税（销项）发票明细</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn
@@ -51,13 +52,7 @@
                 class="q-ml-sm"
                 color="purple"
                 :loading="BookStore.loadding"
-                @click="
-                    () => {
-                        BookStore.setEditor(BookStore.getSchema(match));
-                        BookStore.listPicked = [];
-                        $router.push('/wmss/finance/book-1122-edit');
-                    }
-                "
+                @click="BookStore.listExcel.push(BookStore.getSchema(match))"
             />
         </div>
         <div class="text-option text-primary q-my-sm"></div>
@@ -78,8 +73,8 @@
             { name: 'keyOrigin', field: 'keyOrigin', label: '客户', align: 'left' },
             { name: 'type', field: 'type', label: '分类', align: 'left' },
             { name: 'amount', field: 'amount', label: '发票金额' },
-            { name: 'amountBookOfSelf', field: 'amountBookOfSelf', label: '有效金额' },
-            { name: 'remark', field: 'remark', label: '备注', align: 'left' },
+            { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '有效金额' },
+            { name: 'remark', field: 'remark', label: '备注', align: 'left', style: 'min-width: 188px' },
             { name: '_id', field: '_id', label: '操作', align: 'left' },
         ]"
     >
@@ -101,7 +96,7 @@
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="发票号码" v-model="schema.keyCode" />
+                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="发票号码" v-model="schema.keyCode" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-select
@@ -111,10 +106,9 @@
                         emit-value
                         map-options
                         color="purple"
-                        class="q-mb-sm"
                         placeholder="请选择抬头"
                         :options="(nowCorps as any)"
-                        v-model="BookStore.editor.keyHouse"
+                        v-model="schema.keyHouse"
                     >
                     </q-select>
                 </q-td>
@@ -195,11 +189,11 @@
                     <q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                 </q-th>
                 <q-th
-                    key="amountBookOfSelf"
+                    key="amountBookOfOrder"
                     :props="props"
                     class="cursor-pointer"
-                    :class="{ 'text-negative': BookStore.sortKey === 'amountBookOfSelf' }"
-                    @click="BookStore.sort('amountBookOfSelf')"
+                    :class="{ 'text-negative': BookStore.sortKey === 'amountBookOfOrder' }"
+                    @click="BookStore.sort('amountBookOfOrder')"
                 >
                     <span>有效金额</span>
                     <q-icon :name="BookStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
@@ -220,7 +214,7 @@
 
         <template v-slot:body="props">
             <q-tr
-                class="cursor-crosshair select-none"
+                class="cursor-crosshair"
                 :class="{
                     'bg-grey-4': startIndex <= props.rowIndex && endIndex >= props.rowIndex,
                 }"
@@ -246,20 +240,20 @@
                     {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                 </q-td>
                 <q-td
-                    key="amountBookOfSelf"
+                    key="amountBookOfOrder"
                     :props="props"
                     :style="NotifyStore.cellStyle"
                     :class="{
-                        'text-weight-bold': props.row.amountBookOfSelf > 0,
-                        'text-negative': props.row.amountBookOfSelf > 0,
-                        'text-grey': props.row.amountBookOfSelf <= 0,
+                        'text-weight-bold': props.row.amountBookOfOrder > 0,
+                        'text-negative': props.row.amountBookOfOrder > 0,
+                        'text-grey': props.row.amountBookOfOrder <= 0,
                     }"
                 >
-                    {{ props.row.amountBookOfSelf.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                 </q-td>
                 <q-td key="remark" :props="props" :style="NotifyStore.cellStyle">
                     <span class="cursor-pointer" :class="props.row.remark ? '' : 'text-grey'">
-                        {{ props.row.remark || "修改" }}
+                        {{ props.row.remark || "备注" }}
                         <q-menu anchor="top left" @hide="BookStore.put(props.row)">
                             <q-card class="w-400">
                                 <q-toolbar class="bg-purple text-white">
@@ -280,7 +274,10 @@
                     </span>
                 </q-td>
                 <q-td key="_id" :props="props" :style="NotifyStore.cellStyle">
-                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-purple" @click="toEdit(props.row)"> 编辑 </span>
+                    <span v-if="props.row.isDisabled === false" class="cursor-pointer text-purple row items-center no-wrap" @click="toEdit(props.row)">
+                        选择订单
+                        <q-icon name="chevron_right"></q-icon>
+                    </span>
                 </q-td>
             </q-tr>
         </template>
@@ -334,9 +331,10 @@ import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, BookJoined, Book, Order, OrderJoin
 import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
-import { useBookStore } from "@/stores/wmss/book";
-import { useCorpStore } from "@/stores/brand/corp";
 import { useConfigStore } from "@/stores/brand/config";
+import { useCorpStore } from "@/stores/brand/corp";
+import { useBookStore } from "@/stores/wmss/book";
+import { useOrderStore } from "@/stores/wmss/order";
 
 const route = useRoute();
 const router = useRouter();
@@ -344,6 +342,7 @@ const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
 const ConfigStore = useConfigStore();
 const BookStore = useBookStore();
+const OrderStore = useOrderStore();
 const nowCorps = computed(() => {
     const nowCorp = CorpStore.picked;
     const list: string[] = [nowCorp.name, ...ConfigStore.titles.map((e) => e.text)];
@@ -394,21 +393,21 @@ const filePickNext = async (file: File) => {
     reader.readAsBinaryString(file);
 };
 const toEdit = (invoice: BookJoined) => {
-    const _invoice = cloneDeep(invoice);
-    BookStore.setEditor(_invoice);
+    const _book = cloneDeep(invoice);
+    BookStore.setEditor(_book);
 
-    const books: Book[] = [];
-    _invoice.joinBookOfSelf?.map((BS) => {
-        const book = BS.joinBook;
-        if (book) {
+    const orders: Order[] = [];
+    _book.joinBookOfOrder?.map((BookOfOrder) => {
+        const order = BookOfOrder.joinOrder as OrderJoined;
+        if (order) {
             // 这里把订单的金额换一下
-            book.amountBookOfSelf = BS.amount;
-            books.push(book);
+            order.amountBookOfOrderVAT = BookOfOrder.amount;
+            order.joinContact = BookOfOrder.joinContact;
+            orders.push(order);
         }
     });
-
-    BookStore.listPicked = books;
-    router.push("/wmss/finance/book-1122-edit");
+    OrderStore.listPicked = cloneDeep(orders);
+    router.push("/wmss/finance/book-112202-edit");
 };
 
 const match = {

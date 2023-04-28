@@ -83,8 +83,8 @@
                                         >
                                             <q-item-section>修改</q-item-section>
                                         </q-item>
-                                        <q-item clickable v-close-popup>
-                                            <q-item-section class="text-negative" @click="deleteConfirm(nowCabinet?._id)">删除</q-item-section>
+                                        <q-item clickable v-close-popup @click="deleteConfirm(nowCabinet?._id)">
+                                            <q-item-section class="text-negative">删除</q-item-section>
                                         </q-item>
                                     </q-menu>
                                 </q-btn>
@@ -137,14 +137,17 @@
                                         nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL
                                             ? `${(row.poundsFinal / 1000).toFixed(3)} 吨`
                                             : `${parseInt(countFinal.toString())} ${nowCabinet?.unit}`,
-                                    style: NotifyStore.cellStyle,
+                                    style: (row) =>
+                                        ((nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? row.poundsFinal : row.countFinal) <= 0
+                                            ? `color: #9e9e9e;`
+                                            : 'color: #C10015;') + NotifyStore.cellStyle,
                                 },
                                 {
                                     name: 'price',
                                     field: 'price',
                                     label: '推荐单价',
                                     format: (price) => `${price / 100} 元`,
-                                    style: NotifyStore.cellStyle,
+                                    style: (row) => (row.price <= 0 ? `color: #9e9e9e;` : 'color: #C10015;') + NotifyStore.cellStyle,
                                 },
                                 { name: 'timeCreateString', field: 'timeCreateString', label: '创建时间', style: NotifyStore.cellStyle },
                             ]"
@@ -225,7 +228,7 @@
                                         class="cursor-pointer"
                                         @click="CabinetUnitStore.sort(nowCabinet, 'timeCreate')"
                                     >
-                                        <span>时间</span>
+                                        <span>创建时间</span>
                                         <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                     </q-th>
                                 </q-tr>
@@ -292,6 +295,7 @@
                                     <q-td> </q-td>
                                 </q-tr>
                             </template>
+
                             <template v-slot:bottom="props">
                                 <q-pagination
                                     square

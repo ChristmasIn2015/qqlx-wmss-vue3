@@ -39,8 +39,6 @@ function getSchema(): Book {
 
         amountBookOfOrder: 0,
         amountBookOfOrderRest: 0,
-        amountBookOfSelf: 0,
-        amountBookOfSelfRest: 0,
         ...getMongodbBase(),
     };
 }
@@ -77,7 +75,6 @@ export const useBookStore = defineStore("Book", {
                     search: this.search,
                     sortKey: this.sortKey,
                     sortValue: this.sortValue,
-                    isAmountBookOfSelfRest: false,
                 };
                 const res: getBookRes = await request.get(PATH_BOOK, { dto });
                 this.list = res.list;
@@ -125,7 +122,7 @@ export const useBookStore = defineStore("Book", {
         },
         async put(entity?: Book, orders?: Order[], books?: Book[]) {
             const _entity = entity || this.editor;
-            const dto: putBookDto = { entity: _entity, orders, books };
+            const dto: putBookDto = { entity: _entity, orders };
             const res: putBookRes = await request.put(PATH_BOOK, { dto });
 
             this.setEditor();
