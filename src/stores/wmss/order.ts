@@ -138,6 +138,7 @@ export const useOrderStore = defineStore("Order", {
                 requireAccounterId: this.requireAccounterId,
                 sortKey: this.sortKey,
                 sortValue: this.sortValue,
+                joinSku: true,
             };
             const res: getOrderRes = await request.get(PATH_ORDER, { dto });
             return res.list;
@@ -173,7 +174,7 @@ export const useOrderStore = defineStore("Order", {
         async put(entity?: OrderJoined, skuList?: Sku[]) {
             let code = "";
             try {
-                this.loadding = true;
+                // this.loadding = true;
                 const target = entity || this.editor;
                 const dto: putOrderDto = { entity: target, skuList };
                 const res: putOrderRes = await request.put(PATH_ORDER, { dto });
@@ -184,7 +185,7 @@ export const useOrderStore = defineStore("Order", {
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {
-                this.loadding = false;
+                // this.loadding = false;
                 return code;
             }
         },

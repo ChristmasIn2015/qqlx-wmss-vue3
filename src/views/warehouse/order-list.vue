@@ -116,7 +116,7 @@
                             :class="{ 'bg-grey-4': props.expand }"
                             @click.stop="
                                 async () => {
-                                    if (props.expand === false) await setOrderSku(props.row);
+                                    if (props.expand === false) await setOrderInfo(props.row);
                                     props.expand = !props.expand;
                                 }
                             "
@@ -413,7 +413,7 @@ const SkuStore = useSkuStore();
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
-const setOrderSku = async (order: OrderJoined) => {
+const setOrderInfo = async (order: OrderJoined) => {
     try {
         OrderStore.loadding = true;
         const info = await OrderStore.getSku(order);

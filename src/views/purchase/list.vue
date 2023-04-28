@@ -210,7 +210,7 @@
                     :class="{ 'bg-grey-4': props.expand }"
                     @click.stop="
                         async () => {
-                            if (props.expand === false) await setOrderSku(props.row);
+                            if (props.expand === false) await setOrderInfo(props.row);
                             props.expand = !props.expand;
                         }
                     "
@@ -698,7 +698,7 @@ const downloadOrderList = async () => {
         OrderStore.loadding = false;
     }
 };
-const setOrderSku = async (order: OrderJoined) => {
+const setOrderInfo = async (order: OrderJoined) => {
     try {
         OrderStore.loadding = true;
         const info = await OrderStore.getSku(order);
@@ -723,7 +723,7 @@ const contactPicked = ref(ContactStore.getSchema());
 
 const UserStore = useUserStore();
 const setManager = async (order: OrderJoined, toClear = false) => {
-    await setOrderSku(order);
+    await setOrderInfo(order);
     const entity = cloneDeep(order);
     entity.managerId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
@@ -741,10 +741,10 @@ const setManager = async (order: OrderJoined, toClear = false) => {
     // sku
     await OrderStore.get();
     const target = OrderStore.list.find((e) => e._id === entity._id);
-    await setOrderSku(target as OrderJoined);
+    await setOrderInfo(target as OrderJoined);
 };
 const setAccounter = async (order: OrderJoined, toClear = false) => {
-    await setOrderSku(order);
+    await setOrderInfo(order);
     const entity = cloneDeep(order);
     entity.accounterId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
@@ -752,7 +752,7 @@ const setAccounter = async (order: OrderJoined, toClear = false) => {
     // sku
     await OrderStore.get();
     const target = OrderStore.list.find((e) => e._id === entity._id);
-    await setOrderSku(target as OrderJoined);
+    await setOrderInfo(target as OrderJoined);
 };
 
 const route = useRoute();
