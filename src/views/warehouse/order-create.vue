@@ -151,21 +151,22 @@ const createOrder = async () => {
     const skus = cloneDeep(SkuStore.listPicked);
 
     // 创建领料单
-    if (skuIndividualPicking.value?.deductionSkuId) {
+    if (skuIndividualPicking.value?.deductionSkuId && OrderStore.editor.type === ENUM_ORDER.PROCESS) {
         const individual = cloneDeep(skuIndividualPicking.value);
         individual.pounds = individual.poundsFinal - individual.pounds;
         OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.MATERIAL));
         const result = await OrderStore.post([individual]);
         material._id = result._id;
         material.code = result.code;
+
+        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PROCESS));
+        if (material._id) {
+            OrderStore.editor.parentOrderId = material._id;
+            OrderStore.editor.parentOrderType = ENUM_ORDER.MATERIAL;
+        }
     }
 
-    // 创建加工单
-    OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PROCESS));
-    if (material._id) {
-        OrderStore.editor.parentOrderId = material._id;
-        OrderStore.editor.parentOrderType = ENUM_ORDER.MATERIAL;
-    }
+    // 创建
     await OrderStore.post(skus);
     router.push(`/wmss/warehouse/order-list?code=${material.code}`);
 };
