@@ -52,7 +52,7 @@
                 </q-input>
             </div>
         </span>
-        <q-btn v-else square class="q-ml-sm" color="primary" @click="dialogSkuIndividual = true">
+        <q-btn v-else-if="OrderStore.editor.type === ENUM_ORDER.PROCESS" square class="q-ml-sm" color="primary" @click="dialogSkuIndividual = true">
             选择大件商品
             <q-tooltip class="text-body1">此大件商品将作为加工商品的原材料，并扣减库存</q-tooltip>
         </q-btn>
