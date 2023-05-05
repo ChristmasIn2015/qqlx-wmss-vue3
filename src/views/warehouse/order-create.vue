@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <container-sku-pounds />
+    <container-sku />
 
     <div class="q-py-md row items-start">
         <q-space></q-space>
@@ -40,7 +40,7 @@
                 >
                     <template v-slot:after>
                         <q-btn padding="sm" square icon="close" flat fab @click="skuIndividualPicking = SkuStore.getSchema()">
-                            <q-tooltip class="text-body1">选择其他大件商品</q-tooltip>
+                            <q-tooltip class="text-body1">选择其他原材料</q-tooltip>
                         </q-btn>
                     </template>
                     <template v-slot:prepend>
@@ -53,8 +53,8 @@
             </div>
         </span>
         <q-btn v-else-if="OrderStore.editor.type === ENUM_ORDER.PROCESS" square class="q-ml-sm" color="primary" @click="dialogSkuIndividual = true">
-            选择大件商品
-            <q-tooltip class="text-body1">此大件商品将作为加工商品的原材料，并扣减库存</q-tooltip>
+            选择原材料
+            <q-tooltip class="text-body1">此原材料将作为加工商品的原材料，并扣减库存</q-tooltip>
         </q-btn>
         <q-btn square v-if="nowOrderEditorTrans" push class="q-ml-sm" color="negative" :loading="OrderStore.loadding" @click="createOrder()">
             创建 {{ nowOrderEditorTrans?.text }}
@@ -63,10 +63,10 @@
 
     <picker-cabinet-unit />
 
-    <q-dialog v-model="dialogSkuIndividual" maximized>
+    <q-dialog v-model="dialogSkuIndividual" maximized position="bottom">
         <q-card>
             <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title class="text-weight-bold">大件商品</q-toolbar-title>
+                <q-toolbar-title class="text-weight-bold">原材料</q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
             <q-separator class="q-mb-md" />
@@ -93,7 +93,7 @@ import { MAP_ENUM_ORDER, ENUM_ORDER, SkuJoined, Order } from "qqlx-core";
 
 import listSkuIndividual from "@/components/list-sku-individual.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
-import containerSkuPounds from "@/components/container-sku-pounds.vue";
+import containerSku from "@/components/container-sku.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";

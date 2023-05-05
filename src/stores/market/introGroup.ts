@@ -35,8 +35,7 @@ export const useIntroGroupStore = defineStore({
             try {
                 const dto: getIntroGroupDto = { search: this.search };
                 const res: getIntroGroupRes = await request.get(PATH_INTRO_GROUP, { dto });
-                this.listMatched = res.filter((e) => e.path.includes(path || ""));
-                this.list = res.filter((e) => !e.path.includes(path || ""));
+                this.list = res;
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             }

@@ -14,7 +14,6 @@
                 { name: 'count', field: 'count', label: '数量', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'pounds', field: 'pounds', label: '过磅', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'price', field: 'price', label: '单价', style: NotifyStore.fontStyle },
-                { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.fontlStyle },
                 { name: 'remark', field: 'remark', label: '备注', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'timeCreateString', field: 'timeCreateString', align: 'left', label: '操作', style: NotifyStore.fontStyle },
             ]"
@@ -25,13 +24,16 @@
                     <q-th key="name" :props="props">品名</q-th>
                     <q-th key="norm" :props="props">规格</q-th>
                     <q-th key="count" :props="props">数量</q-th>
-                    <q-th key="pounds" :props="props">过磅</q-th>
+                    <q-th key="pounds" :props="props">
+                        <span>共</span>
+                        <span class="q-mx-sm text-h6 text-negative text-weight-bold">{{ listPickedPoundsTotal }}</span>
+                        <span>吨</span>
+                    </q-th>
                     <q-th key="price" :props="props">
                         <span>共</span>
                         <span class="q-mx-sm text-h6 text-negative text-weight-bold">{{ listPickedPriceTotal }}</span>
                         <span>元</span>
                     </q-th>
-                    <q-th key="areaId" :props="props">货位</q-th>
                     <q-th key="remark" :props="props">备注</q-th>
                     <q-th key="timeCreateString" :props="props">操作</q-th>
                 </q-tr>
@@ -39,39 +41,53 @@
 
             <template v-slot:body="props">
                 <q-tr :props="props">
-                    <q-td
-                        class="cursor-pointer"
-                        @click="
-                            props.row.layout =
-                                props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? ENUM_LAYOUT_CABINET.SUMMARY : ENUM_LAYOUT_CABINET.INDIVIDUAL
-                        "
-                    >
-                        <q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                            大件商品
+                    <q-td>
+                        <q-badge color="negative" v-if="props.row.deductionSkuId">
+                            现货
                             <q-tooltip class="text-body1">
-                                <div>您可以在“大件商品”菜单中</div>
-                                <div>具体看见每一个入库后的“大件商品”的剩余库存（如冷轧卷等）</div>
-                                <div>点击修改修改为 “普通”</div>
+                                <div>您正在销售 “原材料” 中的商品（如冷轧卷等）</div>
                             </q-tooltip>
                         </q-badge>
-                        <q-badge color="grey" v-else>
+                        <q-badge
+                            class="cursor-pointer"
+                            color="primary"
+                            v-else-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
+                            @click="props.row.layout = ENUM_LAYOUT_CABINET.SUMMARY"
+                        >
+                            原材料
+                            <q-tooltip class="text-body1">
+                                <div>点击修改修改为 “普通”</div>
+                                <div>* 您可以在“原材料”菜单中</div>
+                                <div>* 具体看见每一个入库后的“原材料”的剩余库存（如冷轧卷等）</div>
+                            </q-tooltip>
+                        </q-badge>
+                        <q-badge class="cursor-pointer" color="grey" v-else @click="props.row.layout = ENUM_LAYOUT_CABINET.INDIVIDUAL">
                             普通
                             <q-tooltip class="text-body1">
-                                <div>点击修改修改为 “大件商品”</div>
+                                <div>点击修改修改为 “原材料”</div>
                             </q-tooltip>
                         </q-badge>
-                    </q-td>
-                    <q-td :style="myTableCellStyle">
-                        <q-input borderless v-model="props.row.name" dense clearable input-class="text-body1" placeholder="请输入品名" />
                     </q-td>
                     <q-td :style="myTableCellStyle">
                         <q-input
                             dense
                             clearable
                             borderless
+                            placeholder="请输入品名"
                             input-class="text-body1"
+                            v-model="props.row.name"
+                            :disable="!!props.row.deductionSkuId"
+                        />
+                    </q-td>
+                    <q-td :style="myTableCellStyle">
+                        <q-input
+                            dense
+                            clearable
+                            borderless
                             placeholder="请输入规格"
+                            input-class="text-body1"
                             v-model="props.row.norm"
+                            :disable="!!props.row.deductionSkuId"
                             @update:model-value="SkuStore.setSkuPounds(props.row)"
                         />
                     </q-td>
@@ -81,11 +97,12 @@
                             dense
                             clearable
                             type="number"
+                            color="negative"
                             input-class="text-body1"
                             v-model="props.row.count"
                             :filled="!props.row.isPriceInPounds"
+                            :disable="!!props.row.deductionSkuId || props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
                             :borderless="props.row.isPriceInPounds"
-                            color="negative"
                             @update:model-value="SkuStore.setSkuPounds(props.row)"
                         >
                             <template v-slot:after>
@@ -101,6 +118,7 @@
                                 square
                                 glossy
                                 class="q-mx-sm"
+                                :disable="!!props.row.deductionSkuId"
                                 :color="props.row.isPriceInPounds ? 'dark' : 'negative'"
                                 @click="
                                     () => {
@@ -136,33 +154,15 @@
                             filled
                             clearable
                             type="number"
-                            input-class="text-body1 text-right"
-                            placeholder="请输入单价"
-                            v-model="props.row.price"
                             color="negative"
+                            placeholder="请输入单价"
+                            input-class="text-body1 text-right"
+                            v-model="props.row.price"
                         >
                             <template v-slot:after>
                                 <span class="text-body1">元 / {{ props.row.isPriceInPounds ? "吨" : props.row.unit }}</span>
                             </template>
                         </q-input>
-                    </q-td>
-
-                    <q-td>
-                        <q-select
-                            dense
-                            square
-                            filled
-                            clearable
-                            emit-value
-                            map-options
-                            color="negative"
-                            option-value="_id"
-                            option-label="name"
-                            placeholder="请选择货位"
-                            :options="AreaStore.list.filter((e) => e.isDisabled === false)"
-                            v-model="props.row.areaId"
-                        >
-                        </q-select>
                     </q-td>
                     <q-td>
                         <q-input
@@ -170,10 +170,10 @@
                             square
                             clearable
                             borderless
+                            color="negative"
                             placeholder="请输入备注"
                             input-class="text-body1"
                             v-model="props.row.remark"
-                            color="negative"
                         />
                     </q-td>
                     <q-td style="padding: 0 4px 0">
@@ -181,27 +181,30 @@
                             <q-menu>
                                 <q-card>
                                     <q-card-section>
+                                        <div class="text-h6 q-mb-sm">基础信息</div>
                                         <q-input
                                             dense
                                             square
                                             filled
                                             clearable
                                             class="q-mb-sm"
-                                            placeholder="请输入钢厂"
+                                            color="negative"
+                                            placeholder="请输入产地"
                                             input-class="text-body1"
                                             v-model="props.row.keyOrigin"
-                                            color="negative"
+                                            :disable="!!props.row.deductionSkuId"
                                         />
                                         <q-input
                                             dense
                                             filled
                                             square
                                             clearable
+                                            color="negative"
                                             class="q-mb-sm"
                                             placeholder="请输入材质"
                                             input-class="text-body1"
                                             v-model="props.row.keyFeat"
-                                            color="negative"
+                                            :disable="!!props.row.deductionSkuId"
                                         />
                                         <q-input
                                             dense
@@ -209,10 +212,41 @@
                                             filled
                                             clearable
                                             class="q-mb-sm"
-                                            placeholder="请输入编号"
+                                            color="negative"
+                                            placeholder="请输入捆包号"
                                             input-class="text-body1"
                                             v-model="props.row.keyCode"
+                                            :disable="!!props.row.deductionSkuId"
+                                        />
+                                        <div class="text-h6 q-mb-sm">位置信息</div>
+                                        <q-select
+                                            dense
+                                            square
+                                            filled
+                                            clearable
+                                            emit-value
+                                            map-options
+                                            label="仓库"
+                                            class="q-mb-sm"
+                                            option-value="_id"
+                                            option-label="name"
+                                            placeholder="请选择仓库"
+                                            :disable="!!props.row.deductionSkuId"
+                                            :options="WarehouseStore.list.filter((e) => e.isDisabled === false)"
+                                            v-model="props.row.warehouseId"
+                                        >
+                                        </q-select>
+                                        <q-input
+                                            dense
+                                            square
+                                            filled
+                                            clearable
+                                            class="q-mb-sm"
                                             color="negative"
+                                            placeholder="请选择货位号"
+                                            input-class="text-body1"
+                                            v-model="props.row.keyHouse"
+                                            :disable="!!props.row.deductionSkuId"
                                         />
                                     </q-card-section>
                                 </q-card>
@@ -243,10 +277,12 @@ import { useOrderStore } from "@/stores/wmss/order";
 import { cloneDeep } from "lodash";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useAreaStore } from "@/stores/brand/area";
+import { useWarehouseStore } from "@/stores/brand/warehouse";
 
 const route = useRoute();
 const NotifyStore = useNotifyStore();
 const AreaStore = useAreaStore();
+const WarehouseStore = useWarehouseStore();
 const SkuStore = useSkuStore();
 const OrderStore = useOrderStore();
 
@@ -258,5 +294,10 @@ const listPickedPriceTotal = computed(() => {
         price += num * Number(sku.price);
     });
     return Number(price.toFixed(2)).toLocaleString("zh", { minimumFractionDigits: 2 });
+});
+const listPickedPoundsTotal = computed(() => {
+    let pounds = 0;
+    SkuStore.listPicked.map((sku) => (pounds += sku.isPriceInPounds ? Number(sku.pounds) : 0));
+    return Number(pounds).toLocaleString("zh", { minimumFractionDigits: 3 });
 });
 </script>

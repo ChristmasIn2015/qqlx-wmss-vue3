@@ -6,7 +6,7 @@
                     <q-tabs v-model="tabIndex" dense class="text-primary">
                         <q-tab v-for="(cabinet, index) in CabinetStore.list" :name="index">
                             <span class="text-body1 q-my-sm">{{ cabinet.name }}</span>
-                            <q-badge v-if="cabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" floating>大件</q-badge>
+                            <q-badge v-if="cabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" floating>原料</q-badge>
                         </q-tab>
                     </q-tabs>
                     <q-space></q-space>
@@ -27,14 +27,11 @@
                         { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'countFinal', field: 'countFinal', label: '库存', style: NotifyStore.cellStyle },
-                        { name: 'areaId', field: 'areaId', label: '货位', style: NotifyStore.cellStyle },
-                        { name: 'price', field: 'price', label: '推荐单价', style: NotifyStore.cellStyle },
-                        { name: 'timeCreateString', field: 'timeCreateString', label: '时间', style: NotifyStore.fontStyle },
-                        { name: 'actions', field: 'actions', label: '操作', style: 'width: 0px' },
+                        { name: 'actions', field: 'actions', label: '操作', align: 'left' },
                     ]"
                 >
                     <template v-slot:header="props">
-                        <q-tr :props="props">
+                        <q-tr>
                             <q-th :style="NotifyStore.cellStyle">
                                 <q-input
                                     square
@@ -62,67 +59,28 @@
                             <q-th
                                 :props="props"
                                 key="countFinal"
+                                class="cursor-pointer"
                                 :class="
                                     nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL
                                         ? { 'text-negative': CabinetUnitStore.sortKey === 'poundsFinal' }
                                         : { 'text-negative': CabinetUnitStore.sortKey === 'countFinal' }
                                 "
-                                class="cursor-pointer"
                                 @click="CabinetUnitStore.sort(nowCabinet, nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'poundsFinal' : 'countFinal')"
                             >
                                 <span>
                                     <q-icon name="help_outlined" size="14px" v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
                                         <q-tooltip class="text-body1">
-                                            <div>您可以在“大件商品”菜单中，查看具体明细</div>
+                                            <div>您可以在“原材料”菜单中，查看具体明细</div>
                                         </q-tooltip>
                                     </q-icon>
                                     <span>剩余库存</span>
                                     <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                 </span>
                             </q-th>
-
-                            <q-th :props="props" key="areaId">
-                                <q-select
-                                    dense
-                                    square
-                                    filled
-                                    clearable
-                                    emit-value
-                                    map-options
-                                    label="货位"
-                                    color="purple"
-                                    option-value="_id"
-                                    option-label="name"
-                                    placeholder="请选择货位"
-                                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
-                                    v-model="CabinetUnitStore.search.areaId"
-                                    @update:model-value="CabinetUnitStore.get(nowCabinet, 1)"
-                                >
-                                </q-select>
-                            </q-th>
-                            <q-th
-                                :props="props"
-                                key="price"
-                                :class="{ 'text-negative': CabinetUnitStore.sortKey === 'price' }"
-                                class="cursor-pointer"
-                                @click="CabinetUnitStore.sort(nowCabinet, 'price')"
-                            >
-                                <span>推荐单价 </span>
-                                <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-                            </q-th>
-                            <q-th
-                                :props="props"
-                                key="timeCreateString"
-                                :class="{ 'text-negative': CabinetUnitStore.sortKey === 'timeCreate' }"
-                                class="cursor-pointer"
-                                @click="CabinetUnitStore.sort(nowCabinet, 'timeCreate')"
-                            >
-                                <span>时间</span>
-                                <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-                            </q-th>
-                            <q-th></q-th>
+                            <q-th key="actions" :props="props">操作</q-th>
                         </q-tr>
                     </template>
+
                     <template v-slot:body="props">
                         <q-tr :props="props">
                             <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
@@ -134,7 +92,7 @@
                                         :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"
                                         @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
                                     >
-                                        {{ props.row.poundsFinal }} 吨
+                                        {{ props.row.poundsFinal.toFixed(3) }} 吨
                                     </span>
                                     <span
                                         v-else
@@ -143,28 +101,58 @@
                                     >
                                         {{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}
                                     </span>
+
+                                    <q-tooltip class="text-body1">
+                                        <div v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+                                            <div>一共剩余 {{ props.row.poundsFinal.toFixed(3) }} 吨</div>
+                                            <div>点击查看原材料</div>
+                                        </div>
+                                        <div v-else>
+                                            <div>一共剩余 {{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}</div>
+                                            <div>点击查看库存流水</div>
+                                        </div>
+                                    </q-tooltip>
                                 </a>
                             </q-td>
-                            <q-td key="areaId" :props="props">
-                                {{ props.row.joinArea?.name || "-" }}
-                                <q-tooltip class="text-body1">{{ props.row.joinArea?.joinWarehouse?.name || "-" }}</q-tooltip>
-                            </q-td>
-                            <q-td key="price" :props="props" :class="{}"> {{ props.row.price }} 元 </q-td>
-                            <q-td key="timeCreateString" :props="props">
-                                <div class="row">
-                                    <a class="text-body1 cursor-pointer text-negative" @click.capture="pushSku(props.row)">开单</a>
+                            <q-td key="actions" :props="props" style="padding: 0">
+                                <div class="row q-px-sm">
+                                    <q-btn
+                                        :color="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'primary' : 'negative'"
+                                        flat
+                                        square
+                                        padding="xs"
+                                        class="text-body1"
+                                        @click="pushSku(props.row)"
+                                        >开单</q-btn
+                                    >
+                                    <q-btn
+                                        v-if="route.path.includes('trade/sale-') && nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
+                                        flat
+                                        square
+                                        padding="xs"
+                                        color="negative"
+                                        class="text-body1 q-ml-xs"
+                                        @click="
+                                            () => {
+                                                namePicking = props.row.name;
+                                                normPicking = props.row.norm;
+                                                dialogSkuIndividual = true;
+                                            }
+                                        "
+                                        >选择现货</q-btn
+                                    >
                                     <q-space></q-space>
-                                    <span>{{ props.row.timeCreateString }}</span>
+                                    <q-btn flat padding="xs" icon="more_horiz" square>
+                                        <q-menu>
+                                            <q-item clickable v-close-popup class="text-primary" @click="CabinetUnitStore.patch(nowCabinet, [props.row])">
+                                                <q-item-section>重新计算</q-item-section>
+                                            </q-item>
+                                            <q-item clickable v-close-popup class="text-negative" @click="CabinetUnitStore.deleteOne(nowCabinet, props.row)">
+                                                <q-item-section>删除</q-item-section>
+                                            </q-item>
+                                        </q-menu>
+                                    </q-btn>
                                 </div>
-                            </q-td>
-                            <q-td key="actions" :props="props" style="padding: 0 4px">
-                                <q-btn flat padding="xs" icon="more_vert" square>
-                                    <q-menu>
-                                        <q-item clickable v-close-popup class="text-negative" @click="CabinetUnitStore.deleteOne(nowCabinet, props.row)">
-                                            <q-item-section>删除</q-item-section>
-                                        </q-item>
-                                    </q-menu>
-                                </q-btn>
                             </q-td>
                         </q-tr>
                     </template>
@@ -193,6 +181,17 @@
             <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading>
     </q-card>
+
+    <q-dialog v-model="dialogSkuIndividual" maximized position="bottom">
+        <q-card>
+            <q-toolbar class="bg-primary text-white">
+                <q-toolbar-title>原材料</q-toolbar-title>
+                <q-btn dense flat icon="close" v-close-popup></q-btn>
+            </q-toolbar>
+
+            <list-sku-individual :name="namePicking" :norm="normPicking" @pick="(sku) => pushSkuIndividual(sku)"></list-sku-individual>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -201,18 +200,21 @@ import { cloneDeep, debounce } from "lodash";
 import { onMounted, ref, computed, watch } from "vue";
 
 import { MongodbSort } from "qqlx-cdk";
-import { ENUM_LAYOUT_CABINET, SkuJoined, CabinetUnit } from "qqlx-core";
+import { ENUM_LAYOUT_CABINET, SkuJoined, CabinetUnit, Sku, ENUM_ORDER } from "qqlx-core";
 
+import listSkuIndividual from "./list-sku-individual.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCabinetStore } from "@/stores/wmss/cabinet";
 import { useCabinetUnitStore } from "@/stores/wmss/cabinetUnit";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useAreaStore } from "@/stores/brand/area";
+import { useOrderStore } from "@/stores/wmss/order";
 
 const route = useRoute();
 const NotifyStore = useNotifyStore();
 
 const CabinetStore = useCabinetStore();
+const OrderStore = useOrderStore();
 
 const splitIndex = ref(20);
 const tabIndex = ref(0);
@@ -230,11 +232,13 @@ watch(
 const debounceGet = debounce(() => CabinetUnitStore.get(nowCabinet.value, 1), 200);
 
 const SkuStore = useSkuStore();
+const dialogSkuIndividual = ref(false);
+const namePicking = ref("");
+const normPicking = ref("");
 const pushSku = (unit: CabinetUnit) => {
     const schema = SkuStore.getSchema() as SkuJoined;
     schema.name = unit.name;
     schema.norm = unit.norm;
-    schema.areaId = unit.areaId || "";
     schema.unit = nowCabinet.value?.unit;
 
     //@ts-ignore
@@ -249,6 +253,30 @@ const pushSku = (unit: CabinetUnit) => {
         schema.count = 1;
         schema.isPriceInPounds = true;
     }
+    if (SkuStore.listPicked.length >= 8) NotifyStore.fail(`最多添加 8项商品`);
+    else SkuStore.listPicked.push(schema);
+};
+const pushSkuIndividual = (sku: Sku) => {
+    const schema = SkuStore.getSchema() as SkuJoined;
+    schema.name = sku.name;
+    schema.norm = sku.norm;
+    schema.unit = nowCabinet.value?.unit;
+
+    schema.count = 1;
+    schema.isPriceInPounds = true;
+    //@ts-ignore
+    schema.price = null as number;
+
+    schema.formula = nowCabinet.value?.formula;
+    schema.layout = ENUM_LAYOUT_CABINET.INDIVIDUAL;
+
+    schema.keyOrigin = sku.keyOrigin;
+    schema.keyFeat = sku.keyFeat;
+    schema.keyCode = sku.keyCode;
+    schema.warehouseId = sku.warehouseId;
+    schema.keyHouse = sku.keyHouse;
+
+    schema.deductionSkuId = sku._id;
     if (SkuStore.listPicked.length >= 8) NotifyStore.fail(`最多添加 8项商品`);
     else SkuStore.listPicked.push(schema);
 };

@@ -6,7 +6,7 @@
         </div>
     </div>
 
-    <container-sku-pounds />
+    <container-sku />
 
     <div class="q-py-md row">
         <q-space></q-space>
@@ -38,7 +38,7 @@ import { useRouter, useRoute } from "vue-router";
 import { ENUM_ORDER, MAP_ENUM_ORDER, SkuJoined } from "qqlx-core";
 
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
-import containerSkuPounds from "@/components/container-sku-pounds.vue";
+import containerSku from "@/components/container-sku.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";

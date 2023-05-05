@@ -4,7 +4,7 @@
             <span>库存明细</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
-            <!-- <picker-range
+            <picker-range
                 @change="
                     ($event) => {
                         SkuStore.page.startTime = $event.startTime;
@@ -12,22 +12,13 @@
                         SkuStore.get(1);
                     }
                 "
-            /> -->
+            />
         </div>
     </div>
 
     <q-card square>
         <q-splitter v-model="splitIndex">
-            <template v-slot:before>
-                <!-- <q-tabs v-model="tabIndex" dense vertical class="text-primary">
-                    <q-tab :name="0">
-                        <span class="text-body1 q-my-sm">已处理</span>
-                    </q-tab>
-                    <q-tab :name="1">
-                        <span class="text-body1 q-my-sm">待处理</span>
-                    </q-tab>
-                </q-tabs> -->
-            </template>
+            <template v-slot:before> </template>
 
             <template v-slot:after>
                 <q-table
@@ -37,8 +28,8 @@
                     dense
                     :rows="SkuStore.list"
                     :rows-per-page-options="[0]"
-                    :columns="(columns as any)"
-                    :visible-columns="visibleColumns"
+                    :columns="(SkuStore.columns.filter(e => e.label !== 'poundsFinal') as any)"
+                    :visible-columns="SkuStore.columnsVisiable"
                 >
                     <template v-slot:header="props">
                         <q-tr>
@@ -101,6 +92,18 @@
                                 <span>重量</span>
                                 <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                             </q-th>
+                            <q-th key="keyOrigin" :props="props">
+                                <q-input
+                                    square
+                                    filled
+                                    dense
+                                    clearable
+                                    color="primary"
+                                    placeholder="产地"
+                                    v-model="SkuStore.search.keyOrigin"
+                                    @blur="SkuStore.get(1)"
+                                />
+                            </q-th>
                             <q-th key="keyFeat" :props="props">
                                 <q-input
                                     square
@@ -113,36 +116,6 @@
                                     @blur="SkuStore.get(1)"
                                 />
                             </q-th>
-                            <q-th key="keyOrigin" :props="props">
-                                <q-input
-                                    square
-                                    filled
-                                    dense
-                                    clearable
-                                    color="primary"
-                                    placeholder="钢厂"
-                                    v-model="SkuStore.search.keyOrigin"
-                                    @blur="SkuStore.get(1)"
-                                />
-                            </q-th>
-                            <q-th key="areaId" :props="props">
-                                <q-select
-                                    dense
-                                    square
-                                    filled
-                                    clearable
-                                    emit-value
-                                    map-options
-                                    label="货位"
-                                    option-value="_id"
-                                    option-label="name"
-                                    placeholder="请选择货位"
-                                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
-                                    v-model="SkuStore.search.areaId"
-                                    @update:model-value="SkuStore.get(1)"
-                                >
-                                </q-select>
-                            </q-th>
                             <q-th key="keyCode" :props="props">
                                 <q-input
                                     square
@@ -150,12 +123,41 @@
                                     dense
                                     clearable
                                     color="primary"
-                                    placeholder="自定义编号"
+                                    placeholder="捆包号"
                                     v-model="SkuStore.search.keyCode"
                                     @blur="SkuStore.get(1)"
                                 />
                             </q-th>
-
+                            <q-th key="warehouseId" :props="props" style="min-width: 155px">
+                                <q-select
+                                    dense
+                                    square
+                                    filled
+                                    clearable
+                                    emit-value
+                                    map-options
+                                    label="仓库"
+                                    option-value="_id"
+                                    option-label="name"
+                                    placeholder="请选择仓库"
+                                    :options="WarehouseStore.list.filter((e) => e.isDisabled === false)"
+                                    v-model="SkuStore.search.warehouseId"
+                                    @update:model-value="SkuStore.get(1)"
+                                >
+                                </q-select>
+                            </q-th>
+                            <q-th key="keyHouse" :props="props">
+                                <q-input
+                                    square
+                                    filled
+                                    dense
+                                    clearable
+                                    color="primary"
+                                    placeholder="货位号"
+                                    v-model="SkuStore.search.keyHouse"
+                                    @blur="SkuStore.get(1)"
+                                />
+                            </q-th>
                             <q-th
                                 key="price"
                                 :props="props"
@@ -201,18 +203,14 @@
                             </q-th>
                             <q-th key="orderId" :props="props">订单编号</q-th>
                             <q-th key="_id" :props="props">
-                                <q-select
-                                    dense
-                                    filled
-                                    multiple
-                                    emit-value
-                                    map-options
-                                    option-value="name"
-                                    display-value="列设置"
-                                    options-selected-class="bg-primary text-body1 text-white"
-                                    v-model="visibleColumns"
-                                    :options="columns"
-                                />
+                                <q-btn flat icon="visibility">
+                                    <q-menu>
+                                        <q-card class="w-500">
+                                            <plate-sku />
+                                        </q-card>
+                                    </q-menu>
+                                </q-btn>
+                                <q-tooltip class="text-body1">列设置</q-tooltip>
                             </q-th>
                         </q-tr>
                     </template>
@@ -222,8 +220,8 @@
                             <q-td key="timeCreateString" :props="props" class="text-grey"> {{ props.row.timeCreateString }} </q-td>
                             <q-td key="layout" :props="props">
                                 <q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                    大件商品
-                                    <q-tooltip class="text-body1"> 您可以在“大件商品”菜单中，看见每一项入库大件商品剩下多少库存</q-tooltip>
+                                    原材料
+                                    <q-tooltip class="text-body1"> 您可以在“原材料”菜单中，看见每一项入库原材料剩下多少库存</q-tooltip>
                                 </q-badge>
                                 <q-badge color="grey" v-else>普通</q-badge>
                             </q-td>
@@ -241,12 +239,11 @@
                                 <span v-if="props.row.isPriceInPounds">{{ props.row.pounds.toFixed(3) }} 吨</span>
                                 <span v-else>-</span>
                             </q-td>
-                            <q-td key="keyFeat" :props="props" class="text-grey"> {{ props.row.keyFeat }} </q-td>
                             <q-td key="keyOrigin" :props="props" class="text-grey"> {{ props.row.keyOrigin }} </q-td>
-                            <q-td key="areaId" :props="props" class="text-grey">
-                                {{ props.row.joinArea?.name }}-{{ props.row.joinArea?.joinWarehouse?.name }}
-                            </q-td>
+                            <q-td key="keyFeat" :props="props" class="text-grey"> {{ props.row.keyFeat }} </q-td>
                             <q-td key="keyCode" :props="props" class="text-grey"> {{ props.row.keyCode }} </q-td>
+                            <q-td key="warehouseId" :props="props" class="text-grey">{{ props.row.joinWarehouse?.name }} </q-td>
+                            <q-td key="keyHouse" :props="props" class="text-grey"> {{ props.row.keyHouse }} </q-td>
                             <q-td key="price" :props="props" class="text-grey"> {{ props.row.price.toFixed(2) }} 元</q-td>
                             <q-td key="remark" :props="props" class="text-grey ellipsis">{{ props.row.remark }} </q-td>
                             <q-td key="orderContactId" :props="props">
@@ -256,14 +253,6 @@
                             <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                             <q-td key="_id" :props="props">
                                 <span v-if="props.row.isConfirmed" class="text-grey"> 已{{ SkuStore.getLabelByType(props.row.type)?.text }} </span>
-                                <span v-else class="text-primary">
-                                    <q-icon name="help_outline"></q-icon>
-                                    <q-tooltip class="text-body1">
-                                        <div>每个大件商品的最终库存重量</div>
-                                        <div>= 入库重量 -领料重量</div>
-                                        <div>* <span class="text-negative">不包括</span>发货中的重量</div>
-                                    </q-tooltip>
-                                </span>
                             </q-td>
                         </q-tr>
                     </template>
@@ -324,6 +313,7 @@ import { useRouter, useRoute } from "vue-router";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined, Cabinet, CabinetUnit } from "qqlx-core";
 
+import plateSku from "@/components/plate-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
 import listContact from "@/components/list-contact.vue";
@@ -331,32 +321,15 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useAreaStore } from "@/stores/brand/area";
+import { useWarehouseStore } from "@/stores/brand/warehouse";
 
 const NotifyStore = useNotifyStore();
-const columns = ref([
-    { name: "timeCreateString", field: "timeCreateString", label: "时间", align: "left", style: NotifyStore.fontStyle },
-    { name: "layout", field: "layout", label: "库存类型", align: "left" },
-    { name: "name", field: "name", label: "品名", align: "left", style: NotifyStore.fontStyle },
-    { name: "norm", field: "norm", label: "规格", align: "left", style: NotifyStore.fontStyle },
-    { name: "formula", field: "formula", label: "用途", align: "center" },
-    { name: "count", field: "count", label: "数量", style: NotifyStore.fontStyle },
-    { name: "pounds", field: "pounds", label: "重量", style: NotifyStore.fontStyle },
-    { name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: NotifyStore.fontStyle },
-    { name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: NotifyStore.fontStyle },
-    { name: "areaId", field: "areaId", label: "货位", align: "left", style: NotifyStore.cellStyle },
-    { name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: NotifyStore.fontStyle },
-    { name: "price", field: "price", label: "单价", style: NotifyStore.fontStyle },
-    { name: "remark", field: "remark", label: "备注", style: NotifyStore.fontStyle },
-    { name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: NotifyStore.fontStyle },
-    { name: "orderId", field: "orderId", label: "订单编号", align: "left", style: NotifyStore.fontStyle },
-    { name: "_id", field: "_id", label: "操作", align: "left", style: NotifyStore.fontStyle },
-]);
-const visibleColumns = ref(columns.value.filter((e, i) => i < 10 || i === columns.value.length - 1).map((e) => e.name));
 
 const tabIndex = ref(0);
 const splitIndex = ref(0);
 const SkuStore = useSkuStore();
 const AreaStore = useAreaStore();
+const WarehouseStore = useWarehouseStore();
 watch(
     () => tabIndex.value,
     (index) => {
@@ -377,7 +350,6 @@ onMounted(() => {
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;
-    SkuStore.page.startTime = 0;
     SkuStore.types = [ENUM_ORDER.GETIN, ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL, ENUM_ORDER.PROCESS];
 
     const { name, norm } = route.query;

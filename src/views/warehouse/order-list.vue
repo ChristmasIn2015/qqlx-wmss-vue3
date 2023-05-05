@@ -1,6 +1,7 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
+            <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.back()"></q-btn>
             <span>仓库订单</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
@@ -155,61 +156,7 @@
                             <q-td colspan="100%" style="padding: 0">
                                 <div class="row">
                                     <div class="col-8">
-                                        <q-table
-                                            dense
-                                            row-key="_id"
-                                            hide-pagination
-                                            separator="vertical"
-                                            :columns="[
-                                                { name: 'layout', field: 'layout', label: '商品性质', align: 'left' },
-                                                { name: 'name', field: 'name', label: '品名', align: 'left' },
-                                                { name: 'norm', field: 'norm', label: '规格', align: 'left' },
-                                                { name: 'count', field: 'count', label: '数量' },
-                                                { name: 'pounds', field: 'pounds', label: '过磅' },
-                                                { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
-                                                { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
-                                                { name: 'areaId', field: 'areaId', label: '货位', align: 'left' },
-                                                { name: 'price', field: 'price', label: '单价' },
-                                                { name: 'remark', field: 'remark', label: '备注' },
-                                                { name: '_id', field: '_id', label: '当前状态', align: 'left' },
-                                            ]"
-                                            :rows-per-page-options="[0]"
-                                            :rows="props.row.joinSku || []"
-                                        >
-                                            <template v-slot:body="_props">
-                                                <q-tr>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">
-                                                        <q-badge :color="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'primary' : 'grey'">
-                                                            {{ _props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? "大件商品" : "普通" }}
-                                                            <q-tooltip class="text-body1">{{ MAP_ENUM_LAYOUT_CABINET.get(_props.row.layout)?.tip }}</q-tooltip>
-                                                        </q-badge>
-                                                    </q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.name }} </q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.norm }}</q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle" class="text-right"
-                                                        >{{ _props.row.count }} {{ _props.row.unit }}</q-td
-                                                    >
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle" class="text-right">
-                                                        <span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
-                                                    </q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.keyFeat || "-" }}</q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.keyOrigin || "-" }}</q-td>
-                                                    <q-td :_props="_props" style="font-size: 16px">
-                                                        {{ _props.row.joinArea?.name }}
-                                                        <q-tooltip class="text-body1">{{ _props.row.joinArea?.joinWarehouse?.name }}</q-tooltip>
-                                                    </q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle" class="text-right">
-                                                        {{ _props.row.price.toFixed(2) }}
-                                                    </q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">{{ _props.row.remark }}</q-td>
-                                                    <q-td :_props="_props" :style="NotifyStore.fontStyle">
-                                                        <span v-if="_props.row.isConfirmed" class="text-grey">
-                                                            已{{ SkuStore.getLabelByType(_props.row.type)?.text }}
-                                                        </span>
-                                                    </q-td>
-                                                </q-tr>
-                                            </template>
-                                        </q-table>
+                                        <plate-sku-list :skus="props.row.joinSku || []"></plate-sku-list>
                                     </div>
                                     <div class="col-4">
                                         <q-card square>
@@ -246,7 +193,7 @@
                                                                         OrderStore.search.code = props.row.joinParentOrder[0]?.code;
                                                                         tabIndex = 2;
                                                                     } else {
-                                                                        $router.push(`/wmss/trade/sale-list?code=${props.row.joinParentOrder[0]?.code}`);
+                                                                        $router.push(`/wmss/purchase/list?code=${props.row.joinParentOrder[0]?.code}`);
                                                                     }
                                                                 }
                                                             "
@@ -412,6 +359,7 @@ import { cloneDeep, debounce } from "lodash";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET, OrderJoined } from "qqlx-core";
 
+import plateSkuList from "@/components/plate-sku-list.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
 import listContact from "@/components/list-contact.vue";

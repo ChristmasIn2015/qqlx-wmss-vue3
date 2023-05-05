@@ -154,7 +154,7 @@
                                     dense
                                     clearable
                                     color="primary"
-                                    placeholder="自定义编号"
+                                    placeholder="捆包号"
                                     v-model="SkuStore.search.keyCode"
                                     @blur="SkuStore.get(1)"
                                 />
@@ -226,8 +226,8 @@
                             <q-td key="timeCreateString" :props="props" class="text-grey"> {{ props.row.timeCreateString }} </q-td>
                             <q-td key="layout" :props="props">
                                 <q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                    大件商品
-                                    <q-tooltip class="text-body1"> 您可以在“大件商品”菜单中，看见每一项入库大件商品剩下多少库存</q-tooltip>
+                                    原材料
+                                    <q-tooltip class="text-body1"> 您可以在“原材料”菜单中，看见每一项入库原材料剩下多少库存</q-tooltip>
                                 </q-badge>
                                 <q-badge color="grey" v-else>普通</q-badge>
                             </q-td>
@@ -346,7 +346,7 @@ const columns = ref([
     { name: "keyFeat", field: "keyFeat", label: "材质", align: "left", style: NotifyStore.fontStyle },
     { name: "keyOrigin", field: "keyOrigin", label: "产地", align: "left", style: NotifyStore.fontStyle },
     { name: "areaId", field: "areaId", label: "货位", align: "left", style: NotifyStore.cellStyle },
-    { name: "keyCode", field: "keyCode", label: "自定义编号", align: "left", style: NotifyStore.fontStyle },
+    { name: "keyCode", field: "keyCode", label: "捆包号", align: "left", style: NotifyStore.fontStyle },
     { name: "price", field: "price", label: "单价", style: NotifyStore.fontStyle },
     { name: "remark", field: "remark", label: "备注", style: NotifyStore.fontStyle },
     { name: "orderContactId", field: "orderContactId", label: "客户", align: "left", style: NotifyStore.fontStyle },

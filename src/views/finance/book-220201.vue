@@ -1,7 +1,6 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <q-btn icon="arrow_back" padding="xs" flat style="margin-left: -4px; margin-right: 4px" @click="$router.back()"></q-btn>
             <span>付款记录</span>
 
             <dialog-intro></dialog-intro>
@@ -49,6 +48,18 @@
             </span>
 
             <q-btn
+                v-if="BookStore.listExcel.length > 0"
+                flat
+                square
+                label="清空"
+                class="q-ml-sm"
+                color="negative"
+                :loading="BookStore.loadding"
+                @click="BookStore.listExcel = []"
+            >
+            </q-btn>
+
+            <q-btn
                 class="q-ml-sm"
                 color="teal"
                 :loading="BookStore.loadding"
@@ -81,9 +92,9 @@
         ]"
     >
         <template v-slot:top-row>
-            <q-tr v-for="(schema, index) in BookStore.listExcel">
+            <q-tr v-for="(schema, index) in BookStore.listExcel" class="bg-teal">
                 <q-td :style="NotifyStore.fontStyle">
-                    <a class="text-body1 text-teal cursor-pointer text-underline">
+                    <q-btn class="bg-white" square>
                         {{ schema.timeCreateString }}
                         <q-menu>
                             <q-date
@@ -94,23 +105,23 @@
                                 @update:model-value="($event) => (schema.timeCreate = new Date($event).getTime())"
                             />
                         </q-menu>
-                    </a>
+                    </q-btn>
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-white">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入收款人" v-model="schema.keyOrigin" />
+                    <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入收款人" v-model="schema.keyOrigin" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
+                    <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle" class="text-grey"> <q-badge class="q-mr-xs shadow-2" color="cyan" rounded></q-badge>付款 </q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-white"> <q-badge class="q-mr-xs shadow-2" color="cyan" rounded></q-badge>付款 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
+                    <q-input dense square filled bg-color="white" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
-                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-white">自动计算</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-white">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入备注" v-model="schema.remark" />
+                    <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入备注" v-model="schema.remark" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-btn icon="close" dense class="text-negative" flat @click="() => BookStore.listExcel.splice(index, 1)"> </q-btn>
@@ -182,14 +193,7 @@
                 <q-th key="remark" :props="props">
                     <q-input square filled dense clearable color="teal" placeholder="搜索备注" v-model="BookStore.search.remark" @blur="BookStore.get(1)" />
                 </q-th>
-                <q-th key="_id" :props="props">
-                    <span v-if="BookStore.listExcel.length > 0">
-                        <q-btn padding="xs" icon="close" text-color="negative" square :loading="BookStore.loadding" @click="BookStore.listExcel = []">
-                            <q-tooltip class="text-body1">清空</q-tooltip>
-                        </q-btn>
-                    </span>
-                    <span v-else>操作</span>
-                </q-th>
+                <q-th key="_id" :props="props"> 操作 </q-th>
             </q-tr>
         </template>
 
@@ -210,25 +214,7 @@
                 "
             >
                 <q-td key="timeCreateString" :props="props" :style="NotifyStore.fontStyle">
-                    <q-icon name="edit" color="teal" class="cursor-pointer" style="margin-left: -5px">
-                        <q-menu
-                            @hide="
-                                async () => {
-                                    await BookStore.put(props.row);
-                                    BookStore.get();
-                                }
-                            "
-                        >
-                            <q-date
-                                minimal
-                                color="primary"
-                                first-day-of-week="1"
-                                v-model="props.row.timeCreateString"
-                                @update:model-value="($event) => (props.row.timeCreate = new Date($event).getTime())"
-                            />
-                        </q-menu>
-                    </q-icon>
-                    <span class="text-grey q-mx-sm">{{ props.row.timeCreateString }}</span>
+                    <span class="text-grey">{{ props.row.timeCreateString }}</span>
                 </q-td>
                 <q-td key="code" class="text-grey" :props="props" :style="NotifyStore.fontStyle">{{ props.row.code }}</q-td>
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.fontStyle">{{ props.row.keyOrigin }}</q-td>

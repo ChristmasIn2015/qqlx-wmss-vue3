@@ -24,7 +24,7 @@
         <q-btn
             square
             class="q-mr-sm"
-            label="可复核"
+            label="可入库"
             :color="OrderStore.requireManagerId ? 'primary' : 'white'"
             :text-color="OrderStore.requireManagerId ? '' : 'black'"
             @click="
@@ -48,25 +48,7 @@
             "
         />
         <q-space></q-space>
-
-        <q-btn class="q-ml-sm bg-white" :color="isInvoice ? 'purple' : ''" :text-color="isInvoice ? 'white' : 'primary'" square @click="isInvoice = !isInvoice">
-            <q-icon v-if="isInvoice" name="visibility" class="q-mr-sm"></q-icon>
-
-            <q-icon v-else name="visibility_off" class="q-mr-sm"></q-icon>
-            {{ isInvoice ? "发票视角" : "付款视角" }}
-            <q-tooltip class="text-body1">
-                <div v-if="isInvoice">
-                    <div>当前正在发票视角</div>
-                    <div>您可以看到订单已经收到了哪些发票</div>
-                </div>
-                <div v-else>
-                    <div>当前正在货款视角</div>
-                    <div>您可以看到订单已经付给了哪些货款</div>
-                </div>
-            </q-tooltip>
-        </q-btn>
-        <q-btn v-if="isInvoice" square class="q-ml-sm bg-white" @click="$router.push('/wmss/finance/book-220202')"> 发票明细 </q-btn>
-        <q-btn v-else square class="q-ml-sm bg-white" @click="$router.push('/wmss/finance/book-220201')"> 付款明细 </q-btn>
+        <q-btn label="采购明细" class="bg-white" text-color="black" @click="$router.push('/wmss/purchase/sku')"></q-btn>
 
         <picker-range
             @change="
@@ -82,11 +64,6 @@
                 <q-item clickable @click="$router.push('/wmss/system/clue')">
                     <q-item-section>
                         <div><q-icon name="subject" class="q-mr-xs" size="22px"></q-icon>操作记录</div>
-                    </q-item-section>
-                </q-item>
-                <q-item clickable @click="$router.push('/wmss/purchase/sku')">
-                    <q-item-section>
-                        <div><q-icon name="format_list_bulleted" class="q-mr-xs" size="22px"></q-icon>采购明细</div>
                     </q-item-section>
                 </q-item>
                 <q-item clickable @click="downloadOrderList()">
@@ -116,8 +93,9 @@
                     field: 'amountBookOfOrderRest',
                     label: '',
                     align: 'left',
-                    style: NotifyStore.fontStyle + ';width: 155px; padding-right: 48px;',
+                    style: NotifyStore.fontStyle + ';width: 155px;',
                 },
+                { name: 'amountBookOfOrderVAT', field: 'amountBookOfOrderVAT', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
                 { name: '_id', field: '_id', label: '', align: 'left' },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
@@ -172,19 +150,26 @@
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder')"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
+                        @click="OrderStore.sort('amountBookOfOrder')"
                     >
-                        <span>{{ isInvoice ? "应收票" : "已付款" }}</span>
+                        <span>{{ "已付款" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        style="padding-right: 48px"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest')"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
+                        @click="OrderStore.sort('amountBookOfOrderRest')"
                     >
-                        <span>{{ isInvoice ? "已收发票" : "还应付款" }}</span>
+                        <span>{{ "还应付款" }}</span>
+                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    </q-th>
+                    <q-th
+                        class="text-right cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
+                        @click="OrderStore.sort('amountBookOfOrderVAT')"
+                    >
+                        <span>{{ "已收发票" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th class="text-left">操作</q-th>
@@ -219,8 +204,7 @@
                         {{ props.row.timeCreateString }}
                     </q-td>
                     <q-td key="code" :props="props">
-                        <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'cyan'" class="shadow-2 q-mr-sm"> </q-badge>
-                        <span>{{ props.row.code }}</span>
+                        <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'cyan'" class="shadow-2 q-mr-sm"> </q-badge>{{ props.row.code }}
                     </q-td>
                     <q-td key="contactId" :props="props" class="text-body1">
                         <span v-if="props.row.joinContact?.name" class="ellipsis">{{ props.row.joinContact.name }}</span>
@@ -244,7 +228,7 @@
                             'text-through': props.row.accounterId,
                         }"
                     >
-                        {{ (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrder).toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td
                         key="amountBookOfOrderRest"
@@ -252,23 +236,32 @@
                         :props="props"
                         :class="{
                             'text-through': props.row.accounterId,
-                            'text-grey': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
-                            'text-weight-bold': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) >= 1,
-                            'text-purple': isInvoice,
+                            'text-grey': props.row.amountBookOfOrderRest < 1 || props.row.accounterId,
+                            'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
                         }"
                     >
                         {{
-                            (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest).toLocaleString("zh", {
+                            props.row.amountBookOfOrderRest.toLocaleString("zh", {
                                 minimumFractionDigits: 2,
                             })
                         }}
+                    </q-td>
+                    <q-td
+                        key="amountBookOfOrderVAT"
+                        class="text-right text-grey"
+                        :props="props"
+                        :class="{
+                            'text-through': props.row.accounterId,
+                        }"
+                    >
+                        {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td key="_id" :props="props" style="padding: 0px 8px">
                         <q-btn
                             push
                             dense
                             square
-                            label="复核"
+                            label="入库"
                             class="q-mr-xs"
                             :disable="!!props.row.managerId"
                             :color="!!props.row.managerId ? 'standard' : 'primary'"
@@ -298,7 +291,7 @@
                                 }
                             "
                         >
-                            {{ props.row.remark || "点击修改" }}
+                            {{ props.row.remark || "点击备注" }}
                         </span>
                     </q-td>
                 </q-tr>
@@ -307,54 +300,7 @@
                     <q-td colspan="100%" style="padding: 0">
                         <div class="row">
                             <div class="col-9">
-                                <q-table
-                                    v-if="!!props.row.joinSku"
-                                    dense
-                                    row-key="_id"
-                                    hide-pagination
-                                    separator="vertical"
-                                    :columns="[
-                                        { name: 'layout', field: 'layout', label: '商品性质', align: 'left' },
-                                        { name: 'name', field: 'name', label: '品名', align: 'left' },
-                                        { name: 'norm', field: 'norm', label: '规格', align: 'left' },
-                                        { name: 'count', field: 'count', label: '数量' },
-                                        { name: 'pounds', field: 'pounds', label: '过磅' },
-                                        { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
-                                        { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
-                                        { name: 'areaId', field: 'areaId', label: '仓库', align: 'left' },
-                                        { name: 'price', field: 'price', label: '单价' },
-                                        { name: 'remark', field: 'remark', label: '备注', align: 'left' },
-                                    ]"
-                                    :rows-per-page-options="[0]"
-                                    :rows="props.row.joinSku || []"
-                                >
-                                    <template v-slot:body="_props">
-                                        <q-tr>
-                                            <q-td :_props="_props" style="font-size: 16px">
-                                                <q-badge :color="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'primary' : 'grey'">
-                                                    {{ _props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? "大件商品" : "普通" }}
-                                                    <q-tooltip class="text-body1">{{ MAP_ENUM_LAYOUT_CABINET.get(_props.row.layout)?.tip }}</q-tooltip>
-                                                </q-badge>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }} </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right"
-                                                >{{ _props.row.count }} {{ _props.row.unit }}</q-td
-                                            >
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right">
-                                                <span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyOrigin || "-" }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">
-                                                {{ _props.row.joinArea?.name }}
-                                                <q-tooltip class="text-body1">{{ _props.row.joinArea?.joinWarehouse?.name }}</q-tooltip>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
-                                        </q-tr>
-                                    </template>
-                                </q-table>
+                                <plate-sku-list :skus="props.row.joinSku || []"></plate-sku-list>
                             </div>
                             <div class="col-3">
                                 <div>
@@ -404,7 +350,7 @@
                                                 v-if="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                                 class="text-body1"
                                             >
-                                                <div v-if="!!props.row.managerId">* 订单已复核，无法修改</div>
+                                                <div v-if="!!props.row.managerId">* 订单已入库，无法修改</div>
                                                 <div v-if="!!props.row.accounterId">* 订单已确认结清，无法修改</div>
                                                 <div v-if="props.row.joinChildOrder?.length > 0">* 监测到入库单，无法修改</div>
                                             </q-tooltip>
@@ -450,7 +396,7 @@
                                                     </span>
                                                     <span
                                                         class="col-4 text-right text-teal text-weight-bold text-underline cursor-pointer"
-                                                        @click="$router.push(`/wmss/finance/book-220201?code=${BO.joinBook?.code}`)"
+                                                        @click="$router.push(`/wmss/purchase/book-220201?code=${BO.joinBook?.code}`)"
                                                     >
                                                         {{ BO.amount.toFixed(2) }} 元
                                                     </span>
@@ -482,7 +428,7 @@
                                                     </span>
                                                     <span
                                                         class="col-4 text-right text-purple text-weight-bold text-underline cursor-pointer"
-                                                        @click="$router.push(`/wmss/finance/book-220202?code=${BO.joinBook?.code}`)"
+                                                        @click="$router.push(`/wmss/purchase/book-220202?code=${BO.joinBook?.code}`)"
                                                     >
                                                         {{ BO.amount.toFixed(2) }} 元
                                                     </span>
@@ -496,7 +442,7 @@
                                             <div class="row text-body1">
                                                 <span class="col-6 text-grey">
                                                     <q-badge rounded :color="props.row.managerId ? 'primary' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
-                                                    >复核人
+                                                    >入库人
                                                 </span>
                                                 <span class="col-6 text-right text-weight-bold">
                                                     {{ props.row.joinManager?.nickname || "无" }}
@@ -533,8 +479,8 @@
                                         </q-card-section>
                                         <q-separator />
                                         <q-card-section class="text-body2 text-grey" style="white-space: break-spaces">
-                                            <div>1.复核后将会通知仓库卸货，并生成入库单</div>
-                                            <div>2.取消复核后，不会影响入库单</div>
+                                            <div>1.入库后将会通知仓库卸货，并生成入库单</div>
+                                            <div>2.取消入库后，不会影响入库单</div>
                                             <div>3.删除入库单后，您可以继续编辑此采购单</div>
                                         </q-card-section>
                                     </q-card>
@@ -581,7 +527,7 @@
             <list-contact
                 @pick="
                     (value) => {
-                        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
+                        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PURCHASE));
                         contactPicked = value;
                         OrderStore.search.contactId = value._id;
                         OrderStore.get(1);
@@ -635,6 +581,7 @@ import * as XLSX from "xlsx";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET, BookOfOrder, ENUM_BOOK_DIRECTION, ENUM_BOOK_TYPE } from "qqlx-core";
 import type { Order, OrderJoined } from "qqlx-core";
 
+import plateSkuList from "@/components/plate-sku-list.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";
@@ -652,7 +599,6 @@ const NotifyStore = useNotifyStore();
 const CorpStore = useCorpStore();
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
-const isInvoice = ref(false);
 const downloadOrderList = async () => {
     try {
         await OrderStore.get(1);
@@ -686,7 +632,7 @@ const downloadOrderList = async () => {
                 ]);
             });
         });
-        const name = OrderStore.search.type === ENUM_ORDER.SALES ? "销售" : "采购";
+        const name = "采购";
         const workbook = XLSX.utils.book_new();
 
         const sheet1 = XLSX.utils.aoa_to_sheet(Out);
@@ -731,7 +677,7 @@ const setManager = async (order: OrderJoined, toClear = false) => {
     entity.managerId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
 
-    // 销售单复核，需要自动创建对应发货单
+    // 自动创建对应入库单
     if (entity.managerId && entity.type === ENUM_ORDER.PURCHASE) {
         OrderStore.editor = OrderStore.getSchema(ENUM_ORDER.GETIN);
         OrderStore.editor.parentOrderId = entity._id;

@@ -107,18 +107,14 @@ export const useCabinetUnitStore = defineStore("CabinetUnit", {
             }
         },
         /** @viewcatch */
-        async patch(cabinet: Cabinet, price: number, areaId: string = "", picking: CabinetUnit[]) {
+        async patch(cabinet: Cabinet, picking: CabinetUnit[]) {
             try {
                 const list = cloneDeep(picking || []) as CabinetUnit[];
-                list.forEach((e) => {
-                    e.price = Number(price) || 0;
-                    e.areaId = areaId;
-                });
                 const dto: patchCabinetUnitDto = { excels: list };
                 const res: patchCabinetUnitRes = await request.patch(PATH_CABINET_UNIT, { dto });
 
                 await this.get(cabinet, 1);
-                NotifyStore.success("修改成功");
+                NotifyStore.success("已完成");
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             }

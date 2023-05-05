@@ -1,49 +1,22 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>大件商品</span>
+            <span>原材料</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
+            <q-btn class="q-ml-sm bg-white" square @click="$router.push('/wmss/warehouse/order-list')">去入库</q-btn>
+            <q-btn class="q-ml-sm" color="negative" square @click="$router.push('/wmss/purchase/create')">去采购</q-btn>
         </div>
     </div>
 
     <list-sku-individual
-        label="领料"
+        label="加工"
         @pick="
             (picked:Sku) => {
-                picked.deductionSkuId = picked._id;
-                picked._id = '';
-                picked.pounds = picked.poundsFinal;
-                skuDeduction = picked
-                orderDialog = true;
-            }
-        "
+                OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PROCESS))
+                $router.push('/wmss/warehouse/order-create')
+            }"
     />
-
-    <q-dialog v-model="orderDialog">
-        <q-card class="w-400">
-            <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title>领料 </q-toolbar-title>
-                <q-btn dense flat icon="close" v-close-popup></q-btn>
-            </q-toolbar>
-
-            <q-card-section>
-                <q-input
-                    filled
-                    type="number"
-                    label="请输入本次领料后的剩余重量"
-                    :hint="`当前剩余 ${skuDeduction.poundsFinal}吨`"
-                    v-model="skuDeduction.pounds"
-                    color="primary"
-                />
-            </q-card-section>
-
-            <q-card-actions>
-                <q-space></q-space>
-                <q-btn color="primary" v-close-popup @click="postOrder()"> 确定 </q-btn>
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
 </template>
 
 <script lang="ts" setup>

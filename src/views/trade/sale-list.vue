@@ -47,24 +47,7 @@
             "
         />
         <q-space></q-space>
-        <q-btn class="q-ml-sm bg-white" :color="isInvoice ? 'purple' : ''" :text-color="isInvoice ? 'white' : 'primary'" square @click="isInvoice = !isInvoice">
-            <q-icon v-if="isInvoice" name="visibility" class="q-mr-sm"></q-icon>
-
-            <q-icon v-else name="visibility_off" class="q-mr-sm"></q-icon>
-            {{ isInvoice ? "发票视角" : "收款视角" }}
-            <q-tooltip class="text-body1">
-                <div v-if="isInvoice">
-                    <div>当前正在发票视角</div>
-                    <div>您可以看到订单已经开出了哪些发票</div>
-                </div>
-                <div v-else>
-                    <div>当前正在货款视角</div>
-                    <div>您可以看到订单已经收到了哪些货款</div>
-                </div>
-            </q-tooltip>
-        </q-btn>
-        <q-btn v-if="isInvoice" square class="q-ml-sm bg-white" @click="$router.push('/wmss/finance/book-112202')"> 发票明细 </q-btn>
-        <q-btn v-else square class="q-ml-sm bg-white" @click="$router.push('/wmss/finance/book-112201')"> 收款明细 </q-btn>
+        <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')"> 销售明细 </q-btn>
 
         <picker-range
             @change="
@@ -80,11 +63,6 @@
                 <q-item clickable @click="$router.push('/wmss/system/clue')">
                     <q-item-section>
                         <div><q-icon name="subject" class="q-mr-xs" size="22px"></q-icon>操作记录</div>
-                    </q-item-section>
-                </q-item>
-                <q-item clickable @click="$router.push('/wmss/trade/sale-sku')">
-                    <q-item-section>
-                        <div><q-icon name="format_list_bulleted" class="q-mr-xs" size="22px"></q-icon>销售明细</div>
                     </q-item-section>
                 </q-item>
                 <q-item clickable @click="downloadOrderList()">
@@ -114,8 +92,9 @@
                     field: 'amountBookOfOrderRest',
                     label: '',
                     align: 'left',
-                    style: NotifyStore.fontStyle + ';width: 155px; padding-right: 48px;',
+                    style: NotifyStore.fontStyle + ';width: 155px;',
                 },
+                { name: 'amountBookOfOrderVAT', field: 'amountBookOfOrderVAT', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
                 { name: '_id', field: '_id', label: '', align: 'left' },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
@@ -170,19 +149,26 @@
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrder')"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
+                        @click="OrderStore.sort('amountBookOfOrder')"
                     >
-                        <span>{{ isInvoice ? "可开票" : "已收款" }}</span>
+                        <span>{{ "已收款" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        style="padding-right: 48px"
-                        :class="{ 'text-negative': OrderStore.sortKey === (isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest') }"
-                        @click="OrderStore.sort(isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrderRest')"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
+                        @click="OrderStore.sort('amountBookOfOrderRest')"
                     >
-                        <span>{{ isInvoice ? "已开发票" : "还应收款" }}</span>
+                        <span>{{ "还应收款" }}</span>
+                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    </q-th>
+                    <q-th
+                        class="text-right cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
+                        @click="OrderStore.sort('amountBookOfOrderVAT')"
+                    >
+                        <span>{{ "已开发票" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th class="text-left">操作</q-th>
@@ -242,7 +228,7 @@
                             'text-through': props.row.accounterId,
                         }"
                     >
-                        {{ (isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrder).toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td
                         key="amountBookOfOrderRest"
@@ -250,16 +236,14 @@
                         :props="props"
                         :class="{
                             'text-through': props.row.accounterId,
-                            'text-grey': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
-                            'text-weight-bold': (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest) >= 1,
-                            'text-purple': isInvoice,
+                            'text-grey': props.row.amountBookOfOrderRest < 1 || props.row.accounterId,
+                            'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
                         }"
                     >
-                        {{
-                            (isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrderRest).toLocaleString("zh", {
-                                minimumFractionDigits: 2,
-                            })
-                        }}
+                        {{ props.row.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td key="amountBookOfOrderVAT" class="text-right text-grey" :props="props" :class="{ 'text-through': props.row.accounterId }">
+                        {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td key="_id" :props="props" style="padding: 0px 8px">
                         <q-btn
@@ -320,54 +304,7 @@
                     <q-td colspan="100%" style="padding: 0">
                         <div class="row">
                             <div class="col-9">
-                                <q-table
-                                    v-if="!!props.row.joinSku"
-                                    dense
-                                    row-key="_id"
-                                    hide-pagination
-                                    separator="vertical"
-                                    :columns="[
-                                        { name: 'layout', field: 'layout', label: '商品性质', align: 'left' },
-                                        { name: 'name', field: 'name', label: '品名', align: 'left' },
-                                        { name: 'norm', field: 'norm', label: '规格', align: 'left' },
-                                        { name: 'count', field: 'count', label: '数量' },
-                                        { name: 'pounds', field: 'pounds', label: '过磅' },
-                                        { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left' },
-                                        { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left' },
-                                        { name: 'areaId', field: 'areaId', label: '仓库', align: 'left' },
-                                        { name: 'price', field: 'price', label: '单价' },
-                                        { name: 'remark', field: 'remark', label: '备注', align: 'left' },
-                                    ]"
-                                    :rows-per-page-options="[0]"
-                                    :rows="props.row.joinSku || []"
-                                >
-                                    <template v-slot:body="_props">
-                                        <q-tr>
-                                            <q-td :_props="_props" style="font-size: 16px">
-                                                <q-badge :color="_props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'primary' : 'grey'">
-                                                    {{ _props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? "大件商品" : "普通" }}
-                                                    <q-tooltip class="text-body1">{{ MAP_ENUM_LAYOUT_CABINET.get(_props.row.layout)?.tip }}</q-tooltip>
-                                                </q-badge>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.name }} </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.norm }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right"
-                                                >{{ _props.row.count }} {{ _props.row.unit }}</q-td
-                                            >
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right">
-                                                <span v-if="_props.row.isPriceInPounds">{{ _props.row.pounds.toFixed(3) }} 吨</span>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyFeat || "-" }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.keyOrigin || "-" }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">
-                                                {{ _props.row.joinArea?.name }}
-                                                <q-tooltip class="text-body1">{{ _props.row.joinArea?.joinWarehouse?.name }}</q-tooltip>
-                                            </q-td>
-                                            <q-td :_props="_props" style="font-size: 16px" class="text-right">{{ _props.row.price.toFixed(2) }}</q-td>
-                                            <q-td :_props="_props" style="font-size: 16px">{{ _props.row.remark }}</q-td>
-                                        </q-tr>
-                                    </template>
-                                </q-table>
+                                <plate-sku-list :skus="props.row.joinSku || []"></plate-sku-list>
                             </div>
                             <div class="col-3">
                                 <div>
@@ -463,7 +400,7 @@
                                                     </span>
                                                     <span
                                                         class="col-4 text-right text-teal text-weight-bold text-underline cursor-pointer"
-                                                        @click="$router.push(`/wmss/finance/book-112201?code=${BO.joinBook?.code}`)"
+                                                        @click="$router.push(`/wmss/trade/book-112201?code=${BO.joinBook?.code}`)"
                                                     >
                                                         {{ BO.amount.toFixed(2) }} 元
                                                     </span>
@@ -495,7 +432,7 @@
                                                     </span>
                                                     <span
                                                         class="col-4 text-right text-purple text-weight-bold text-underline cursor-pointer"
-                                                        @click="$router.push(`/wmss/finance/book-112202?code=${BO.joinBook?.code}`)"
+                                                        @click="$router.push(`/wmss/trade/book-112202?code=${BO.joinBook?.code}`)"
                                                     >
                                                         {{ BO.amount.toFixed(2) }} 元
                                                     </span>
@@ -835,6 +772,7 @@ import html2canvas from "html2canvas";
 import { BookOfOrder, ENUM_BOOK_DIRECTION, ENUM_BOOK_TYPE, ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET } from "qqlx-core";
 import type { Order, OrderJoined } from "qqlx-core";
 
+import plateSkuList from "@/components/plate-sku-list.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";
@@ -944,7 +882,8 @@ const printDialog = ref(false);
 const orderPrinting = ref(OrderStore.getSchema() as OrderJoined);
 const print = async () => {
     const dom = document.getElementById("order");
-    const info = callPrinter(dom as HTMLElement);
+    callPrinter(dom as HTMLElement);
+    printLog();
 };
 const printLog = () => ClueStore.post(orderPrinting.value); // async
 const { ClipboardItem } = window;
@@ -1005,8 +944,8 @@ const setAccounter = async (order: OrderJoined, toClear = false) => {
 const route = useRoute();
 onMounted(() => {
     // 打印预设置
-    window.removeEventListener("afterprint", printLog);
-    window.addEventListener("afterprint", printLog);
+    // window.removeEventListener("afterprint", printLog);
+    // window.addEventListener("afterprint", printLog);
     // 清空SKU
     SkuStore.setEditor();
     // 清空订单

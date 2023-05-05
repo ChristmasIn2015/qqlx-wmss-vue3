@@ -8,7 +8,7 @@
 
             <!-- 个人中心 -->
             <!-- 个人中心 -->
-            <q-item clickable class="q-pl-md q-pr-sm q-mb-sm bg-primary text-white" @click="userDialog = true">
+            <q-item clickable class="q-pl-md q-pr-sm q-mb-sm bg-primary text-white" @click="$router.push('/wmss/system/setting')">
                 <q-item-section avatar>
                     <q-avatar>
                         <img :src="UserStore.userEditor?.avator || UserStore.wxAvatorDefault" />
@@ -25,64 +25,10 @@
                 </q-item-section>
             </q-item>
 
-            <q-dialog v-model="userDialog" persistent>
-                <q-card class="w-400">
-                    <q-toolbar class="bg-primary text-white">
-                        <q-toolbar-title>个人信息</q-toolbar-title>
-
-                        <q-btn flat dense icon="close" v-close-popup />
-                    </q-toolbar>
-
-                    <q-separator />
-
-                    <q-card-section>
-                        <q-input filled label="用户昵称" class="q-mb-sm" v-model="UserStore.userEditor.nickname">
-                            <template v-slot:append>
-                                <q-btn fab flat icon="save" color="primary" @click="UserStore.patch()">
-                                    <q-tooltip class="text-body1"> 保存 </q-tooltip>
-                                </q-btn>
-                            </template>
-                        </q-input>
-
-                        <div class="q-px-sm">
-                            <q-input readonly label="当前公司" class="q-mb-sm" v-model="nowCorpName">
-                                <template v-slot:append>
-                                    <q-btn fab flat v-close-popup icon="chevron_right" color="primary" @click="$router.push('/wmss/system/dashboard')">
-                                        <q-tooltip class="text-body1"> 去切换 </q-tooltip>
-                                    </q-btn>
-                                </template>
-                            </q-input>
-
-                            <q-input
-                                readonly
-                                label="有效期"
-                                class="q-mb-sm"
-                                v-model="MarketScoAnalysisStore.message"
-                                :input-class="MarketScoAnalysisStore.isOverdue ? 'text-negative' : 'text-primary'"
-                            >
-                                <template v-slot:append>
-                                    <q-btn fab flat v-close-popup icon="card_giftcard" color="primary" @click="$router.push('/wmss/system/pay')">
-                                        <q-tooltip class="text-body1">去购买</q-tooltip>
-                                    </q-btn>
-                                </template>
-                            </q-input>
-                        </div>
-                    </q-card-section>
-
-                    <q-card-actions>
-                        <q-btn color="negative" flat v-close-popup @click="$router.push('/wmss/login')">
-                            <q-icon name="logout"></q-icon>
-                            <span class="q-ml-xs">退出</span>
-                        </q-btn>
-                        <q-space></q-space>
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
-
             <!-- 导航 -->
             <!-- 导航 -->
             <q-list v-for="(container, index) in routes">
-                <div v-if="container.name" class="text-caption text-grey-13 q-pa-md">{{ container.name }}</div>
+                <div v-if="container.name" class="text-caption text-grey-13 q-pt-md q-px-md q-pb-sm">{{ container.name }}</div>
                 <router-link
                     v-for="route in container.children?.filter((e) => e.meta?.show)"
                     :to="`/wmss/${container.path}/${route.path}`"
@@ -96,7 +42,8 @@
                             <q-item-label style="position: relative">
                                 <span>
                                     {{ route.name }}
-                                    <!-- <q-badge style="transform: translateY(-2px)" color="negative" v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'">
+                                    <q-badge v-if="route.meta?.badge" color="negative" style="transform: translateY(-2px)">{{ route.meta?.badge }}</q-badge>
+                                    <!-- <q-badge  color="negative" v-if="skuNotConfirmedAll > 0 && route.path === 'sku-list'">
                                         {{ skuNotConfirmedAll }}
                                     </q-badge> -->
                                 </span>
