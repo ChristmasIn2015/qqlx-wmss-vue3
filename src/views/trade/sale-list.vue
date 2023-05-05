@@ -23,7 +23,7 @@
         <q-btn
             square
             class="q-mr-sm"
-            label="可复核"
+            label="可出库"
             :color="OrderStore.requireManagerId ? 'primary' : 'white'"
             :text-color="OrderStore.requireManagerId ? '' : 'black'"
             @click="
@@ -265,7 +265,7 @@
                             push
                             dense
                             square
-                            label="复核"
+                            label="出库"
                             class="q-mr-xs"
                             :disable="!!props.row.managerId"
                             :color="!!props.row.managerId ? 'standard' : 'primary'"
@@ -354,7 +354,7 @@
                                                 v-if="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                                 class="text-body1"
                                             >
-                                                <div v-if="!!props.row.managerId">* 订单已复核，无法修改</div>
+                                                <div v-if="!!props.row.managerId">* 订单已出库，无法修改</div>
                                                 <div v-if="props.row.joinChildOrder?.length > 0">* 仓库已经装货，无法修改，请检查仓库（发货）订单</div>
                                                 <div v-if="!!props.row.accounterId">* 订单已确认结清，无法修改</div>
                                             </q-tooltip>
@@ -446,7 +446,7 @@
                                             <div class="row text-body1">
                                                 <span class="col-6 text-grey">
                                                     <q-badge rounded :color="props.row.managerId ? 'primary' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
-                                                    >复核人
+                                                    >出库人
                                                 </span>
                                                 <span class="col-6 text-right text-weight-bold">
                                                     {{ props.row.joinManager?.nickname || "无" }}
@@ -483,8 +483,8 @@
                                         </q-card-section>
                                         <q-separator />
                                         <q-card-section class="text-body2 text-grey" style="white-space: break-spaces">
-                                            <div>1.复核后将会通知仓库装货，并生成发货单</div>
-                                            <div>2.取消复核后，不会影响发货单</div>
+                                            <div>1.出库后将会通知仓库装货，并生成发货单</div>
+                                            <div>2.取消出库后，不会影响发货单</div>
                                             <div>3.删除发货单后，您可以继续编辑此销售单</div>
                                         </q-card-section>
                                     </q-card>
@@ -914,7 +914,7 @@ const setManager = async (order: OrderJoined, toClear = false) => {
     entity.managerId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
 
-    // 销售单复核，需要自动创建对应发货单
+    // 销售单出库，需要自动创建对应发货单
     if (entity.managerId && entity.type === ENUM_ORDER.SALES) {
         OrderStore.editor = OrderStore.getSchema(ENUM_ORDER.GETOUT);
         OrderStore.editor.parentOrderId = entity._id;
