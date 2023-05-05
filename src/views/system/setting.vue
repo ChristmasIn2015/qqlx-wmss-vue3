@@ -133,7 +133,7 @@
                     </q-card>
                 </q-card-section>
             </q-card>
-            <q-btn class="q-mt-md full-width" color="negative">
+            <q-btn class="q-mt-md full-width" color="negative" @click="$router.push('/wmss/login')">
                 <q-icon name="logout" class="q-mr-xs"></q-icon>
                 切换用户
             </q-btn>
