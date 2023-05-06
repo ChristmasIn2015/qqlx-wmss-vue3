@@ -8,7 +8,7 @@
 
             <!-- 个人中心 -->
             <!-- 个人中心 -->
-            <q-item clickable class="q-pl-md q-pr-sm q-mb-sm bg-primary text-white" @click="$router.push('/wmss/system/setting')">
+            <q-item clickable class="q-mb-sm q-px-sm bg-primary text-white" @click="$router.push('/wmss/brand/setting')">
                 <q-item-section avatar>
                     <q-avatar>
                         <img :src="UserStore.userEditor?.avator || UserStore.wxAvatorDefault" />
@@ -19,9 +19,6 @@
                 <q-item-section>
                     <q-item-label class="text-weight-bold ellipsis">{{ UserStore.userEditor?.nickname }}</q-item-label>
                     <q-item-label class="text-caption ellipsis">{{ CorpStore.picked?.name || "-" }}</q-item-label>
-                </q-item-section>
-                <q-item-section side top>
-                    <q-icon name="arrow_drop_down" color="white" />
                 </q-item-section>
             </q-item>
 

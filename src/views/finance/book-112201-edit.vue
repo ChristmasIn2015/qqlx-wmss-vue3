@@ -104,7 +104,7 @@
                             <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
                             正在确认
                         </div>
-                        <div class="col text-right text-body1">
+                        <div class="col-8 text-right text-body1">
                             <span>{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }} </span>
                             /
                             <span class="text-teal text-bold">
@@ -114,7 +114,7 @@
                     </div>
                     <div class="row">
                         <div class="col">确认率</div>
-                        <div class="col text-right text-body1 text-">{{ ((nowAmount * 100) / BookStore.editor.amount).toFixed(2) }}%</div>
+                        <div class="col-8 text-right text-body1 text-">{{ ((nowAmount * 100) / BookStore.editor.amount).toFixed(2) }}%</div>
                     </div>
                 </q-card-section>
                 <q-space></q-space>

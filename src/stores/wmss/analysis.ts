@@ -6,6 +6,7 @@ import {
     PATH_ORDER_ANALYSIS,
     PATH_CONTACT_ANALYSIS,
     ENUM_ORDER,
+    OrderAnalysis,
     getOrderAnalysisDto,
     getOrderAnalysisRes,
     getContactAnalysisDto,
@@ -53,11 +54,9 @@ export const useAnalysisStore = defineStore("Analysis", {
         loadding: false,
     }),
     actions: {
-        async set(dto: ViewOrderAna[]): Promise<ViewOrderAna[]> {
-            this.loadding = true;
+        async getOrderAnalysis(dto: getOrderAnalysisDto): Promise<OrderAnalysis> {
             const res: getOrderAnalysisRes = await request.get(PATH_ORDER_ANALYSIS, { dto });
-            this.loadding = false;
-            return dto.map((time, index) => ({ ...time, ...res[index] }));
+            return res;
         },
         async getContactAnalysis(page: number = 1) {
             try {

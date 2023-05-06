@@ -2,10 +2,10 @@
     <div class="q-pl-xs q-mb-md">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <q-btn icon="arrow_back" fab flat style="margin-left: -12px" @click="$router.push('/wmss')"></q-btn>
-            <span>礼品卡</span>
+            <span>时长卡</span>
         </div>
         <div class="text-option text-primary q-mb-sm">
-            您正在选购礼品卡，购买后将会增加
+            您正在选购时长卡，购买后将会增加
             <span class="text-negative text-weight-bold q-mx-sm">@{{ CorpStore.picked?.name }}</span>
             的使用期。
         </div>

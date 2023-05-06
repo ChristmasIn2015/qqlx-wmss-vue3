@@ -19,20 +19,8 @@ const routes = [
                         meta: { icon: "insights", color: "primary", show: true },
                     },
                     {
-                        path: "role",
-                        name: "成员管理",
-                        component: () => import("@/views/system/role.vue"),
-                        meta: { icon: "group_add", color: "primary", show: true },
-                    },
-                    {
-                        path: "cabinet",
-                        name: "商品设置",
-                        component: () => import("@/views/system/cabinet.vue"),
-                        meta: { icon: "dashboard_customize", color: "indigo-14", show: true },
-                    },
-                    {
                         path: "pay",
-                        name: "礼品卡",
+                        name: "时长卡",
                         component: () => import("@/views/system/pay.vue"),
                         meta: { icon: "group", color: "primary", show: false },
                     },
@@ -46,12 +34,6 @@ const routes = [
                         path: "analysis",
                         name: "回款分析",
                         component: () => import("@/views/system/analysis.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
-                    },
-                    {
-                        path: "setting",
-                        name: "设置",
-                        component: () => import("@/views/system/setting.vue"),
                         meta: { icon: "group", color: "primary", show: false },
                     },
                 ],
@@ -204,7 +186,7 @@ const routes = [
                     },
                     {
                         path: "sku-individual",
-                        name: "原材料",
+                        name: "在库原料",
                         component: () => import("@/views/warehouse/sku-individual.vue"),
                         meta: { icon: "content_cut", color: "indigo-14", show: true },
                     },
@@ -213,6 +195,32 @@ const routes = [
                         name: "库存日志",
                         component: () => import("@/views/warehouse/sku-list.vue"),
                         meta: { icon: "list", color: "indigo-14", show: true },
+                    },
+                ],
+            },
+
+            {
+                path: "brand",
+                name: "系统",
+                component: () => import("@/views/system/index.vue"),
+                children: [
+                    {
+                        path: "cabinet",
+                        name: "商品管理",
+                        component: () => import("@/views/system/cabinet.vue"),
+                        meta: { icon: "dashboard_customize", color: "indigo-14", show: true },
+                    },
+                    {
+                        path: "setting",
+                        name: "系统设置",
+                        component: () => import("@/views/system/setting.vue"),
+                        meta: { icon: "settings", color: "primary", show: true },
+                    },
+                    {
+                        path: "role",
+                        name: "成员管理",
+                        component: () => import("@/views/system/role.vue"),
+                        meta: { icon: "group_add", color: "primary", show: true },
                     },
                 ],
             },

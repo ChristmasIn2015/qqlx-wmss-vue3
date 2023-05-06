@@ -181,7 +181,7 @@
                             <q-menu>
                                 <q-card>
                                     <q-card-section>
-                                        <div class="text-h6 q-mb-sm">基础信息</div>
+                                        <div class="text-h6 q-mb-md q-pl-xs">基础信息</div>
                                         <q-input
                                             dense
                                             square
@@ -218,7 +218,7 @@
                                             v-model="props.row.keyCode"
                                             :disable="!!props.row.deductionSkuId"
                                         />
-                                        <div class="text-h6 q-mb-sm">位置信息</div>
+                                        <div class="text-h6 q-mt-md q-mb-sm q-pl-xs">位置信息</div>
                                         <q-select
                                             dense
                                             square

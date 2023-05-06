@@ -81,7 +81,7 @@
         :columns="[
             { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left' },
             { name: 'code', field: 'code', label: '编号', align: 'left' },
-            { name: 'keyOrigin', field: 'keyOrigin', label: '收款人', align: 'left' },
+            { name: 'keyOrigin', field: 'keyOrigin', label: '付款人', align: 'left' },
             { name: 'keyHouse', field: 'keyHouse', label: '银行', align: 'left' },
             { name: 'type', field: 'type', label: '分类', align: 'left' },
             { name: 'amount', field: 'amount', label: '' },
@@ -109,7 +109,7 @@
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle" class="text-white">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入收款人" v-model="schema.keyOrigin" />
+                    <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入付款人" v-model="schema.keyOrigin" />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-input dense square filled clearable bg-color="white" input-class="text-body1" placeholder="请输入银行" v-model="schema.keyHouse" />
@@ -151,7 +151,7 @@
                         dense
                         clearable
                         color="teal"
-                        placeholder="搜索收款人"
+                        placeholder="搜索付款人"
                         v-model="BookStore.search.keyOrigin"
                         @blur="BookStore.get(1)"
                     />
@@ -361,7 +361,7 @@ const filePickNext = async (file: File) => {
             if (!sheet) throw new Error(`找不到表格 [资金导入] !`);
             const rowJsonList: Record<string, any>[] = XLSX.utils.sheet_to_json(sheet);
 
-            // 1.批量上传收款人
+            // 1.批量上传付款人
             const uploading = [];
             for (let i in rowJsonList) {
                 const row = rowJsonList[i];

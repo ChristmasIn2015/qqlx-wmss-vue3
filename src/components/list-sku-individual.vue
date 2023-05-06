@@ -4,7 +4,7 @@
             dense
             row-key="_id"
             separator="cell"
-            style="min-height: 500px"
+            style="min-height: 450px"
             :columns="(SkuStore.columns as any)"
             :visible-columns="SkuStore.columnsVisiable"
             :rows="SkuStore.list"
@@ -174,9 +174,9 @@
                         <span class="text-grey"> 1 个</span>
                     </q-td>
                     <q-td key="pounds" :props="props" class="text-grey"> {{ props.row.pounds.toFixed(3) }} 吨 </q-td>
-                    <q-td key="poundsFinal" :props="props" :class="{ 'text-grey': props.row.poundsFinal < 1 }">
+                    <q-td key="poundsFinal" :props="props" :class="props.row.poundsFinal < 1 ? 'text-grey' : 'text-negative'">
                         <span
-                            class="cursor-pointer text-underline"
+                            class="cursor-pointer"
                             @click="
                                 async () => {
                                     skus_rela_order = await SkuStore.getSkuRelaOrder(props.row._id);
@@ -201,8 +201,14 @@
                     </q-td>
                     <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                     <q-td key="_id" :props="props" style="padding: 0 0 0 20px">
-                        <span v-if="props.row.isConfirmed">
-                            <q-btn dense square :label="vue_props.label" v-close-popup color="primary" @click="$emit('pick', cloneDeep(props.row))" />
+                        <span
+                            v-close-popup
+                            class="text-primary cursor-pointer row items-center"
+                            v-if="props.row.isConfirmed"
+                            @click="$emit('pick', cloneDeep(props.row))"
+                        >
+                            {{ vue_props.label }}
+                            <q-icon name="arrow_right"></q-icon>
                         </span>
                     </q-td>
                 </q-tr>

@@ -5,7 +5,7 @@
     </div>
 
     <div class="row text-primary">
-        <div class="col-3 q-pr-sm">
+        <div class="col-4 q-pr-sm">
             <q-card>
                 <q-card-section class="text-center q-pt-lg cursor-pointer" @click="userDialog = true">
                     <q-avatar size="108px">
@@ -139,7 +139,7 @@
             </q-btn>
         </div>
 
-        <div class="col-9">
+        <div class="col-8">
             <q-card class="q-mb-sm">
                 <q-card-section class="q-pb-none">
                     <div class="text-h6 text-bold row items-center">
@@ -443,21 +443,8 @@ const WarehouseStore = useWarehouseStore();
 const warehouseDialog = ref(false);
 const showWarehouseIsDisabled = ref(false);
 
-const AreaStore = useAreaStore();
-const areaDialog = ref(false);
-const showAreaIsDisabled = ref(false);
-
-const AnalysisStore = useAnalysisStore();
 const MarketScoAnalysisStore = useMarketScoAnalysisStore();
-
-const time1 = ref({ ...getRangeDay(), text: "今日", calcu: {} });
-const time2 = ref({ ...getRangeMonth(), text: "本月", calcu: {} });
-const time3 = ref({ ...getRangeYear(), text: "本年", calcu: {} });
-const time4 = ref({ startTime: new Date("2020/01/01").getTime(), endTime: Date.now() + 86400000, text: "全部", calcu: {} });
-const times = ref([time1.value, time2.value, time3.value, time4.value]);
-onMounted(async () => {
-    times.value = await AnalysisStore.set(times.value as any);
-});
+onMounted(async () => {});
 </script>
 
 <style scoped lang="scss"></style>

@@ -10,7 +10,7 @@
                         </q-tab>
                     </q-tabs>
                     <q-space></q-space>
-                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/system/cabinet')">
+                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/brand/cabinet')">
                         <q-tooltip class="text-body1">去设置商品</q-tooltip>
                     </q-btn>
                 </div>

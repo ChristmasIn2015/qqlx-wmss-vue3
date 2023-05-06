@@ -497,9 +497,9 @@
 
             <template v-slot:bottom="props">
                 <q-pagination
-                    size="17px"
-                    class="q-my-sm"
+                    size="16px"
                     color="white"
+                    class="q-my-sm"
                     text-color="black"
                     active-color="primary"
                     active-text-color="white"
@@ -542,7 +542,7 @@
     </q-dialog>
 
     <q-dialog v-model="printDialog">
-        <div class="row" style="min-width: 1330px">
+        <div class="row no-wrap" id="order-container">
             <q-card class="w-350" id="order-config">
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
@@ -630,7 +630,7 @@
                 </q-card-section>
             </q-card>
 
-            <q-space></q-space>
+            <q-space id="order-space"></q-space>
             <q-card class="print-container">
                 <q-card-section>
                     <div id="order">
@@ -1016,9 +1016,18 @@ onMounted(() => {
         }
     }
 }
-// @media screen and (max-width: 1200px) {
-//     #order-config {
-//         display: none;
-//     }
-// }
+#order-container {
+    min-width: 1325px;
+}
+@media screen and (max-width: 1200px) {
+    #order-container {
+        min-width: 960px;
+    }
+    #order-config {
+        display: none;
+    }
+    #order-space {
+        display: none;
+    }
+}
 </style>
