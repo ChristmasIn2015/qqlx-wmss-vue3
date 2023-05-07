@@ -19,6 +19,8 @@
             />
 
             <picker-range
+                :start-time="BookStore.page.startTime"
+                :end-time="BookStore.page.endTime"
                 @change="
                     ($event) => {
                         BookStore.page.startTime = $event.startTime;

@@ -8,7 +8,7 @@
 
             <!-- 个人中心 -->
             <!-- 个人中心 -->
-            <q-item clickable class="q-mb-sm q-px-sm bg-primary text-white" @click="$router.push('/wmss/brand/setting')">
+            <q-item clickable class="q-mb-sm q-px-sm bg-primary text-white" @click="$router.push('/wmss/system/setting')">
                 <q-item-section avatar>
                     <q-avatar>
                         <img :src="UserStore.userEditor?.avator || UserStore.wxAvatorDefault" />

@@ -1,63 +1,19 @@
 <template>
     <q-btn square color="white" text-color="black" class="q-ml-sm">
-        {{ time_range?.from }} ~ {{ time_range?.to }}
+        {{ string_start_time }} ~ {{ string_end_time }}
         <q-menu>
             <div class="row bg-grey-11">
                 <q-list class="q-pt-sm">
-                    <q-item
-                        clickable
-                        @click="
-                            () => {
-                                setRange(getRangeDay());
-                                $emit('change', {
-                                    startTime: new Date(time_range.from + ' 00:00:00').getTime(),
-                                    endTime: new Date(time_range.to + ' 23:59:59').getTime(),
-                                });
-                            }
-                        "
-                    >
+                    <q-item clickable @click="() => $emit('change', getRangeDay())">
                         <q-item-section>今日</q-item-section>
                     </q-item>
-                    <q-item
-                        clickable
-                        @click="
-                            () => {
-                                setRange(getRangeWeek());
-                                $emit('change', {
-                                    startTime: new Date(time_range.from + ' 00:00:00').getTime(),
-                                    endTime: new Date(time_range.to + ' 23:59:59').getTime(),
-                                });
-                            }
-                        "
-                    >
+                    <q-item clickable @click="() => $emit('change', getRangeWeek())">
                         <q-item-section>本周</q-item-section>
                     </q-item>
-                    <q-item
-                        clickable
-                        @click="
-                            () => {
-                                setRange(getRangeMonth());
-                                $emit('change', {
-                                    startTime: new Date(time_range.from + ' 00:00:00').getTime(),
-                                    endTime: new Date(time_range.to + ' 23:59:59').getTime(),
-                                });
-                            }
-                        "
-                    >
+                    <q-item clickable @click="() => $emit('change', getRangeMonth())">
                         <q-item-section>本月</q-item-section>
                     </q-item>
-                    <q-item
-                        clickable
-                        @click="
-                            () => {
-                                setRange(getRangeYear());
-                                $emit('change', {
-                                    startTime: new Date(time_range.from + ' 00:00:00').getTime(),
-                                    endTime: new Date(time_range.to + ' 23:59:59').getTime(),
-                                });
-                            }
-                        "
-                    >
+                    <q-item clickable @click="() => $emit('change', getRangeYear())">
                         <q-item-section>本年</q-item-section>
                     </q-item>
                 </q-list>
@@ -71,12 +27,11 @@
                     @update:model-value="
                         ($event) => {
                             if (typeof $event === 'string') {
-                                time_range = { from: $event, to: $event };
                                 $emit('change', {
                                     startTime: new Date($event + ' 00:00:00').getTime(),
                                     endTime: new Date($event + ' 23:59:59').getTime(),
                                 });
-                            } else if (time_range) {
+                            } else {
                                 $emit('change', {
                                     startTime: new Date(time_range.from + ' 00:00:00').getTime(),
                                     endTime: new Date(time_range.to + ' 23:59:59').getTime(),
@@ -91,26 +46,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { getRangeDay, getRangeWeek, getRangeMonth, getRangeYear } from "qqlx-cdk";
+import { ref, computed } from "vue";
+import { getRangeDay, getRangeWeek, getRangeMonth, getRangeYear, getTime } from "qqlx-cdk";
 
-const time_range = ref({
-    from: `${new Date().getFullYear()}/01/01`,
-    to: new Date().toLocaleString().split(" ")[0],
+const vue_props = defineProps({
+    startTime: {
+        type: Number,
+        default: getRangeYear().startTime,
+    },
+    endTime: {
+        type: Number,
+        default: getRangeYear().endTime,
+    },
 });
-
-const setRange = (range: { startTime: number; endTime: number }) => {
-    const from = new Date(range.startTime);
-    const from_month = from.getMonth() + 1 < 10 ? `0${from.getMonth() + 1}` : from.getMonth() + 1;
-    const from_day = from.getDate() < 10 ? `0${from.getDate()}` : from.getDate();
-
-    const to = new Date(range.endTime);
-    const to_month = to.getMonth() + 1 < 10 ? `0${to.getMonth() + 1}` : to.getMonth() + 1;
-    const to_day = to.getDate() < 10 ? `0${to.getDate()}` : to.getDate();
-
-    time_range.value = {
-        from: `${from.getFullYear()}/${from_month}/${from_day}`,
-        to: `${to.getFullYear()}/${to_month}/${to_day}`,
-    };
-};
+const string_start_time = computed(() => getTime(vue_props.startTime).text);
+const string_end_time = computed(() => getTime(vue_props.endTime).text);
+const time_range = computed({
+    get() {
+        console.log(getRangeWeek());
+        return { from: string_start_time.value, to: string_end_time.value };
+    },
+    set() {},
+});
 </script>

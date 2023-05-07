@@ -50,14 +50,14 @@ onMounted(async () => {
         // 登录
         if (state === "LOGIN" && code) {
             await UserStore.post(code);
-            window.location.assign("/wmss/system/dashboard");
+            window.location.assign("/wmss/analysis/dashboard");
         }
         // 加入店铺
         else if (state === "JOIN" && code) {
             const res = await UserStore.get(code);
             BrandRoleStore.setEditor();
             await BrandRoleStore.post(res.userId);
-            window.location.assign("/wmss/system/dashboard");
+            window.location.assign("/wmss/analysis/dashboard");
         }
     } catch (error) {
         NotifyStore.fail((error as Error).message);

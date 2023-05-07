@@ -4,6 +4,8 @@
             <span>{{ MAP_ENUM_ORDER.get(vue_props.type)?.text }}（未结清）</span>
             <q-space></q-space>
             <picker-range
+                :start-time="OrderStore.page.startTime"
+                :end-time="OrderStore.page.endTime"
                 @change="
                     ($event) => {
                         OrderStore.page.startTime = $event.startTime;

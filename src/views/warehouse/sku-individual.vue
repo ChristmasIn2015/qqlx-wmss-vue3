@@ -1,7 +1,7 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>原材料</span>
+            <span>在库原料</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn class="q-ml-sm bg-white" square @click="$router.push('/wmss/warehouse/order-list')">去入库</q-btn>

@@ -1,7 +1,7 @@
 <template>
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>增值税（进项）发票明细</span>
+            <span>进项发票</span>
             <dialog-intro></dialog-intro>
             <q-space></q-space>
             <q-btn
@@ -18,6 +18,8 @@
             />
 
             <picker-range
+                :start-time="BookStore.page.startTime"
+                :end-time="BookStore.page.endTime"
                 @change="
                     ($event) => {
                         BookStore.page.startTime = $event.startTime;

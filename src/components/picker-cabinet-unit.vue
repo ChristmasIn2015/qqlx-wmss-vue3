@@ -10,7 +10,7 @@
                         </q-tab>
                     </q-tabs>
                     <q-space></q-space>
-                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/brand/cabinet')">
+                    <q-btn icon="settings" flat color="primary" @click="$router.push('/wmss/system/cabinet')">
                         <q-tooltip class="text-body1">去设置商品</q-tooltip>
                     </q-btn>
                 </div>
@@ -68,11 +68,6 @@
                                 @click="CabinetUnitStore.sort(nowCabinet, nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'poundsFinal' : 'countFinal')"
                             >
                                 <span>
-                                    <q-icon name="help_outlined" size="14px" v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                        <q-tooltip class="text-body1">
-                                            <div>您可以在“原材料”菜单中，查看具体明细</div>
-                                        </q-tooltip>
-                                    </q-icon>
                                     <span>剩余库存</span>
                                     <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                 </span>

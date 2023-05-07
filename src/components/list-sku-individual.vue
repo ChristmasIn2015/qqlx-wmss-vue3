@@ -354,7 +354,6 @@ import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined } from "qqlx-core";
 import plateSku from "@/components/plate-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
-import pickerRange from "@/components/picker-range.vue";
 import { useContactStore } from "@/stores/brand/contact";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";

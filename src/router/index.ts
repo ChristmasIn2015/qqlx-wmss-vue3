@@ -4,37 +4,19 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
     {
         path: "/wmss",
-        redirect: "/wmss/system/dashboard",
+        redirect: "/wmss/analysis/dashboard",
         component: () => import("@/layout/index.vue"),
         children: [
             {
-                path: "system",
+                path: "analysis",
                 name: "",
                 component: () => import("@/views/system/index.vue"),
                 children: [
                     {
                         path: "dashboard",
                         name: "经营分析",
-                        component: () => import("@/views/system/dashboard.vue"),
+                        component: () => import("@/views/analysis/dashboard.vue"),
                         meta: { icon: "insights", color: "primary", show: true },
-                    },
-                    {
-                        path: "pay",
-                        name: "时长卡",
-                        component: () => import("@/views/system/pay.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
-                    },
-                    {
-                        path: "clue",
-                        name: "操作明细",
-                        component: () => import("@/views/system/clue.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
-                    },
-                    {
-                        path: "analysis",
-                        name: "回款分析",
-                        component: () => import("@/views/system/analysis.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
                     },
                 ],
             },
@@ -198,9 +180,8 @@ const routes = [
                     },
                 ],
             },
-
             {
-                path: "brand",
+                path: "system",
                 name: "系统",
                 component: () => import("@/views/system/index.vue"),
                 children: [
@@ -221,6 +202,18 @@ const routes = [
                         name: "成员管理",
                         component: () => import("@/views/system/role.vue"),
                         meta: { icon: "group_add", color: "primary", show: true },
+                    },
+                    {
+                        path: "pay",
+                        name: "时长卡",
+                        component: () => import("@/views/system/pay.vue"),
+                        meta: { icon: "group", color: "primary", show: false },
+                    },
+                    {
+                        path: "clue",
+                        name: "操作明细",
+                        component: () => import("@/views/system/clue.vue"),
+                        meta: { icon: "group", color: "primary", show: false },
                     },
                 ],
             },

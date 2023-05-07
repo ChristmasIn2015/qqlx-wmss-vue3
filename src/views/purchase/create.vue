@@ -2,6 +2,7 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>创建采购清单</span>
+            <q-space></q-space>
             <dialog-intro />
         </div>
     </div>

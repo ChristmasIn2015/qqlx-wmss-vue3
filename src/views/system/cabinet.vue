@@ -1,57 +1,119 @@
 <template>
-    <div class="q-pl-xs q-mb-sm">
-        <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>商品分类</span>
-            <dialog-intro></dialog-intro>
-            <q-space></q-space>
-            <q-btn square class="q-ml-sm" color="primary">
-                常见分类
-                <q-menu>
-                    <q-item
-                        clickable
-                        v-close-popup
-                        v-for="recommand in RECOMAND_POUNDS_FORMULA"
-                        @click="
-                            () => {
-                                CabinetStore.setEditor(recommand);
-                                CabinetStore.post(); //async
-                            }
-                        "
-                    >
-                        <q-item-section>{{ recommand.name }}</q-item-section>
-                        <q-tooltip class="text-body1">点击添加</q-tooltip>
-                    </q-item>
-                </q-menu>
-            </q-btn>
-            <q-btn
-                square
-                class="q-ml-sm"
-                color="negative"
-                @click="
-                    () => {
-                        CabinetStore.setEditor();
-                        dialogCabinet = true;
-                    }
-                "
-            >
-                添加新分类
-            </q-btn>
+    <div style="max-width: 1350px">
+        <div class="q-pl-xs q-mb-sm q-pr-sm">
+            <div class="text-h5 text-primary text-weight-bold row items-center">
+                <span>商品设置</span>
+                <dialog-intro></dialog-intro>
+                <q-space></q-space>
+                <q-btn square class="q-ml-sm" color="primary">
+                    常见分类
+                    <q-menu>
+                        <q-item
+                            clickable
+                            v-close-popup
+                            v-for="recommand in RECOMAND_POUNDS_FORMULA"
+                            @click="
+                                () => {
+                                    CabinetStore.setEditor(recommand);
+                                    CabinetStore.post(); //async
+                                }
+                            "
+                        >
+                            <q-item-section>{{ recommand.name }}</q-item-section>
+                            <q-tooltip class="text-body1">点击添加</q-tooltip>
+                        </q-item>
+                    </q-menu>
+                </q-btn>
+                <q-btn
+                    square
+                    class="q-ml-sm"
+                    color="negative"
+                    @click="
+                        () => {
+                            CabinetStore.setEditor();
+                            dialogCabinet = true;
+                        }
+                    "
+                >
+                    添加新分类
+                </q-btn>
+            </div>
         </div>
-    </div>
 
-    <q-card square>
         <q-splitter v-model="splitIndex">
             <template v-slot:before>
-                <q-tabs v-model="tabIndex" dense vertical class="text-primary">
-                    <q-tab v-for="(cabinet, index) in CabinetStore.list" :name="index" class="q-my-md">
-                        <span class="text-body1 q-my-sm">{{ cabinet.name }}</span>
-                        <q-badge v-if="cabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" floating>原料</q-badge>
-                    </q-tab>
-                </q-tabs>
+                <q-card square>
+                    <q-tabs v-model="tabIndex" dense vertical class="text-primary">
+                        <q-tab v-for="(cabinet, index) in CabinetStore.list" :name="index" class="q-my-md">
+                            <span class="text-body1 q-my-sm">{{ cabinet.name }}</span>
+                            <q-badge v-if="cabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL" floating>原料</q-badge>
+                        </q-tab>
+                    </q-tabs>
+                </q-card>
             </template>
             <template v-slot:after>
-                <q-splitter v-model="splitIndex2">
-                    <template v-slot:before>
+                <div class="q-pl-sm q-pb-sm q-pr-sm">
+                    <q-card square class="q-mb-sm text-primary">
+                        <q-card-section>
+                            <div class="row text-h6">
+                                {{ nowCabinet?.name }}
+
+                                <q-space></q-space>
+                                <q-btn padding="xs" icon="more_horiz" flat>
+                                    <q-menu>
+                                        <q-item
+                                            clickable
+                                            v-close-popup
+                                            @click="
+                                                () => {
+                                                    CabinetStore.setEditor(nowCabinet);
+                                                    CabinetStore.patch();
+                                                }
+                                            "
+                                        >
+                                            <q-item-section>置顶</q-item-section>
+                                        </q-item>
+                                        <q-item
+                                            clickable
+                                            v-close-popup
+                                            @click="
+                                                () => {
+                                                    CabinetStore.setEditor(nowCabinet);
+                                                    dialogCabinet = true;
+                                                }
+                                            "
+                                        >
+                                            <q-item-section>修改</q-item-section>
+                                        </q-item>
+                                        <q-item clickable v-close-popup @click="deleteConfirm(nowCabinet?._id)">
+                                            <q-item-section class="text-negative">删除</q-item-section>
+                                        </q-item>
+                                    </q-menu>
+                                </q-btn>
+                            </div>
+
+                            <div class="q-mt-sm">
+                                <span>类型：</span>
+                                <span :class="nowCabinet?.layout > 1 ? 'text-negative' : 'text-grey'">
+                                    {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
+                                    <q-tooltip class="text-body1">
+                                        {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.tip }}
+                                    </q-tooltip>
+                                </span>
+                                <span>，过磅方法：</span>
+                                <span :class="nowCabinet?.formula > 1 ? 'text-negative' : 'text-grey'">
+                                    {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.text }}
+                                    <q-tooltip class="text-body1">
+                                        {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.tip }}
+                                    </q-tooltip>
+                                </span>
+                                <span>，单位：</span>
+                                <span> {{ nowCabinet?.unit }} </span>。
+                            </div>
+                        </q-card-section>
+                    </q-card>
+
+                    <q-card>
                         <q-table
                             style="min-height: 660px"
                             separator="cell"
@@ -245,80 +307,15 @@
                                 <span v-if="CabinetUnitStore.listExcel.length">，正在添加 {{ CabinetUnitStore.listExcel.length }} 项</span>
                             </template>
                         </q-table>
-                    </template>
-                    <template v-slot:after>
-                        <div class="q-px-md q-pt-sm text-primary">
-                            <div class="text-h6 q-pb-sm row">
-                                {{ nowCabinet?.name }}
 
-                                <q-space></q-space>
-                                <q-btn padding="xs" icon="more_horiz" flat style="margin-right: -8px">
-                                    <q-menu>
-                                        <q-item
-                                            clickable
-                                            v-close-popup
-                                            @click="
-                                                () => {
-                                                    CabinetStore.setEditor(nowCabinet);
-                                                    CabinetStore.patch();
-                                                }
-                                            "
-                                        >
-                                            <q-item-section>置顶</q-item-section>
-                                        </q-item>
-                                        <q-item
-                                            clickable
-                                            v-close-popup
-                                            @click="
-                                                () => {
-                                                    CabinetStore.setEditor(nowCabinet);
-                                                    dialogCabinet = true;
-                                                }
-                                            "
-                                        >
-                                            <q-item-section>修改</q-item-section>
-                                        </q-item>
-                                        <q-item clickable v-close-popup @click="deleteConfirm(nowCabinet?._id)">
-                                            <q-item-section class="text-negative">删除</q-item-section>
-                                        </q-item>
-                                    </q-menu>
-                                </q-btn>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">过磅方法</div>
-                                <div class="col text-right" :class="nowCabinet?.formula > 1 ? 'text-negative' : 'text-grey'">
-                                    {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.text }}
-                                    <q-tooltip class="text-body1">
-                                        {{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet?.formula)?.tip }}
-                                    </q-tooltip>
-                                </div>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">类型</div>
-                                <div class="col text-right" :class="nowCabinet?.layout > 1 ? 'text-negative' : 'text-grey'">
-                                    {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.text }}
-                                    <q-tooltip class="text-body1">
-                                        {{ MAP_ENUM_LAYOUT_CABINET.get(nowCabinet?.layout)?.tip }}
-                                    </q-tooltip>
-                                </div>
-                            </div>
-                            <div class="text-grey row">
-                                <div class="col">单位</div>
-                                <div class="col text-right">{{ nowCabinet?.unit }}</div>
-                            </div>
-                            <div class="q-pt-md row">
-                                <q-space></q-space>
-                            </div>
-                        </div>
-                    </template>
-                </q-splitter>
+                        <q-inner-loading :showing="CabinetUnitStore.loadding || CabinetStore.loadding">
+                            <q-spinner-gears size="50px" color="primary" />
+                        </q-inner-loading>
+                    </q-card>
+                </div>
             </template>
         </q-splitter>
-
-        <q-inner-loading :showing="CabinetUnitStore.loadding || CabinetStore.loadding">
-            <q-spinner-gears size="50px" color="primary" />
-        </q-inner-loading>
-    </q-card>
+    </div>
 
     <q-dialog v-model="dialogCabinet" persistent>
         <q-card class="w-400">

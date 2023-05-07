@@ -7,6 +7,8 @@
             <q-space></q-space>
 
             <picker-range
+                :start-time="OrderStore.page.startTime"
+                :end-time="OrderStore.page.endTime"
                 @change="
                     ($event) => {
                         OrderStore.page.startTime = $event.startTime;

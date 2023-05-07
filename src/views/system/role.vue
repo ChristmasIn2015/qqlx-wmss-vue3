@@ -125,7 +125,6 @@ import { ENUM_BRAND_ROLE, MAP_ENUM_BRAND_ROLE } from "qqlx-core";
 
 import dialogIntro from "@/components/dialog-intro.vue";
 import { useUserStore } from "@/stores/user/user";
-import { useCorpStore } from "@/stores/brand/corp";
 import { useBrandRoleStore } from "@/stores/brand/role";
 
 const UserStore = useUserStore();
@@ -155,12 +154,6 @@ const openBrandRole = () => {
                 state: `JOIN`,
             });
     }, 500);
-};
-const toggleBrandRole = async (base: BrandRole, exist: ENUM_BRAND_ROLE) => {
-    const all = BrandRoleStore.list;
-    const match = all.find((e) => e.role === exist && e.userId === base.userId);
-    if (match) await BrandRoleStore.delete(match._id);
-    else await BrandRoleStore.post(base.userId, exist);
 };
 
 // action

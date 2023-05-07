@@ -17,6 +17,8 @@
             <q-space></q-space>
             <div style="float: right">
                 <picker-range
+                    :start-time="SkuStore.page.startTime"
+                    :end-time="SkuStore.page.endTime"
                     @change="
                         ($event) => {
                             SkuStore.page.startTime = $event.startTime;

@@ -2,8 +2,8 @@
     <div class="q-pl-xs q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
             <span>销售单列表</span>
-            <dialog-intro></dialog-intro>
             <q-space></q-space>
+            <dialog-intro></dialog-intro>
         </div>
     </div>
     <div class="row q-mb-sm">
@@ -50,6 +50,8 @@
         <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')"> 销售明细 </q-btn>
 
         <picker-range
+            :start-time="OrderStore.page.startTime"
+            :end-time="OrderStore.page.endTime"
             @change="
                 ($event) => {
                     OrderStore.page.startTime = $event.startTime;

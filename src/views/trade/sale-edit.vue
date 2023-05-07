@@ -69,7 +69,7 @@ onMounted(() => {
     if (OrderStore.editor._id) {
         contactPicked.value = OrderStore.editor.joinContact || ContactStore.getSchema();
     } else {
-        router.push("/wmss/system/dashboard");
+        router.push("/wmss/analysis/dashboard");
     }
 });
 </script>
