@@ -180,7 +180,7 @@
                             @click="
                                 async () => {
                                     skus_rela_order = await SkuStore.getSkuRelaOrder(props.row._id);
-                                    dialog_skus_rela_order = true;
+                                    SkuStore.dialogSku(skus_rela_order, { title: `${props.row.name} ${props.row.norm}`, more: true });
                                 }
                             "
                         >
@@ -258,89 +258,6 @@
             ></list-contact>
         </q-card>
     </q-dialog>
-
-    <q-dialog v-model="dialog_skus_rela_order">
-        <q-card class="w-1000">
-            <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title class="text-weight-bold">库存明细</q-toolbar-title>
-                <q-btn dense flat icon="close" v-close-popup></q-btn>
-            </q-toolbar>
-            <q-separator class="q-mb-md" />
-
-            <q-table
-                style="min-height: 500px"
-                separator="cell"
-                row-key="_id"
-                dense
-                :rows="skus_rela_order"
-                :rows-per-page-options="[0]"
-                :columns="[
-                    { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'layout', field: 'layout', label: '库存类型', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'formula', field: 'formula', label: '用途', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'count', field: 'count', label: '数量', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'pounds', field: 'pounds', label: '重量', align: 'right', style: NotifyStore.fontStyle },
-                    { name: 'keyOrigin', field: 'keyOrigin', label: '产地', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'keyFeat', field: 'keyFeat', label: '材质', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'keyCode', field: 'keyCode', label: '捆包号', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'warehouseId', field: 'warehouseId', label: '仓库', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'keyHouse', field: 'keyHouse', label: '货位号', align: 'left', style: NotifyStore.fontStyle },
-                    { name: 'orderId', field: 'orderId', label: '订单', align: 'left', style: NotifyStore.fontStyle },
-                ]"
-            >
-                <template v-slot:body="props">
-                    <q-tr>
-                        <q-td key="timeCreateString" :props="props" class="text-grey"> {{ props.row.timeCreateString }} </q-td>
-                        <q-td key="layout" :props="props">
-                            <q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                原材料
-                                <q-tooltip class="text-body1"> 您可以在“原材料”菜单中，看见每一项入库原材料剩下多少库存</q-tooltip>
-                            </q-badge>
-                            <q-badge color="grey" v-else>普通</q-badge>
-                        </q-td>
-                        <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
-                        <q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
-                        <q-td key="formula" :props="props">
-                            <q-badge :color="SkuStore.getLabelByType(props.row.type).color">
-                                {{ SkuStore.getLabelByType(props.row.type).text }}
-                            </q-badge>
-                        </q-td>
-                        <q-td key="count" :props="props" :class="{ 'text-grey': props.row.count <= 0 }">
-                            <span :class="{ 'text-grey': props.row.isPriceInPounds }"> {{ props.row.count }} {{ props.row.unit }}</span>
-                        </q-td>
-                        <q-td key="pounds" :props="props" :class="{ 'text-grey': props.row.pounds <= 0 }">
-                            <span v-if="props.row.isPriceInPounds">{{ props.row.pounds.toFixed(3) }} 吨</span>
-                            <span v-else>-</span>
-                        </q-td>
-                        <q-td key="keyOrigin" :props="props" class="text-grey"> {{ props.row.keyOrigin }} </q-td>
-                        <q-td key="keyFeat" :props="props" class="text-grey"> {{ props.row.keyFeat }} </q-td>
-                        <q-td key="keyCode" :props="props" class="text-grey"> {{ props.row.keyCode }} </q-td>
-                        <q-td key="warehouseId" :props="props" class="text-grey">{{ props.row.joinWarehouse?.name }} </q-td>
-                        <q-td key="keyHouse" :props="props" class="text-grey"> {{ props.row.keyHouse }} </q-td>
-                        <q-td key="price" :props="props" class="text-grey"> {{ props.row.price.toFixed(2) }} 元</q-td>
-                        <q-td key="remark" :props="props" class="text-grey ellipsis">{{ props.row.remark }} </q-td>
-                        <q-td key="orderContactId" :props="props">
-                            <span v-if="props.row.joinOrderContact">{{ props.row.joinOrderContact?.name }} </span>
-                            <span v-else class="text-grey">批量导入</span>
-                        </q-td>
-                        <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
-                        <q-td key="_id" :props="props">
-                            <span v-if="props.row.joinOrder?.managerId" class="text-grey"> 发货中 </span>
-                            <span v-else class="text-negative text-bold">
-                                未发货
-                                <q-tooltip class="text-body1">
-                                    <div>* 销售单复核后，将会生成发货单，此商品将会变更为 “发货中”</div>
-                                    <div>* 发货商品可以和销售商品不一致，请注意检查</div>
-                                </q-tooltip>
-                            </span>
-                        </q-td>
-                    </q-tr>
-                </template>
-            </q-table>
-        </q-card>
-    </q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -351,6 +268,7 @@ import { useRouter, useRoute } from "vue-router";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined } from "qqlx-core";
 
+import plateSkuList from "./plate-sku-list.vue";
 import plateSku from "@/components/plate-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
@@ -364,7 +282,6 @@ import { useWarehouseStore } from "@/stores/brand/warehouse";
 const NotifyStore = useNotifyStore();
 
 const skus_rela_order = ref([] as SkuJoined[]);
-const dialog_skus_rela_order = ref(false);
 const SkuStore = useSkuStore();
 const AreaStore = useAreaStore();
 const WarehouseStore = useWarehouseStore();

@@ -90,7 +90,7 @@ const SkuStore = useSkuStore();
 const OrderStore = useOrderStore();
 const putOrder = async () => {
     const code = await OrderStore.put(OrderStore.editor, SkuStore.listPicked);
-    router.push(`/wmss/warehouse/order-list?code=${code}`);
+    router.back();
 };
 
 const nowOrderEditorTrans = computed(() => MAP_ENUM_ORDER.get(OrderStore.editor.type));

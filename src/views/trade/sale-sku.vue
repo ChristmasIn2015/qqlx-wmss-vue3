@@ -10,7 +10,7 @@
                 <span>
                     您可以前往
                     <span class="text-negative cursor-pointer" @click="$router.push('/wmss/warehouse/sku-list')">库存明细</span>
-                    查看实际发货内容。
+                    查看实际出库内容。
                 </span>
             </div>
 
@@ -267,12 +267,12 @@
                             </q-td>
                             <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                             <q-td key="_id" :props="props">
-                                <span v-if="props.row.joinOrder?.managerId" class="text-grey"> 发货中 </span>
+                                <span v-if="props.row.joinOrder?.managerId" class="text-grey"> 出库中 </span>
                                 <span v-else class="text-negative text-bold">
-                                    未发货
+                                    未出库
                                     <q-tooltip class="text-body1">
-                                        <div>* 销售单复核后，将会生成发货单，此商品将会变更为 “发货中”</div>
-                                        <div>* 发货商品可以和销售商品不一致，请注意检查</div>
+                                        <div>* 销售单签字后，将会生成出库单，此商品将会变更为 “出库中”</div>
+                                        <div>* 出库商品可以和销售商品不一致，请注意检查</div>
                                     </q-tooltip>
                                 </span>
                             </q-td>
@@ -368,6 +368,7 @@ const route = useRoute();
 onMounted(() => {
     SkuStore.page = getPage(20);
     SkuStore.sortKey = "timeCreate";
+    SkuStore.listPicked = [];
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;

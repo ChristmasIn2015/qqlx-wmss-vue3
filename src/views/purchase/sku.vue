@@ -265,7 +265,7 @@
                                 <span v-else class="text-negative text-bold">
                                     未入库
                                     <q-tooltip class="text-body1">
-                                        <div>* 采购清单复核后，将会生成入库单，此商品将会变更为 “已入库”</div>
+                                        <div>* 采购清单入库后，将会生成入库单，此商品将会变更为 “已入库”</div>
                                         <div>* 入库商品可以和采购商品不一致，请注意检查</div>
                                     </q-tooltip>
                                 </span>
@@ -378,6 +378,7 @@ const route = useRoute();
 onMounted(() => {
     SkuStore.page = getPage(20);
     SkuStore.sortKey = "timeCreate";
+    SkuStore.listPicked = [];
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;

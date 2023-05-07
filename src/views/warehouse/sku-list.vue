@@ -186,11 +186,14 @@
                         </q-badge>
                     </q-td>
                     <q-td key="count" :props="props" :class="{ 'text-grey': props.row.count <= 0 }">
-                        <span :class="{ 'text-grey': props.row.isPriceInPounds }"> {{ props.row.count }} {{ props.row.unit }}</span>
+                        <span v-if="[ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL].includes(props.row.type)">-</span>
+                        <span> {{ props.row.count }} {{ props.row.unit }}</span>
                     </q-td>
-                    <q-td key="pounds" :props="props" :class="{ 'text-grey': props.row.pounds <= 0 }">
-                        <span v-if="props.row.isPriceInPounds">{{ props.row.pounds.toFixed(3) }} 吨</span>
-                        <span v-else>-</span>
+                    <q-td key="pounds" :props="props" class="text-grey">
+                        <span v-if="props.row.isPriceInPounds">
+                            <span v-if="[ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL].includes(props.row.type)">-</span>
+                            {{ props.row.pounds.toFixed(3) }} 吨
+                        </span>
                     </q-td>
                     <q-td key="keyOrigin" :props="props" class="text-grey"> {{ props.row.keyOrigin }} </q-td>
                     <q-td key="keyFeat" :props="props" class="text-grey"> {{ props.row.keyFeat }} </q-td>
@@ -298,6 +301,7 @@ const route = useRoute();
 onMounted(() => {
     SkuStore.page = getPage(20);
     SkuStore.sortKey = "timeCreate";
+    SkuStore.listPicked = [];
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.layout = ENUM_LAYOUT_CABINET.SUMMARY;
     SkuStore.search.isConfirmed = false;

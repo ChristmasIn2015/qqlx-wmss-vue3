@@ -196,8 +196,14 @@
                     :class="{ 'bg-grey-4': props.expand }"
                     @click.stop="
                         async () => {
-                            if (props.expand === false) await setOrderInfo(props.row);
-                            props.expand = !props.expand;
+                            if (props.expand === false) {
+                                OrderStore.loadding = true;
+                                await setOrderInfo(props.row);
+                                props.expand = true;
+                                OrderStore.loadding = false;
+                            } else {
+                                props.expand = false;
+                            }
                         }
                     "
                 >
@@ -305,7 +311,7 @@
                 <q-tr v-show="props.expand" :props="props">
                     <q-td colspan="100%" style="padding: 0">
                         <div class="row">
-                            <div class="col-9">
+                            <div class="col-9 q-pa-sm">
                                 <plate-sku-list :skus="props.row.joinSku || []"></plate-sku-list>
                             </div>
                             <div class="col-3">
@@ -356,9 +362,9 @@
                                                 v-if="!!props.row.managerId || !!props.row.accounterId || props.row.joinChildOrder?.length > 0"
                                                 class="text-body1"
                                             >
-                                                <div v-if="!!props.row.managerId">* 订单已出库，无法修改</div>
-                                                <div v-if="props.row.joinChildOrder?.length > 0">* 仓库已经装货，无法修改，请检查仓库（发货）订单</div>
-                                                <div v-if="!!props.row.accounterId">* 订单已确认结清，无法修改</div>
+                                                <div v-if="!!props.row.managerId">* 检查到出库人签字，无法修改</div>
+                                                <div v-if="props.row.joinChildOrder?.length > 0">* 检查到出库单，无法修改</div>
+                                                <div v-if="!!props.row.accounterId">* 订单已结清签字，无法修改</div>
                                             </q-tooltip>
                                         </q-card-actions>
                                     </q-card>
@@ -369,15 +375,18 @@
                                                 <span class="col text-grey">
                                                     <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
                                                     >结清确认
+                                                </span>
+                                                <span class="col text-right text-weight-bold"
+                                                    >{{ props.row.joinAccounter?.nickname || "无" }}
+
                                                     <a
                                                         v-if="props.row.accounterId"
-                                                        class="cursor-pointer q-mx-sm text-negative"
+                                                        class="cursor-pointer text-negative text-underline"
                                                         @click.stop="setAccounter(props.row, true)"
                                                     >
                                                         取消
                                                     </a>
                                                 </span>
-                                                <span class="col text-right text-weight-bold">{{ props.row.joinAccounter?.nickname || "无" }}</span>
                                             </div>
                                             <div class="text-body1 text-grey q-mt-xs" v-if="props.row.joinBookOfOrder">
                                                 <div>
@@ -469,13 +478,39 @@
                                                         class="shadow-2 q-mr-sm"
                                                     >
                                                     </q-badge
-                                                    >发货单
+                                                    >出库单
+
+                                                    <span v-if="props.row.joinChildOrder?.length > 0">
+                                                        <a v-if="props.row.managerId" class="cursor-pointer text-grey text-underline">
+                                                            删除
+                                                            <q-tooltip class="text-body1">请先取消出库人的签字</q-tooltip>
+                                                        </a>
+                                                        <a
+                                                            v-else
+                                                            class="cursor-pointer text-negative text-underline"
+                                                            @click="
+                                                                async () => {
+                                                                    await OrderStore.delete(props.row.joinChildOrder[0]._id);
+                                                                    setOrderInfo(props.row);
+                                                                }
+                                                            "
+                                                        >
+                                                            删除
+                                                        </a>
+                                                    </span>
                                                 </span>
                                                 <span class="col text-right text-weight-bold">
                                                     <a
                                                         v-if="props.row.joinChildOrder?.length > 0"
                                                         class="cursor-pointer text-negative text-underline"
-                                                        @click="() => $router.push(`/wmss/warehouse/order-list?code=${props.row.joinChildOrder[0]?.code}`)"
+                                                        @click="
+                                                            async () => {
+                                                                OrderStore.loadding = true;
+                                                                await setOrderInfo(props.row.joinChildOrder[0]);
+                                                                SkuStore.dialogSku(props.row.joinChildOrder[0].joinSku, { title: '出库信息', more: false });
+                                                                OrderStore.loadding = false;
+                                                            }
+                                                        "
                                                     >
                                                         查看
                                                     </a>
@@ -485,9 +520,9 @@
                                         </q-card-section>
                                         <q-separator />
                                         <q-card-section class="text-body2 text-grey" style="white-space: break-spaces">
-                                            <div>1.出库后将会通知仓库装货，并生成发货单</div>
-                                            <div>2.取消出库后，不会影响发货单</div>
-                                            <div>3.删除发货单后，您可以继续编辑此销售单</div>
+                                            <div>1.出库后将会通知仓库装货，并生成出库单</div>
+                                            <div>2.取消出库后，不会影响出库单</div>
+                                            <div>3.删除出库单后，您可以继续编辑此销售单</div>
                                         </q-card-section>
                                     </q-card>
                                 </div>
@@ -790,10 +825,10 @@ import { useClueStore } from "@/stores/wmss/clue";
 
 const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
+const WarehouseStore = useWarehouseStore();
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
-const isInvoice = ref(false);
 const downloadOrderList = async () => {
     try {
         await OrderStore.get(1);
@@ -865,8 +900,6 @@ const ContactStore = useContactStore();
 const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
 
-const WarehouseStore = useWarehouseStore();
-
 const CorpStore = useCorpStore();
 const ConfigStore = useConfigStore();
 const skuPrinting = computed(() => {
@@ -911,12 +944,12 @@ const copy = async () => {
 
 const UserStore = useUserStore();
 const setManager = async (order: OrderJoined, toClear = false) => {
-    await setOrderInfo(order);
+    await setOrderInfo(order); // 保证必要数据
     const entity = cloneDeep(order);
     entity.managerId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
 
-    // 销售单出库，需要自动创建对应发货单
+    // 销售单出库，需要自动创建对应出库单
     if (entity.managerId && entity.type === ENUM_ORDER.SALES) {
         OrderStore.editor = OrderStore.getSchema(ENUM_ORDER.GETOUT);
         OrderStore.editor.parentOrderId = entity._id;
@@ -932,7 +965,6 @@ const setManager = async (order: OrderJoined, toClear = false) => {
     await setOrderInfo(target as OrderJoined);
 };
 const setAccounter = async (order: OrderJoined, toClear = false) => {
-    await setOrderInfo(order);
     const entity = cloneDeep(order);
     entity.accounterId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
@@ -949,6 +981,7 @@ onMounted(() => {
     // window.removeEventListener("afterprint", printLog);
     // window.addEventListener("afterprint", printLog);
     // 清空SKU
+    SkuStore.listPicked = [];
     SkuStore.setEditor();
     // 清空订单
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));

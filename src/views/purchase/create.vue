@@ -67,6 +67,7 @@ const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
 
 onMounted(async () => {
+    SkuStore.listPicked = [];
     SkuStore.setEditor();
 });
 </script>

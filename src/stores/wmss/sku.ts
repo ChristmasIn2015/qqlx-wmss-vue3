@@ -9,10 +9,8 @@ import type { getSkuDto, getSkuRes, patchSkuDto, patchSkuRes, SkuJoined, getOrde
 
 import { request } from "@/lib";
 import { useNotifyStore } from "@/stores/quasar/notify";
-import { useAnalysisStore } from "@/stores/wmss/analysis";
 
 const NotifyStore = useNotifyStore();
-const AnalysisStore = useAnalysisStore();
 
 function getSchema(): Sku {
     return {
@@ -65,6 +63,11 @@ export const useSkuStore = defineStore("Sku", {
         page: getPage(),
         total: 0,
         loadding: false,
+
+        dialog: false,
+        dialogTitle: "",
+        dialogMore: false,
+        dialogSkuList: [] as SkuJoined[],
 
         columns: [
             { name: "timeCreateString", field: "timeCreateString", label: "时间", align: "left", style: NotifyStore.fontStyle },
@@ -150,9 +153,25 @@ export const useSkuStore = defineStore("Sku", {
             }
         },
         async getSkuRelaOrder(deductionSkuId: string): Promise<SkuJoined[]> {
-            const dto = { deductionSkuId };
-            const res: SkuJoined[] = await request.get(PATH_SKU + "/rela-order", { dto });
-            return res;
+            let skus: SkuJoined[] = [];
+            try {
+                this.loadding = true;
+                const dto = { deductionSkuId };
+                const res: SkuJoined[] = await request.get(PATH_SKU + "/rela-order", { dto });
+                skus = res;
+            } catch (error) {
+                //
+            } finally {
+                this.loadding = false;
+                return skus;
+            }
+        },
+        /** 弹窗查看Sku */
+        dialogSku(skuList: SkuJoined[], option = { title: "商品信息", more: false }) {
+            this.dialogSkuList = cloneDeep(skuList || []);
+            this.dialogTitle = option?.title || "";
+            this.dialogMore = option?.more || false;
+            this.dialog = true;
         },
         getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {
             const schema: Sku = getSchema();
@@ -165,7 +184,6 @@ export const useSkuStore = defineStore("Sku", {
 
             this.editor = schema;
             this.search = schema;
-            this.listPicked = [];
         },
         getLabelByType(type: ENUM_ORDER) {
             if (type === ENUM_ORDER.GETIN) return { text: "入库", color: "positive" };

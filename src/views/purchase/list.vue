@@ -197,8 +197,14 @@
                     :class="{ 'bg-grey-4': props.expand }"
                     @click.stop="
                         async () => {
-                            if (props.expand === false) await setOrderInfo(props.row);
-                            props.expand = !props.expand;
+                            if (props.expand === false) {
+                                OrderStore.loadding = true;
+                                await setOrderInfo(props.row);
+                                props.expand = true;
+                                OrderStore.loadding = false;
+                            } else {
+                                props.expand = false;
+                            }
                         }
                     "
                 >
@@ -365,15 +371,18 @@
                                                 <span class="col text-grey">
                                                     <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
                                                     >结清确认
+                                                </span>
+                                                <span class="col text-right text-weight-bold"
+                                                    >{{ props.row.joinAccounter?.nickname || "无" }}
+
                                                     <a
                                                         v-if="props.row.accounterId"
-                                                        class="cursor-pointer q-mx-sm text-negative"
+                                                        class="cursor-pointer text-underline text-negative"
                                                         @click.stop="setAccounter(props.row, true)"
                                                     >
                                                         取消
                                                     </a>
                                                 </span>
-                                                <span class="col text-right text-weight-bold">{{ props.row.joinAccounter?.nickname || "无" }}</span>
                                             </div>
                                             <div class="text-body1 text-grey q-mt-xs" v-if="props.row.joinBookOfOrder">
                                                 <div>
@@ -466,12 +475,38 @@
                                                     >
                                                     </q-badge
                                                     >入库单
+
+                                                    <span v-if="props.row.joinChildOrder?.length > 0">
+                                                        <a v-if="props.row.managerId" class="cursor-pointer text-grey text-underline">
+                                                            删除
+                                                            <q-tooltip class="text-body1">请先取消入库人的签字</q-tooltip>
+                                                        </a>
+                                                        <a
+                                                            v-else
+                                                            class="cursor-pointer text-negative text-underline"
+                                                            @click="
+                                                                async () => {
+                                                                    await OrderStore.delete(props.row.joinChildOrder[0]._id);
+                                                                    setOrderInfo(props.row);
+                                                                }
+                                                            "
+                                                        >
+                                                            删除
+                                                        </a>
+                                                    </span>
                                                 </span>
-                                                <span class="col text-right text-weight-bold">
-                                                    <a
+                                                <span class="col text-right text-weight-bold"
+                                                    ><a
                                                         v-if="props.row.joinChildOrder?.length > 0"
                                                         class="cursor-pointer text-negative text-underline"
-                                                        @click="() => $router.push(`/wmss/warehouse/order-list?code=${props.row.joinChildOrder[0]?.code}`)"
+                                                        @click="
+                                                            async () => {
+                                                                OrderStore.loadding = true;
+                                                                await setOrderInfo(props.row.joinChildOrder[0]);
+                                                                SkuStore.dialogSku(props.row.joinChildOrder[0].joinSku, { title: '入库信息', more: true });
+                                                                OrderStore.loadding = false;
+                                                            }
+                                                        "
                                                     >
                                                         查看
                                                     </a>
@@ -651,7 +686,7 @@ const downloadOrderList = async () => {
 };
 const setOrderInfo = async (order: OrderJoined) => {
     try {
-        OrderStore.loadding = true;
+        // OrderStore.loadding = true;
         const info = await OrderStore.getSku(order);
         order.joinSku = info.skuList;
         order.joinBookOfOrder = info.bookOfOrderList;
@@ -663,7 +698,7 @@ const setOrderInfo = async (order: OrderJoined) => {
     } catch (error) {
         NotifyStore.fail(`网络异常, 请重新试试`);
     } finally {
-        OrderStore.loadding = false;
+        // OrderStore.loadding = false;
     }
 };
 
@@ -695,7 +730,6 @@ const setManager = async (order: OrderJoined, toClear = false) => {
     await setOrderInfo(target as OrderJoined);
 };
 const setAccounter = async (order: OrderJoined, toClear = false) => {
-    await setOrderInfo(order);
     const entity = cloneDeep(order);
     entity.accounterId = toClear ? "" : UserStore.userEditor.userId;
     await OrderStore.put(entity);
@@ -709,6 +743,7 @@ const setAccounter = async (order: OrderJoined, toClear = false) => {
 const route = useRoute();
 onMounted(() => {
     // 清空SKU
+    SkuStore.listPicked = [];
     SkuStore.setEditor();
     // 清空清单
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PURCHASE));

@@ -168,12 +168,15 @@ const createOrder = async () => {
 
     // 创建
     await OrderStore.post(skus);
-    router.push(`/wmss/warehouse/order-list?code=${material.code}`);
+    router.back();
 };
 
 const nowOrderEditorTrans = computed(() => MAP_ENUM_ORDER.get(OrderStore.editor.type));
 onMounted(() => {
     if (nowOrderEditorTrans.value?.value === ENUM_ORDER.NONE) router.push("/wmss/warehouse/order-list");
-    else SkuStore.setEditor();
+    else {
+        SkuStore.listPicked = [];
+        SkuStore.setEditor();
+    }
 });
 </script>

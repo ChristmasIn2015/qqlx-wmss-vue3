@@ -78,6 +78,9 @@
                 </div>
             </q-page>
         </q-page-container>
+
+        <!-- 全局组件 -->
+        <dialog-plate-sku-list />
     </q-layout>
 </template>
 
@@ -86,6 +89,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { getRangeMonth } from "qqlx-cdk";
 
+import dialogPlateSkuList from "@/components/dialog-plate-sku-list.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useUserStore } from "@/stores/user/user";
 import { useCorpStore } from "@/stores/brand/corp";
