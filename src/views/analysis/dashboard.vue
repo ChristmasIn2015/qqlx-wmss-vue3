@@ -39,7 +39,7 @@
             <div class="col q-pr-sm">
                 <q-card square class="text-body1 full-height">
                     <q-card-section>
-                        <div class="row text-bold">
+                        <div class="row text-h5" :class="{ 'text-grey': PurchaseAnalysis.amount < 1, 'text-bold': PurchaseAnalysis.amount > 1 }">
                             <div class="col">采购金额</div>
                             <div class="col text-right">{{ (PurchaseAnalysis.amount / 10000).toFixed(2) }} 万</div>
                         </div>
@@ -67,28 +67,7 @@
             <div class="col q-pr-sm">
                 <q-card square class="text-body1 full-height">
                     <q-card-section>
-                        <div class="row text-bold">
-                            <div class="col">领料订单</div>
-                            <div class="col text-right">{{ MaterialAnalysis.count }} 张</div>
-                        </div>
-                        <div class="row text-bold">
-                            <div class="col">加工订单</div>
-                            <div class="col text-right">{{ ProcessAnalysis.count }} 张</div>
-                        </div>
-                    </q-card-section>
-                    <q-separator></q-separator>
-                    <q-card-section>
-                        <div class="text-body2 text-grey">一次完整的原材料加工过程，包含领取原材料 > 产品加工两个步骤。</div>
-                    </q-card-section>
-                    <q-inner-loading :showing="AnalysisStore.loadding">
-                        <q-spinner-gears size="50px" color="primary" />
-                    </q-inner-loading>
-                </q-card>
-            </div>
-            <div class="col">
-                <q-card square class="text-body1 full-height">
-                    <q-card-section>
-                        <div class="row text-bold">
+                        <div class="row text-bold text-h5">
                             <div class="col">销售金额</div>
                             <div class="col text-right">{{ (SaleAnalysis.amount / 10000).toFixed(2) }} 万</div>
                         </div>
@@ -113,6 +92,28 @@
                     </q-inner-loading>
                 </q-card>
             </div>
+            <div class="col">
+                <q-card square class="text-body1 full-height">
+                    <q-card-section>
+                        <div class="row text-h5" :class="{ 'text-grey': IndividualAnalysis.poundsFinal < 1, 'text-bold': IndividualAnalysis.poundsFinal > 1 }">
+                            <div class="col">原材料</div>
+                            <div class="col text-right">{{ IndividualAnalysis.poundsFinal.toFixed(0) }} 吨</div>
+                            <q-tooltip class="text-body1">指目前剩余多少原材料现货</q-tooltip>
+                        </div>
+                        <div class="row text-bold text-grey">
+                            <div class="col">加工订单</div>
+                            <div class="col text-right">{{ ProcessAnalysis.count }} 张</div>
+                        </div>
+                    </q-card-section>
+                    <q-separator></q-separator>
+                    <q-card-section>
+                        <div class="text-body2 text-grey">一次完整的原材料加工过程，包含领取原材料 > 产品加工两个步骤。</div>
+                    </q-card-section>
+                    <q-inner-loading :showing="AnalysisStore.loadding">
+                        <q-spinner-gears size="50px" color="primary" />
+                    </q-inner-loading>
+                </q-card>
+            </div>
         </div>
 
         <!-- 快速入口 -->
@@ -124,16 +125,16 @@
                     <q-icon name="arrow_right" style="margin-top: -2px"></q-icon>
                 </q-btn>
             </div>
-            <div class="col q-pr-sm">
-                <q-btn flat color="primary" class="full-width" @click="$router.push('/wmss/warehouse/sku-individual')">
-                    <span>查看原材料</span>
-                    <q-icon name="arrow_right" style="margin-top: -2px"></q-icon>
-                </q-btn>
-            </div>
             <div class="col">
                 <q-btn flat color="primary" class="full-width" @click="$router.push('/wmss/trade/sale-create')">
                     <q-badge color="negative">HOT</q-badge>
                     <span class="q-ml-sm">去开单</span>
+                    <q-icon name="arrow_right" style="margin-top: -2px"></q-icon>
+                </q-btn>
+            </div>
+            <div class="col q-pr-sm">
+                <q-btn flat color="primary" class="full-width" @click="$router.push('/wmss/warehouse/sku-individual')">
+                    <span>查看原材料</span>
                     <q-icon name="arrow_right" style="margin-top: -2px"></q-icon>
                 </q-btn>
             </div>
@@ -359,6 +360,7 @@ const PurchaseAnalysis = ref({ count: 0, amount: 0, amountBookOfOrder: 0, amount
 const MaterialAnalysis = ref({ count: 0, amount: 0, amountBookOfOrder: 0, amountBookOfOrderVAT: 0 });
 const ProcessAnalysis = ref({ count: 0, amount: 0, amountBookOfOrder: 0, amountBookOfOrderVAT: 0 });
 const SaleAnalysis = ref({ count: 0, amount: 0, amountBookOfOrder: 0, amountBookOfOrderVAT: 0 });
+const IndividualAnalysis = ref({ poundsFinal: 0 });
 
 const ContactAnalysisResult = ref([]);
 const ContactStore = useContactStore();
@@ -375,8 +377,8 @@ const renderOrderAnalysis = async (params?: { startTime: number; endTime: number
         const base = { type: ENUM_ORDER.NONE, startTime: AnalysisStore.page.startTime, endTime: AnalysisStore.page.endTime };
         base.type = ENUM_ORDER.PURCHASE;
         PurchaseAnalysis.value = (await AnalysisStore.getOrderAnalysis(base)).analysis;
-        base.type = ENUM_ORDER.MATERIAL;
-        MaterialAnalysis.value = (await AnalysisStore.getOrderAnalysis(base)).analysis;
+        // base.type = ENUM_ORDER.MATERIAL;
+        // MaterialAnalysis.value = (await AnalysisStore.getOrderAnalysis(base)).analysis;
         base.type = ENUM_ORDER.PROCESS;
         ProcessAnalysis.value = (await AnalysisStore.getOrderAnalysis(base)).analysis;
         base.type = ENUM_ORDER.SALES;
@@ -384,6 +386,7 @@ const renderOrderAnalysis = async (params?: { startTime: number; endTime: number
 
         base.type = ENUM_ORDER.SALES;
         ContactAnalysisResult.value = await AnalysisStore.getContactAnalysis({ ...base, contactId: contactPicked.value?._id });
+        IndividualAnalysis.value = await AnalysisStore.getSkuAnalysis();
     } catch (error) {
         NotifyStore.fail((error as Error).message);
     } finally {

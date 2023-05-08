@@ -145,7 +145,7 @@
                     </q-th>
                     <q-th key="orderId" :props="props">订单编号</q-th>
                     <q-th key="_id" :props="props">
-                        <q-btn flat icon="visibility">
+                        <q-btn padding="xs" color="primary" flat icon="visibility">
                             <q-menu>
                                 <q-card class="w-500">
                                     <plate-sku />
@@ -180,7 +180,7 @@
                             @click="
                                 async () => {
                                     skus_rela_order = await SkuStore.getSkuRelaOrder(props.row._id);
-                                    SkuStore.dialogSku(skus_rela_order, { title: `${props.row.name} ${props.row.norm}`, more: true });
+                                    SkuStore.dialogSku(skus_rela_order, { title: `${props.row.name} ${props.row.norm}，库存日志`, more: true });
                                 }
                             "
                         >
@@ -197,19 +197,13 @@
                     <q-td key="remark" :props="props" class="text-grey ellipsis"> {{ props.row.remark }} </q-td>
                     <q-td key="orderContactId" :props="props">
                         <span v-if="props.row.joinOrderContact">{{ props.row.joinOrderContact?.name }} </span>
-                        <span v-else class="text-grey">批量导入</span>
+                        <span v-else class="text-grey">无</span>
                     </q-td>
                     <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
-                    <q-td key="_id" :props="props" style="padding: 0 0 0 20px">
-                        <span
-                            v-close-popup
-                            class="text-primary cursor-pointer row items-center"
-                            v-if="props.row.isConfirmed"
-                            @click="$emit('pick', cloneDeep(props.row))"
-                        >
-                            {{ vue_props.label }}
-                            <q-icon name="arrow_right"></q-icon>
-                        </span>
+                    <q-td key="_id" :props="props" style="padding: 0 4px">
+                        <q-btn v-if="props.row.isConfirmed" color="primary" v-close-popup flat padding="xs" @click="$emit('pick', cloneDeep(props.row))"
+                            >{{ vue_props.label }}
+                        </q-btn>
                     </q-td>
                 </q-tr>
             </template>
@@ -268,7 +262,7 @@ import { useRouter, useRoute } from "vue-router";
 import { MongodbSort, getPage } from "qqlx-cdk";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, SkuJoined } from "qqlx-core";
 
-import plateSkuList from "./plate-sku-list.vue";
+import listSku from "./list-sku.vue";
 import plateSku from "@/components/plate-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";

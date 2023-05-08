@@ -149,21 +149,9 @@ const routes = [
                 component: () => import("@/views/warehouse/index.vue"),
                 children: [
                     {
-                        path: "order-list",
-                        name: "仓库订单",
-                        component: () => import("@/views/warehouse/order-list.vue"),
-                        meta: { icon: "post_add", color: "indigo-14", show: false },
-                    },
-                    {
                         path: "order-create",
                         name: "创建仓库订单",
                         component: () => import("@/views/warehouse/order-create.vue"),
-                        meta: { icon: "mdi-truck-check", color: "indigo-14", show: false },
-                    },
-                    {
-                        path: "order-edit",
-                        name: "修改仓库订单",
-                        component: () => import("@/views/warehouse/order-edit.vue"),
                         meta: { icon: "mdi-truck-check", color: "indigo-14", show: false },
                     },
                     {
@@ -196,18 +184,6 @@ const routes = [
                         name: "系统设置",
                         component: () => import("@/views/system/setting.vue"),
                         meta: { icon: "settings", color: "primary", show: true },
-                    },
-                    {
-                        path: "role",
-                        name: "成员管理",
-                        component: () => import("@/views/system/role.vue"),
-                        meta: { icon: "group_add", color: "primary", show: true },
-                    },
-                    {
-                        path: "pay",
-                        name: "时长卡",
-                        component: () => import("@/views/system/pay.vue"),
-                        meta: { icon: "group", color: "primary", show: false },
                     },
                     {
                         path: "clue",

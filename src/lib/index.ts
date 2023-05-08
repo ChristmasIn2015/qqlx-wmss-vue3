@@ -31,7 +31,7 @@ class Request {
                         break;
                     }
                     case ENUM_ERROR_CODE.SCHEDULE_MARKET_BELOW: {
-                        setTimeout(() => location.assign("/wmss/system/pay"), 2000);
+                        setTimeout(() => location.assign("/wmss/system/setting"), 2000);
                         break;
                     }
                 }

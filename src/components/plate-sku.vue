@@ -6,6 +6,7 @@
                 v-model="SkuStore.columnsVisiable"
                 :val="column.name"
                 :label="column.label"
+                :disable="['poundsFinal', '_id'].includes(column.name)"
                 color="primary"
                 class="q-mr-sm"
             />

@@ -2028,10 +2028,10 @@ qqlx-cdk@^0.0.14:
   resolved "https://registry.npmjs.org/qqlx-cdk/-/qqlx-cdk-0.0.14.tgz#82586ce7d314376e998201e68ee48842ab7388a5"
   integrity sha512-dOYzTLGNpLgGDTfjwppgYN1XKp2/ZP+5OgsABEvZnJSNWg/clHPxYZrxYwiLcXIuRtv7EY4jZECyp4fzG5yT9w==
 
-qqlx-core@^1.0.69:
-  version "1.0.69"
-  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-1.0.69.tgz#a764fb46f7a9433eb0274be5b6770846ce3225ad"
-  integrity sha512-G0tEZiLwiMZN8gvF8PVk289v0JuTFhOvdKQ6qmMTH4FFpFcl6LELfuwEj+UD6VzZk8Re3Vu1hrXIJDRa5EQHgQ==
+qqlx-core@^1.0.71:
+  version "1.0.71"
+  resolved "https://registry.npmjs.org/qqlx-core/-/qqlx-core-1.0.71.tgz#46777bb53182e0aebe8ddba06f99710444c84d74"
+  integrity sha512-yTst6LTPDiO5aOs75sDmcPrKXSGxQlxGsLESlwoLJIF3J8P59Dc0yCCzw39iA9tE7+6IQRDvtzhseaQeMSbYpw==
   dependencies:
     mongodb "^4.13.0"
     qqlx-cdk "^0.0.14"

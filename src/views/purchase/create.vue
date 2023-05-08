@@ -11,7 +11,7 @@
 
     <div class="q-py-md row">
         <q-space></q-space>
-        <q-btn class="q-ml-sm" square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
+        <q-btn class="q-ml-sm" square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择供应商" }} </q-btn>
         <q-btn
             color="negative"
             class="q-ml-sm"

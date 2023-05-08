@@ -13,7 +13,7 @@
 
     <div class="q-py-md row">
         <q-space></q-space>
-        <q-btn class="q-ml-sm" push square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择客户" }} </q-btn>
+        <q-btn class="q-ml-sm" push square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择供应商" }} </q-btn>
         <q-btn v-if="contactPicked._id" class="q-ml-sm" square push color="negative" :loading="OrderStore.loadding" @click="putOrder()">
             修改 {{ OrderStore.editor.code }}
         </q-btn>

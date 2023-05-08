@@ -8,7 +8,7 @@
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
 
-            <plate-sku-list :skus="SkuStore.dialogSkuList" />
+            <list-sku :skus="SkuStore.dialogSkuList" />
         </q-card>
     </q-dialog>
 </template>
@@ -18,7 +18,7 @@ import { cloneDeep } from "lodash";
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-import plateSkuList from "./plate-sku-list.vue";
+import listSku from "./list-sku.vue";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useNotifyStore } from "@/stores/quasar/notify";
 

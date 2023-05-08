@@ -12,13 +12,17 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useWarehouseStore } from "@/stores/brand/warehouse";
 import { useMarketScoAnalysisStore } from "@/stores/market/analysis";
 import { useAnnounceStore } from "@/stores/brand/announce";
-import { useAreaStore } from "@/stores/brand/area";
+import { useScheduleCardStore } from "@/stores/market/scheduleCard";
+import { useScheduleCardOrderStore } from "@/stores/market/scheduleCardOrder";
+import { useBrandRoleStore } from "@/stores/brand/role";
 
 const NotifyStore = useNotifyStore();
 const AnnounceStore = useAnnounceStore();
 const WarehouseStore = useWarehouseStore();
-const AreaStore = useAreaStore();
 const MarketScoAnalysisStore = useMarketScoAnalysisStore();
+const BrandRoleStore = useBrandRoleStore();
+const ScheduleCardStore = useScheduleCardStore();
+const ScheduleCardOrderStore = useScheduleCardOrderStore();
 
 function getSchema(): Corp {
     return {
@@ -89,7 +93,10 @@ export const useCorpStore = defineStore("Corp", {
                 WarehouseStore.pick(WarehouseStore.list.find((e) => e.isDisabled === false));
                 await AnnounceStore.get();
                 await MarketScoAnalysisStore.get();
-                await AreaStore.get();
+
+                BrandRoleStore.get();
+                ScheduleCardStore.get();
+                ScheduleCardOrderStore.get(1);
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             }

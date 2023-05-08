@@ -208,7 +208,26 @@
                     </q-td>
                     <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                     <q-td key="_id" :props="props">
-                        <span v-if="props.row.isConfirmed" class="text-grey"> 已{{ SkuStore.getLabelByType(props.row.type)?.text }} </span>
+                        <span v-if="props.row.isConfirmed" class="text-grey">
+                            <span v-if="props.row.type === ENUM_ORDER.PROCESS && !props.row.deductionSkuId">
+                                <q-btn
+                                    padding="none"
+                                    flat
+                                    square
+                                    color="negative"
+                                    @click="
+                                        async () => {
+                                            SkuStore.loadding = true;
+                                            await OrderStore.delete(props.row.joinOrder?._id);
+                                            SkuStore.get();
+                                        }
+                                    "
+                                >
+                                    取消
+                                </q-btn>
+                            </span>
+                            <span v-else>已{{ SkuStore.getLabelByType(props.row.type)?.text }}</span>
+                        </span>
                     </q-td>
                 </q-tr>
             </template>
@@ -276,6 +295,7 @@ import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useAreaStore } from "@/stores/brand/area";
 import { useWarehouseStore } from "@/stores/brand/warehouse";
+import { useOrderStore } from "@/stores/wmss/order";
 
 const NotifyStore = useNotifyStore();
 
@@ -297,6 +317,7 @@ const ContactStore = useContactStore();
 const contactDialog = ref(false);
 const contactPicked = ref(ContactStore.getSchema());
 
+const OrderStore = useOrderStore();
 const route = useRoute();
 onMounted(() => {
     SkuStore.page = getPage(20);

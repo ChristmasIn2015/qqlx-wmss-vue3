@@ -308,7 +308,7 @@
                     <q-td colspan="100%" style="padding: 0">
                         <div class="row">
                             <div class="col-9">
-                                <plate-sku-list :skus="props.row.joinSku || []"></plate-sku-list>
+                                <list-sku :skus="props.row.joinSku || []"></list-sku>
                             </div>
                             <div class="col-3">
                                 <div>
@@ -618,7 +618,7 @@ import * as XLSX from "xlsx";
 import { ENUM_LAYOUT_CABINET, ENUM_ORDER, MAP_ENUM_LAYOUT_CABINET, BookOfOrder, ENUM_BOOK_DIRECTION, ENUM_BOOK_TYPE } from "qqlx-core";
 import type { Order, OrderJoined } from "qqlx-core";
 
-import plateSkuList from "@/components/plate-sku-list.vue";
+import listSku from "@/components/list-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";

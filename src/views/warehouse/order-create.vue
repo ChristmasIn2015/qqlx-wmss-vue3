@@ -24,65 +24,12 @@
                 </q-list>
             </q-menu>
         </q-btn>
-        <span v-if="skuIndividualPicking.deductionSkuId" class="row">
-            <div style="width: 288px">
-                <q-input
-                    class="q-ml-sm"
-                    square
-                    filled
-                    dense
-                    borderless
-                    :hint="`${skuIndividualPicking.name} / ${skuIndividualPicking.norm} / 当前剩余${skuIndividualPicking.poundsFinal}吨`"
-                    type="number"
-                    color="negative"
-                    input-class="text-body1"
-                    v-model="skuIndividualPicking.pounds"
-                >
-                    <template v-slot:after>
-                        <q-btn padding="sm" square icon="close" flat fab @click="skuIndividualPicking = SkuStore.getSchema()">
-                            <q-tooltip class="text-body1">选择其他原材料</q-tooltip>
-                        </q-btn>
-                    </template>
-                    <template v-slot:prepend>
-                        <span class="text-body1">加工后剩余</span>
-                    </template>
-                    <template v-slot:append>
-                        <span class="text-body1">吨</span>
-                    </template>
-                </q-input>
-            </div>
-        </span>
-        <q-btn v-else-if="OrderStore.editor.type === ENUM_ORDER.PROCESS" square class="q-ml-sm" color="primary" @click="dialogSkuIndividual = true">
-            选择原材料
-            <q-tooltip class="text-body1">此原材料将作为加工商品的原材料，并扣减库存</q-tooltip>
-        </q-btn>
         <q-btn square v-if="nowOrderEditorTrans" push class="q-ml-sm" color="negative" :loading="OrderStore.loadding" @click="createOrder()">
             创建 {{ nowOrderEditorTrans?.text }}
         </q-btn>
     </div>
 
     <picker-cabinet-unit />
-
-    <q-dialog v-model="dialogSkuIndividual" maximized position="bottom">
-        <q-card>
-            <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title class="text-weight-bold">原材料</q-toolbar-title>
-                <q-btn dense flat icon="close" v-close-popup></q-btn>
-            </q-toolbar>
-            <q-separator class="q-mb-md" />
-            <list-sku-individual
-                label="选择"
-                @pick="
-                    (sku) => {
-                        sku.deductionSkuId = sku._id;
-                        sku._id = '';
-                        sku.pounds = sku.poundsFinal;
-                        skuIndividualPicking = sku;
-                    }
-                "
-            />
-        </q-card>
-    </q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -91,7 +38,6 @@ import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { MAP_ENUM_ORDER, ENUM_ORDER, SkuJoined, Order } from "qqlx-core";
 
-import listSkuIndividual from "@/components/list-sku-individual.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
 import containerSku from "@/components/container-sku.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
@@ -143,30 +89,9 @@ const filePickNext = async (file: File) => {
 };
 
 const SkuStore = useSkuStore();
-const dialogSkuIndividual = ref(false);
-const skuIndividualPicking = ref(SkuStore.getSchema());
 const OrderStore = useOrderStore();
 const createOrder = async () => {
-    const material = { _id: "", code: "" };
     const skus = cloneDeep(SkuStore.listPicked);
-
-    // 创建领料单
-    if (skuIndividualPicking.value?.deductionSkuId && OrderStore.editor.type === ENUM_ORDER.PROCESS) {
-        const individual = cloneDeep(skuIndividualPicking.value);
-        individual.pounds = individual.poundsFinal - individual.pounds;
-        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.MATERIAL));
-        const result = await OrderStore.post([individual]);
-        material._id = result._id;
-        material.code = result.code;
-
-        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PROCESS));
-        if (material._id) {
-            OrderStore.editor.parentOrderId = material._id;
-            OrderStore.editor.parentOrderType = ENUM_ORDER.MATERIAL;
-        }
-    }
-
-    // 创建
     await OrderStore.post(skus);
     router.back();
 };
