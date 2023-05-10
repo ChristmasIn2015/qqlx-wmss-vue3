@@ -36,7 +36,7 @@
 
     <div class="q-pl-xs q-mt-lg q-mb-sm">
         <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>入库订单</span>
+            <span>自定义订单</span>
             <q-space></q-space>
 
             <picker-range
@@ -62,9 +62,9 @@
             :rows-per-page-options="[0]"
             :columns="[
                 { name: 'timeCreateString', field: 'timeCreateString', label: '', align: 'left', style: NotifyStore.cellStyle },
+                { name: '_id', field: '_id', label: '', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'code', field: 'code', label: '', align: 'left', style: NotifyStore.cellStyle },
-                { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
-                { name: '_id', field: '_id', label: '', align: 'left' },
+                { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.fontStyle },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
         >
@@ -78,7 +78,8 @@
                         <span>时间 </span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
-                    <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
+                    <q-th class="text-left">类型</q-th>
+                    <q-th key="code" :props="props">
                         <q-input
                             square
                             filled
@@ -91,8 +92,7 @@
                             @blur="OrderStore.get(1)"
                         />
                     </q-th>
-                    <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">来源</q-th>
-                    <q-th class="text-left">操作</q-th>
+                    <q-th key="contactId" :props="props">来源</q-th>
                     <q-th class="text-left">
                         <q-input
                             square
@@ -126,16 +126,14 @@
                         }
                     "
                 >
-                    <q-td key="timeCreateString" :props="props">
-                        {{ props.row.timeCreateString }}
+                    <q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
+                    <q-td key="_id" :props="props">
+                        <q-chip dense square :color="SkuStore.getLabelByType(props.row.type)?.color" class="text-white">
+                            {{ SkuStore.getLabelByType(props.row.type)?.text }}
+                        </q-chip>
                     </q-td>
-                    <q-td key="code" :props="props">
-                        <span>{{ props.row.code }}</span>
-                    </q-td>
-                    <q-td key="contactId" :props="props" class="text-body1">
-                        <span class="text-grey">批量导入</span>
-                    </q-td>
-                    <q-td key="_id" :props="props" style="padding: 0px 8px"> ?? </q-td>
+                    <q-td key="code" :props="props"> {{ props.row.code }} </q-td>
+                    <q-td key="contactId" :props="props">批量导入</q-td>
                     <q-td key="remark" :props="props">
                         <span
                             class="cursor-pointer"
@@ -514,7 +512,9 @@ const postProcess = async () => {
 const route = useRoute();
 onMounted(async () => {
     // 清空订单
-    OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.GETIN));
+    // @ts-ignore
+    OrderStore.setEditor(OrderStore.getSchema({ $in: [ENUM_ORDER.GETIN, ENUM_ORDER.PROCESS] }));
+    // OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.GETIN));
     OrderStore.search.contactId = "";
     OrderStore.page = getPage(10);
     // 根据路由进行搜索

@@ -196,6 +196,7 @@ export const useSkuStore = defineStore("Sku", {
             else return { text: "异常", color: "grey" };
         },
         setSkuPounds(sku: SkuJoined) {
+            console.log(sku.formula);
             sku.pounds = this.getNormPounds(sku.norm, sku.count, sku.formula);
         },
         getNormPounds(norm: string, count: number, formula: ENUM_POUNDS_FORMULA): number {
@@ -220,11 +221,35 @@ export const useSkuStore = defineStore("Sku", {
                     POUNDS /= 1000;
                     break;
                 }
+                case ENUM_POUNDS_FORMULA.TS_WFGG_REGULAR: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const D = norms[0]; // 外直径
+                    const h = norms[1]; // 厚度
+                    POUNDS = (D - h) * h * VOLUME * PAI * count; // kg
+
+                    const l = norms[2]; // 长度
+                    POUNDS *= l / 1000;
+
+                    POUNDS /= 1000;
+                    break;
+                }
                 case ENUM_POUNDS_FORMULA.TS_FG: {
                     const norms = norm.split("*").map((MM) => Number(MM) || 0);
                     const W = norms[0];
                     const h = norms[1];
                     POUNDS = W * 4 * h * VOLUME * count; // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_FG_REGULAR: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const W = norms[0];
+                    const h = norms[1];
+                    POUNDS = W * 4 * h * VOLUME * count; // kg
+
+                    const l = norms[2]; // 长度
+                    POUNDS *= l / 1000;
+
                     POUNDS /= 1000;
                     break;
                 }
@@ -234,6 +259,19 @@ export const useSkuStore = defineStore("Sku", {
                     const H = norms[1];
                     const h = norms[2];
                     POUNDS = (((W + H) * 2) / PAI - h) * h * VOLUME * PAI * count; // kg
+                    POUNDS /= 1000;
+                    break;
+                }
+                case ENUM_POUNDS_FORMULA.TS_JXFG_REGULAR: {
+                    const norms = norm.split("*").map((MM) => Number(MM) || 0);
+                    const W = norms[0];
+                    const H = norms[1];
+                    const h = norms[2];
+                    POUNDS = (((W + H) * 2) / PAI - h) * h * VOLUME * PAI * count; // kg
+
+                    const l = norms[3]; // 长度
+                    POUNDS *= l / 1000;
+
                     POUNDS /= 1000;
                     break;
                 }

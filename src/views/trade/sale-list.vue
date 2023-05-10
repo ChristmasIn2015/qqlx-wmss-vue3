@@ -146,7 +146,7 @@
                         </q-btn>
                     </q-th>
                     <q-th class="text-right cursor-pointer" :class="{ 'text-negative': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
-                        <span>订单金额</span>
+                        <span> 订单金额 </span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
@@ -213,6 +213,7 @@
                     <q-td key="code" :props="props">
                         <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
                         <span>{{ props.row.code }}</span>
+                        <q-badge floating v-if="props.row.isNotTax"> 不含税</q-badge>
                     </q-td>
                     <q-td key="contactId" :props="props" class="text-body1">
                         <span v-if="props.row.joinContact?.name" class="ellipsis">{{ props.row.joinContact.name }}</span>
@@ -329,6 +330,9 @@
                                             </div>
                                         </q-card-section>
                                         <q-card-actions>
+                                            <q-btn :class="{ 'text-negative': props.row.isNotTax }" @click="setTax(props.row)">
+                                                {{ props.row.isNotTax ? "不含税" : "含税" }}
+                                            </q-btn>
                                             <q-space></q-space>
                                             <q-btn
                                                 class="q-ml-sm"
@@ -584,15 +588,25 @@
                 <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
-                    <div class="text-body1 q-mb-md q-ml-xs text-bold">列设置</div>
-                    <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
-                    <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
+                    <div class="text-body1 q-mb-sm q-ml-xs text-bold">销售信息</div>
+                    <div>
+                        <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
+                    </div>
+                    <div class="text-body1 q-my-sm q-ml-xs text-bold">其他信息</div>
+                    <div>
+                        <q-checkbox v-model="OrderStore.columnKeyOriginShow" label="产地"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyFeatShow" label="材质"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyCodeShow" label="捆包号"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyWarehouseShow" label="仓库"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyHouseShow" label="货位号"></q-checkbox>
+                    </div>
                 </q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
@@ -700,6 +714,11 @@
                                 <th v-if="OrderStore.columnPriceReverseShow">* 单价/元</th>
                                 <th v-if="OrderStore.columnPriceAllShow">售价/元</th>
                                 <th v-if="OrderStore.columnRemarkShow">备注</th>
+                                <th v-if="OrderStore.columnKeyOriginShow">产地</th>
+                                <th v-if="OrderStore.columnKeyFeatShow">材质</th>
+                                <th v-if="OrderStore.columnKeyCodeShow">捆包号</th>
+                                <th v-if="OrderStore.columnKeyWarehouseShow">仓库</th>
+                                <th v-if="OrderStore.columnKeyHouseShow">货位号</th>
                             </tr>
                             <tr v-for="(sku, i) in skuPrinting">
                                 <td v-if="OrderStore.columnNameShow">{{ sku.name }} {{ sku.norm }}</td>
@@ -722,6 +741,11 @@
                                     <span v-show="sku.name && sku.norm">{{ (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2) }}</span>
                                 </td>
                                 <td v-if="OrderStore.columnRemarkShow">{{ sku.remark }}</td>
+                                <td v-if="OrderStore.columnKeyOriginShow">{{ sku.keyOrigin }}</td>
+                                <td v-if="OrderStore.columnKeyFeatShow">{{ sku.keyFeat }}</td>
+                                <td v-if="OrderStore.columnKeyCodeShow">{{ sku.keyCode }}</td>
+                                <td v-if="OrderStore.columnKeyWarehouseShow">{{ sku.joinWarehouse?.name }}</td>
+                                <td v-if="OrderStore.columnKeyHouseShow">{{ sku.keyHouse }}</td>
                             </tr>
                         </table>
                         <div class="order-table-line row">
@@ -967,6 +991,16 @@ const setManager = async (order: OrderJoined, toClear = false) => {
 const setAccounter = async (order: OrderJoined, toClear = false) => {
     const entity = cloneDeep(order);
     entity.accounterId = toClear ? "" : UserStore.userEditor.userId;
+    await OrderStore.put(entity);
+
+    // sku
+    await OrderStore.get();
+    const target = OrderStore.list.find((e) => e._id === entity._id);
+    await setOrderInfo(target as OrderJoined);
+};
+const setTax = async (order: OrderJoined) => {
+    const entity = cloneDeep(order);
+    entity.isNotTax = !Boolean(order.isNotTax);
     await OrderStore.put(entity);
 
     // sku

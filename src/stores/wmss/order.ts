@@ -47,6 +47,7 @@ function getSchema(): Order {
         amount: 0,
         remark: "",
         isDisabled: false,
+        isNotTax: false,
 
         amountBookOfOrder: 0,
         amountBookOfOrderRest: 0,
@@ -86,6 +87,12 @@ export const useOrderStore = defineStore("Order", {
         columnPriceAllShow: true,
         columnPriceReverseShow: false, // 从售价数量，逆向推断单价
         columnRemarkShow: true,
+
+        columnKeyOriginShow: false,
+        columnKeyFeatShow: false,
+        columnKeyCodeShow: false,
+        columnKeyWarehouseShow: false,
+        columnKeyHouseShow: false,
     }),
     actions: {
         /** @viewcatch */
@@ -216,6 +223,7 @@ export const useOrderStore = defineStore("Order", {
             this.editor = schema;
             this.search.type = schema.type;
             this.search.code = "";
+            this.search.isNotTax = false;
 
             this.requireManagerId = false;
             this.requireAccounterId = false;

@@ -62,11 +62,11 @@
                                 key="countFinal"
                                 :class="{
                                     'text-negative': CabinetUnitStore.sortKey === 'countFinal',
-                                    'cursor-pointer': nowCabinet.layout === ENUM_LAYOUT_CABINET.SUMMARY,
+                                    'cursor-pointer': nowCabinet?.layout === ENUM_LAYOUT_CABINET.SUMMARY,
                                 }"
                                 @click="CabinetUnitStore.sort(nowCabinet, 'countFinal')"
                             >
-                                <span v-if="nowCabinet.layout === ENUM_LAYOUT_CABINET.SUMMARY">
+                                <span v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.SUMMARY">
                                     <span>剩余数量</span>
                                     <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                 </span>
@@ -92,32 +92,31 @@
                             <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
                             <q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
                             <q-td key="countFinal" :props="props">
-                                <span v-if="nowCabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">-</span>
-                                <a class="cursor-pointer text-grey" v-else>
-                                    <span
-                                        :class="props.row.countFinal > 1 ? 'text-negative' : ''"
-                                        @click="$router.push('/wmss/warehouse/sku-list' + `?name=${props.row.name}&norm=${props.row.norm}`)"
-                                    >
+                                <span v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">-</span>
+                                <a
+                                    v-else
+                                    class="cursor-pointer text-grey"
+                                    @click="$router.push('/wmss/warehouse/sku-list' + `?name=${props.row.name}&norm=${props.row.norm}`)"
+                                >
+                                    <span :class="props.row.countFinal > 1 ? 'text-negative' : ''">
                                         {{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}
                                     </span>
 
                                     <q-tooltip class="text-body1">
                                         <div>
                                             <div>一共剩余 {{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}</div>
-                                            <div>点击查看库存流水</div>
+                                            <div>点击查看明细</div>
                                         </div>
                                     </q-tooltip>
                                 </a>
                             </q-td>
                             <q-td key="poundsFinal" :props="props">
-                                <a class="cursor-pointer text-grey" v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                    <span
-                                        :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"
-                                        @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
-                                    >
-                                        {{ props.row.poundsFinal.toFixed(3) }} 吨
-                                    </span>
-
+                                <a
+                                    class="cursor-pointer text-grey"
+                                    v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
+                                    @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
+                                >
+                                    <span :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"> {{ props.row.poundsFinal.toFixed(3) }} 吨 </span>
                                     <q-tooltip class="text-body1">
                                         <div>
                                             <div>一共剩余 {{ props.row.poundsFinal.toFixed(3) }} 吨</div>
@@ -125,7 +124,19 @@
                                         </div>
                                     </q-tooltip>
                                 </a>
-                                <span class="text-grey" v-else> {{ props.row.poundsFinal.toFixed(3) }} 吨 </span>
+                                <span
+                                    v-else
+                                    class="text-grey cursor-pointer"
+                                    @click="$router.push('/wmss/warehouse/sku-list' + `?name=${props.row.name}&norm=${props.row.norm}`)"
+                                >
+                                    {{ props.row.poundsFinal.toFixed(3) }} 吨
+                                    <q-tooltip class="text-body1">
+                                        <div>
+                                            <div>一共剩余 {{ props.row.poundsFinal.toFixed(3) }} 吨</div>
+                                            <div>点击查看明细</div>
+                                        </div>
+                                    </q-tooltip>
+                                </span>
                             </q-td>
                             <q-td key="actions" :props="props" style="padding: 0">
                                 <div class="row q-px-sm">
@@ -154,7 +165,16 @@
                                         "
                                         >选择现货</q-btn
                                     >
+
                                     <q-space></q-space>
+
+                                    <q-chip dense square v-if="nowCabinet.formula > 1">
+                                        自动理算
+                                        <q-tooltip class="text-body1" v-if="MAP_ENUM_POUNDS_FORMULA.get(nowCabinet.formula)">
+                                            <div>{{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet.formula)?.text }}</div>
+                                            <div>{{ MAP_ENUM_POUNDS_FORMULA.get(nowCabinet.formula)?.tip }}</div>
+                                        </q-tooltip>
+                                    </q-chip>
                                     <q-btn flat padding="xs" icon="more_horiz" square>
                                         <q-menu>
                                             <q-item clickable v-close-popup class="text-primary" @click="CabinetUnitStore.patch(nowCabinet, [props.row])">
@@ -213,7 +233,7 @@ import { cloneDeep, debounce } from "lodash";
 import { onMounted, ref, computed, watch } from "vue";
 
 import { MongodbSort } from "qqlx-cdk";
-import { ENUM_LAYOUT_CABINET, SkuJoined, CabinetUnit, Sku, ENUM_ORDER } from "qqlx-core";
+import { ENUM_LAYOUT_CABINET, SkuJoined, CabinetUnit, Sku, ENUM_ORDER, MAP_ENUM_POUNDS_FORMULA } from "qqlx-core";
 
 import listSkuIndividual from "./list-sku-individual.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
@@ -234,7 +254,6 @@ const tabIndex = ref(0);
 const nowCabinet = computed(() => (CabinetStore.list[tabIndex.value] ? CabinetStore.list[tabIndex.value] : CabinetStore.list[0]));
 
 const CabinetUnitStore = useCabinetUnitStore();
-const AreaStore = useAreaStore();
 watch(
     () => nowCabinet.value,
     (cabinet) => {

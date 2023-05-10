@@ -79,7 +79,7 @@
                             :disable="!!props.row.deductionSkuId"
                         />
                     </q-td>
-                    <q-td :style="myTableCellStyle">
+                    <q-td :style="myTableCellMaxStyle">
                         <q-input
                             dense
                             clearable
@@ -287,6 +287,7 @@ const SkuStore = useSkuStore();
 const OrderStore = useOrderStore();
 
 const myTableCellStyle = ref({ "min-width": "177px", "max-width": "177px" });
+const myTableCellMaxStyle = ref({ "min-width": "199px", "max-width": "199px" });
 const listPickedPriceTotal = computed(() => {
     let price = 0;
     SkuStore.listPicked.map((sku) => {

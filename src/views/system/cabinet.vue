@@ -5,25 +5,7 @@
                 <span>商品设置</span>
                 <dialog-intro></dialog-intro>
                 <q-space></q-space>
-                <q-btn square class="q-ml-sm" color="primary">
-                    常见分类
-                    <q-menu>
-                        <q-item
-                            clickable
-                            v-close-popup
-                            v-for="recommand in RECOMAND_POUNDS_FORMULA"
-                            @click="
-                                () => {
-                                    CabinetStore.setEditor(recommand);
-                                    CabinetStore.post(); //async
-                                }
-                            "
-                        >
-                            <q-item-section>{{ recommand.name }}</q-item-section>
-                            <q-tooltip class="text-body1">点击添加</q-tooltip>
-                        </q-item>
-                    </q-menu>
-                </q-btn>
+                <q-btn square class="q-ml-sm" color="primary" label="快速添加" @click="dialogCabinetQuick = true"> </q-btn>
                 <q-btn
                     square
                     class="q-ml-sm"
@@ -393,51 +375,32 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
-
-    <q-dialog v-model="dialogPatching">
+    <q-dialog v-model="dialogCabinetQuick" persistent>
         <q-card class="w-400">
-            <q-toolbar>
-                <q-toolbar-title>批量修改（{{ unitPicking.length }}项）</q-toolbar-title>
-                <q-btn dense flat icon="close" v-close-popup></q-btn>
+            <q-toolbar class="bg-primary text-white">
+                <q-toolbar-title>快速添加分类</q-toolbar-title>
+                <q-btn flat dense icon="close" v-close-popup />
             </q-toolbar>
-            <q-separator />
 
+            <q-separator />
             <q-card-section>
-                <q-input square class="q-mb-sm" label="推荐单价" filled v-model="pricePatching" type="number" clearable />
-                <q-select
-                    square
-                    filled
-                    clearable
-                    emit-value
-                    map-options
-                    label="货位"
-                    option-value="_id"
-                    option-label="name"
-                    placeholder="请选择货位"
-                    :options="AreaStore.list.filter((e) => e.isDisabled === false)"
-                    v-model="areaIdPatching"
-                >
-                </q-select>
-            </q-card-section>
-            <q-card-actions>
-                <q-space></q-space>
                 <q-btn
                     v-close-popup
+                    push
+                    square
+                    class="q-mr-sm q-mb-sm"
+                    v-for="recommand in RECOMAND_POUNDS_FORMULA"
                     @click="
-                        async () => {
-                            await CabinetUnitStore.patch(nowCabinet, unitPicking);
-
-                            areaIdPatching = '';
-                            pricePatching = 0;
-                            startIndex = -1;
-                            endIndex = -1;
+                        () => {
+                            CabinetStore.setEditor(recommand);
+                            CabinetStore.post(); //async
                         }
                     "
-                    color="primary"
                 >
-                    确定
+                    {{ recommand.name }}
+                    <q-tooltip class="text-body1">点击添加分类</q-tooltip>
                 </q-btn>
-            </q-card-actions>
+            </q-card-section>
         </q-card>
     </q-dialog>
 </template>
@@ -458,16 +421,15 @@ import { useAreaStore } from "@/stores/brand/area";
 const layoutOptions = [...MAP_ENUM_LAYOUT_CABINET].map((e) => e[1]);
 const formulaOptions = [...MAP_ENUM_POUNDS_FORMULA].map((e) => e[1]);
 const splitIndex = ref(10);
-const splitIndex2 = ref(80);
 const tabIndex = ref(0);
 const nowCabinet = computed(() => (CabinetStore.list[tabIndex.value] ? CabinetStore.list[tabIndex.value] : CabinetStore.list[0]));
 
 const NotifyStore = useNotifyStore();
 const $q = NotifyStore.getQuasarStore();
 
-const AreaStore = useAreaStore();
 const CabinetStore = useCabinetStore();
 const dialogCabinet = ref(false);
+const dialogCabinetQuick = ref(false);
 const deleteConfirm = (cabinetId: string) => {
     $q.dialog({
         title: "重要确认",

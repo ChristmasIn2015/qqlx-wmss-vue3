@@ -87,7 +87,7 @@
                         color="negative"
                         padding="xs"
                         flat
-                        v-if="[ENUM_ORDER.MATERIAL, ENUM_ORDER.PROCESS].includes(props.row.type)"
+                        v-if="[ENUM_ORDER.MATERIAL].includes(props.row.type)"
                         v-close-popup
                         @click="
                             async () => {
@@ -97,7 +97,7 @@
                             }
                         "
                     >
-                        删除
+                        取消
                     </q-btn>
                 </q-td>
             </q-tr>

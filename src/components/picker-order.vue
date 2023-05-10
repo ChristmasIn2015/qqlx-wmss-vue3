@@ -285,6 +285,7 @@ onMounted(async () => {
 
     OrderStore.setEditor(OrderStore.getSchema(vue_props.type));
     OrderStore.page = getPage(8);
+    OrderStore.search.isNotTax = true;
     OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;
     OrderStore.get(1, false, true);
