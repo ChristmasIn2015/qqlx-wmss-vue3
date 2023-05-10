@@ -190,7 +190,7 @@
                         <span> {{ props.row.count }} {{ props.row.unit }}</span>
                     </q-td>
                     <q-td key="pounds" :props="props" class="text-grey">
-                        <span v-if="props.row.isPriceInPounds">
+                        <span :class="{ 'text-black': props.row.isPriceInPounds }">
                             <span v-if="[ENUM_ORDER.GETOUT, ENUM_ORDER.MATERIAL].includes(props.row.type)">-</span>
                             {{ props.row.pounds.toFixed(3) }} 吨
                         </span>

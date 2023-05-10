@@ -34,6 +34,190 @@
             }"
     />
 
+    <div class="q-pl-xs q-mt-lg q-mb-sm">
+        <div class="text-h5 text-primary text-weight-bold row items-center">
+            <span>入库订单</span>
+            <q-space></q-space>
+
+            <picker-range
+                :start-time="OrderStore.page.startTime"
+                :end-time="OrderStore.page.endTime"
+                @change="
+                    ($event) => {
+                        OrderStore.page.startTime = $event.startTime;
+                        OrderStore.page.endTime = $event.endTime;
+                        OrderStore.get(1);
+                    }
+                "
+            />
+        </div>
+    </div>
+
+    <q-card>
+        <q-table
+            dense
+            row-key="_id"
+            style="min-height: 400px"
+            :rows="OrderStore.list"
+            :rows-per-page-options="[0]"
+            :columns="[
+                { name: 'timeCreateString', field: 'timeCreateString', label: '', align: 'left', style: NotifyStore.cellStyle },
+                { name: 'code', field: 'code', label: '', align: 'left', style: NotifyStore.cellStyle },
+                { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
+                { name: '_id', field: '_id', label: '', align: 'left' },
+                { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
+            ]"
+        >
+            <template v-slot:header="props">
+                <q-tr>
+                    <q-th
+                        class="text-left cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
+                        @click="OrderStore.sort('timeCreate')"
+                    >
+                        <span>时间 </span>
+                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    </q-th>
+                    <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
+                        <q-input
+                            square
+                            filled
+                            dense
+                            clearable
+                            color="primary"
+                            placeholder="搜索批次"
+                            style="margin-left: -6px"
+                            v-model="OrderStore.search.code"
+                            @blur="OrderStore.get(1)"
+                        />
+                    </q-th>
+                    <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">来源</q-th>
+                    <q-th class="text-left">操作</q-th>
+                    <q-th class="text-left">
+                        <q-input
+                            square
+                            filled
+                            dense
+                            clearable
+                            color="primary"
+                            placeholder="搜索备注"
+                            style="margin-left: -6px"
+                            v-model="OrderStore.search.remark"
+                            @blur="OrderStore.get(1)"
+                        />
+                    </q-th>
+                </q-tr>
+            </template>
+
+            <template v-slot:body="props">
+                <q-tr
+                    class="cursor-pointer"
+                    :class="{ 'bg-grey-4': props.expand }"
+                    @click.stop="
+                        async () => {
+                            if (props.expand === false) {
+                                OrderStore.loadding = true;
+                                await setOrderInfo(props.row);
+                                props.expand = true;
+                                OrderStore.loadding = false;
+                            } else {
+                                props.expand = false;
+                            }
+                        }
+                    "
+                >
+                    <q-td key="timeCreateString" :props="props">
+                        {{ props.row.timeCreateString }}
+                    </q-td>
+                    <q-td key="code" :props="props">
+                        <span>{{ props.row.code }}</span>
+                    </q-td>
+                    <q-td key="contactId" :props="props" class="text-body1">
+                        <span class="text-grey">批量导入</span>
+                    </q-td>
+                    <q-td key="_id" :props="props" style="padding: 0px 8px"> ?? </q-td>
+                    <q-td key="remark" :props="props">
+                        <span
+                            class="cursor-pointer"
+                            :class="props.row.remark ? 'text-primary' : 'text-grey'"
+                            @click="
+                                () => {
+                                    OrderStore.setEditor(props.row);
+                                    orderDialog = true;
+                                }
+                            "
+                        >
+                            {{ props.row.remark || "点击修改" }}
+                        </span>
+                    </q-td>
+                </q-tr>
+
+                <q-tr v-show="props.expand" :props="props">
+                    <q-td colspan="100%" style="padding: 0">
+                        <div class="row">
+                            <div class="col-9 q-pa-sm">
+                                <list-sku :skus="props.row.joinSku || []"></list-sku>
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <q-card square class="q-mb-sm">
+                                        <q-card-section>
+                                            <div class="text-h6 text-weight-bold">订单信息</div>
+                                            <div class="row text-body1">
+                                                <span class="col-3 text-grey">开单人</span>
+                                                <span class="col-9 text-right text-weight-bold">{{ props.row.joinCreator?.nickname }}</span>
+                                            </div>
+                                            <div class="row text-body1">
+                                                <span class="col-3 text-grey">客户信息</span>
+                                                <span class="col-9 text-right text-weight-bold ellipsis">批量导入</span>
+                                            </div>
+                                        </q-card-section>
+                                        <q-card-actions>
+                                            <q-space></q-space>
+                                            <q-btn
+                                                class="q-ml-sm"
+                                                text-color="negative"
+                                                @click="
+                                                    async () => {
+                                                        await OrderStore.delete(props.row._id);
+                                                        OrderStore.get(1, true);
+                                                    }
+                                                "
+                                            >
+                                                {{ props.row.isDisabled ? "恢复" : "删除" }}
+                                            </q-btn>
+                                        </q-card-actions>
+                                    </q-card>
+                                </div>
+                            </div>
+                        </div>
+                    </q-td>
+                </q-tr>
+            </template>
+
+            <template v-slot:bottom="props">
+                <q-pagination
+                    size="16px"
+                    color="white"
+                    class="q-my-sm"
+                    text-color="black"
+                    active-color="primary"
+                    active-text-color="white"
+                    v-model="OrderStore.page.page"
+                    :max-pages="10"
+                    :max="Math.ceil(OrderStore.total / OrderStore.page.pageSize)"
+                    @update:model-value="(value) => OrderStore.get(value)"
+                />
+                <q-space></q-space>
+                <span>共 {{ OrderStore.total }} 项</span>
+            </template>
+        </q-table>
+
+        <q-inner-loading :showing="OrderStore.loadding">
+            <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
+    </q-card>
+
     <q-dialog v-model="dialogMaterial" maximized position="bottom">
         <q-card style="min-height: 500px" class="w-1200">
             <q-toolbar class="bg-primary text-white">
@@ -178,6 +362,39 @@
             </q-inner-loading>
         </q-card>
     </q-dialog>
+
+    <q-dialog v-model="orderDialog">
+        <q-card class="w-400">
+            <q-toolbar class="bg-primary text-white">
+                <q-toolbar-title>
+                    <q-badge rounded color="pink-6" class="shadow-2 q-mr-sm"> </q-badge>
+                    修改
+                </q-toolbar-title>
+                <q-btn dense flat icon="close" v-close-popup></q-btn>
+            </q-toolbar>
+
+            <q-card-section>
+                <q-input filled disable label="订单编号" v-model="OrderStore.editor.code" color="primary" class="q-mb-md" />
+                <q-input filled label="请输入备注" v-model="OrderStore.editor.remark" color="primary" />
+            </q-card-section>
+
+            <q-card-actions>
+                <q-space></q-space>
+                <q-btn
+                    color="primary"
+                    v-close-popup
+                    @click="
+                        async () => {
+                            await OrderStore.put();
+                            await OrderStore.get(1);
+                        }
+                    "
+                >
+                    保存
+                </q-btn>
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -187,8 +404,10 @@ import { cloneDeep, debounce } from "lodash";
 import { useRouter, useRoute } from "vue-router";
 
 import { MongodbSort, getPage } from "qqlx-cdk";
-import { ENUM_LAYOUT_CABINET, ENUM_ORDER, Sku, SkuJoined } from "qqlx-core";
+import { ENUM_LAYOUT_CABINET, ENUM_ORDER, Sku, SkuJoined, OrderJoined } from "qqlx-core";
 
+import listSku from "@/components/list-sku.vue";
+import pickerRange from "@/components/picker-range.vue";
 import listSkuIndividual from "@/components/list-sku-individual.vue";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
 import containerSku from "@/components/container-sku.vue";
@@ -242,6 +461,24 @@ const filePickNext = async (file: File) => {
 const OrderStore = useOrderStore();
 const dialogMaterial = ref(false);
 const indexProcess = ref(0);
+const orderDialog = ref(false);
+const setOrderInfo = async (order: OrderJoined) => {
+    try {
+        // OrderStore.loadding = true;
+        const info = await OrderStore.getSku(order);
+        order.joinSku = info.skuList;
+        order.joinBookOfOrder = info.bookOfOrderList;
+        order.joinAccounter = info.joinAccounter;
+        order.joinCreator = info.joinCreator;
+        order.joinManager = info.joinManager;
+        order.joinChildOrder = info.joinChildOrder;
+        order.joinParentOrder = info.joinParentOrder;
+    } catch (error) {
+        NotifyStore.fail(`网络异常, 请重新试试`);
+    } finally {
+        // OrderStore.loadding = false;
+    }
+};
 
 const SkuStore = useSkuStore();
 const material = ref(SkuStore.getSchema());
@@ -275,5 +512,15 @@ const postProcess = async () => {
 };
 
 const route = useRoute();
-onMounted(() => {});
+onMounted(async () => {
+    // 清空订单
+    OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.GETIN));
+    OrderStore.search.contactId = "";
+    OrderStore.page = getPage(10);
+    // 根据路由进行搜索
+    const { code } = route.query;
+    code && (OrderStore.search.code = code as string);
+    // 搜索
+    OrderStore.get(1);
+});
 </script>

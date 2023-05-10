@@ -27,6 +27,7 @@
                         { name: 'name', field: 'name', label: '品名', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'norm', field: 'norm', label: '规格', align: 'left', style: NotifyStore.cellStyle },
                         { name: 'countFinal', field: 'countFinal', label: '库存', style: NotifyStore.cellStyle },
+                        { name: 'poundsFinal', field: 'poundsFinal', label: '库存', style: NotifyStore.cellStyle },
                         { name: 'actions', field: 'actions', label: '操作', align: 'left' },
                     ]"
                 >
@@ -59,16 +60,26 @@
                             <q-th
                                 :props="props"
                                 key="countFinal"
+                                :class="{
+                                    'text-negative': CabinetUnitStore.sortKey === 'countFinal',
+                                    'cursor-pointer': nowCabinet.layout === ENUM_LAYOUT_CABINET.SUMMARY,
+                                }"
+                                @click="CabinetUnitStore.sort(nowCabinet, 'countFinal')"
+                            >
+                                <span v-if="nowCabinet.layout === ENUM_LAYOUT_CABINET.SUMMARY">
+                                    <span>剩余数量</span>
+                                    <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                                </span>
+                            </q-th>
+                            <q-th
+                                :props="props"
+                                key="poundsFinal"
                                 class="cursor-pointer"
-                                :class="
-                                    nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL
-                                        ? { 'text-negative': CabinetUnitStore.sortKey === 'poundsFinal' }
-                                        : { 'text-negative': CabinetUnitStore.sortKey === 'countFinal' }
-                                "
-                                @click="CabinetUnitStore.sort(nowCabinet, nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL ? 'poundsFinal' : 'countFinal')"
+                                :class="{ 'text-negative': CabinetUnitStore.sortKey === 'poundsFinal' }"
+                                @click="CabinetUnitStore.sort(nowCabinet, 'poundsFinal')"
                             >
                                 <span>
-                                    <span>剩余库存</span>
+                                    <span>剩余重量</span>
                                     <q-icon :name="CabinetUnitStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                                 </span>
                             </q-th>
@@ -81,16 +92,9 @@
                             <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
                             <q-td key="norm" :props="props"> {{ props.row.norm }} </q-td>
                             <q-td key="countFinal" :props="props">
-                                <a class="cursor-pointer text-grey">
+                                <span v-if="nowCabinet.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">-</span>
+                                <a class="cursor-pointer text-grey" v-else>
                                     <span
-                                        v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL"
-                                        :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"
-                                        @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
-                                    >
-                                        {{ props.row.poundsFinal.toFixed(3) }} 吨
-                                    </span>
-                                    <span
-                                        v-else
                                         :class="props.row.countFinal > 1 ? 'text-negative' : ''"
                                         @click="$router.push('/wmss/warehouse/sku-list' + `?name=${props.row.name}&norm=${props.row.norm}`)"
                                     >
@@ -98,16 +102,30 @@
                                     </span>
 
                                     <q-tooltip class="text-body1">
-                                        <div v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
-                                            <div>一共剩余 {{ props.row.poundsFinal.toFixed(3) }} 吨</div>
-                                            <div>点击查看原材料</div>
-                                        </div>
-                                        <div v-else>
+                                        <div>
                                             <div>一共剩余 {{ props.row.countFinal.toFixed(0) }} {{ props.row.joinCabinet?.unit }}</div>
                                             <div>点击查看库存流水</div>
                                         </div>
                                     </q-tooltip>
                                 </a>
+                            </q-td>
+                            <q-td key="poundsFinal" :props="props">
+                                <a class="cursor-pointer text-grey" v-if="nowCabinet?.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">
+                                    <span
+                                        :class="props.row.poundsFinal > 1 ? 'text-negative' : ''"
+                                        @click="$router.push('/wmss/warehouse/sku-individual' + `?name=${props.row.name}&norm=${props.row.norm}`)"
+                                    >
+                                        {{ props.row.poundsFinal.toFixed(3) }} 吨
+                                    </span>
+
+                                    <q-tooltip class="text-body1">
+                                        <div>
+                                            <div>一共剩余 {{ props.row.poundsFinal.toFixed(3) }} 吨</div>
+                                            <div>点击查看原材料</div>
+                                        </div>
+                                    </q-tooltip>
+                                </a>
+                                <span class="text-grey" v-else> {{ props.row.poundsFinal.toFixed(3) }} 吨 </span>
                             </q-td>
                             <q-td key="actions" :props="props" style="padding: 0">
                                 <div class="row q-px-sm">
