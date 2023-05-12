@@ -98,6 +98,7 @@
                     style: NotifyStore.fontStyle + ';width: 155px;',
                 },
                 { name: 'amountBookOfOrderVAT', field: 'amountBookOfOrderVAT', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
+                { name: 'event', field: 'event', label: '', align: 'left' },
                 { name: '_id', field: '_id', label: '', align: 'left' },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
@@ -174,6 +175,7 @@
                         <span>{{ "已收发票" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
+                    <q-th class="text-left">事件</q-th>
                     <q-th class="text-left">操作</q-th>
                     <q-th class="text-left">
                         <q-input
@@ -264,6 +266,10 @@
                     >
                         {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
+                    <q-td key="event" :props="props">
+                        <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">已收发票</q-badge>
+                        <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
+                    </q-td>
                     <q-td key="_id" :props="props" style="padding: 0px 8px">
                         <q-btn
                             push
@@ -325,6 +331,9 @@
                                             </div>
                                         </q-card-section>
                                         <q-card-actions>
+                                            <q-btn :class="{ 'text-negative': props.row.isNotTax }" @click="setTax(props.row)">
+                                                {{ props.row.isNotTax ? "不含税" : "含税" }}
+                                            </q-btn>
                                             <q-space></q-space>
                                             <q-btn
                                                 class="q-ml-sm"
@@ -700,6 +709,16 @@ const setOrderInfo = async (order: OrderJoined) => {
     } finally {
         // OrderStore.loadding = false;
     }
+};
+const setTax = async (order: OrderJoined) => {
+    const entity = cloneDeep(order);
+    entity.isNotTax = !Boolean(order.isNotTax);
+    await OrderStore.put(entity);
+
+    // sku
+    await OrderStore.get();
+    const target = OrderStore.list.find((e) => e._id === entity._id);
+    await setOrderInfo(target as OrderJoined);
 };
 
 const SkuStore = useSkuStore();

@@ -1,7 +1,15 @@
 <template>
-    <div class="q-pl-xs q-py-md">
-        <div class="text-h5 text-primary text-weight-bold row items-center">
-            <span>{{ MAP_ENUM_ORDER.get(vue_props.type)?.text }}（未结清）</span>
+    <div class="q-pl-xs q-py-md row">
+        <div class="col">
+            <div class="text-h5 text-primary text-weight-bold row items-center">
+                <span>{{ MAP_ENUM_ORDER.get(vue_props.type)?.text }}</span>
+            </div>
+            <div class="text-option text-grey row">
+                <span>仅为您展示 1.含税 2.未结清 的订单</span>
+            </div>
+        </div>
+
+        <div class="col row items-end">
             <q-space></q-space>
             <picker-range
                 :start-time="OrderStore.page.startTime"
@@ -15,7 +23,6 @@
                 "
             />
         </div>
-        <div class="text-option text-primary"></div>
     </div>
 
     <q-card>
@@ -26,18 +33,27 @@
             :rows="OrderStore.list"
             :rows-per-page-options="[OrderStore.page.pageSize]"
             :columns="[
+                { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'code', field: 'code', label: '批次', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'contactId', field: 'contactId', label: '客户名称', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'amount', field: 'amount', label: '金额', style: NotifyStore.cellStyle },
                 { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '已收款', style: NotifyStore.cellStyle },
                 { name: 'amountBookOfOrderRest', field: 'amountBookOfOrderRest', label: '剩余', align: 'left', style: NotifyStore.cellStyle },
+                { name: 'event', field: 'event', label: '事件', align: 'left' },
                 { name: '_id', field: '_id', label: '操作', align: 'left' },
-                { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'remark', field: 'remark', label: '备注', align: 'left', style: NotifyStore.cellStyle },
             ]"
         >
             <template v-slot:header="props">
                 <q-tr>
+                    <q-th
+                        class="text-left cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
+                        @click="OrderStore.sort('timeCreate', true)"
+                    >
+                        <span>时间 </span>
+                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    </q-th>
                     <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
                         <q-input
                             square
@@ -98,27 +114,21 @@
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderRestVAT' : 'amountBookOfOrderRest') }"
-                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderRestVAT' : 'amountBookOfOrderRest', true)"
+                        :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest') }"
+                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest', true)"
                     >
                         <span>{{ vue_props.isInvoice ? "可开票" : "还应确认" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
+                    <q-th class="text-left">事件</q-th>
                     <q-th class="text-left">操作</q-th>
                     <q-th class="text-left">备注</q-th>
-                    <q-th
-                        class="text-left cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
-                        @click="OrderStore.sort('timeCreate', true)"
-                    >
-                        <span>时间 </span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-                    </q-th>
                 </q-tr>
             </template>
 
             <template v-slot:body="props">
                 <q-tr>
+                    <q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
                     <q-td key="code" :props="props">
                         <q-badge class="q-mr-xs shadow-2" :color="type === ENUM_ORDER.SALES ? 'pink-6' : 'cyan'" rounded></q-badge>
                         {{ props.row.code }}
@@ -161,6 +171,12 @@
                             })
                         }}
                     </q-td>
+                    <q-td key="event" :props="props">
+                        <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">
+                            {{ OrderStore.search.type === ENUM_ORDER.SALES ? "已开发票" : "已收发票" }}
+                        </q-badge>
+                        <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
+                    </q-td>
                     <q-td key="_id" :props="props">
                         <span
                             v-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
@@ -172,7 +188,6 @@
                         <span v-else class="text-body1 text-grey"> 已选择 </span>
                     </q-td>
                     <q-td key="remark" :props="props"> {{ props.row.remark || "-" }} </q-td>
-                    <q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
                 </q-tr>
             </template>
             <template v-slot:bottom="props">

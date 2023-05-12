@@ -97,6 +97,7 @@
                     style: NotifyStore.fontStyle + ';width: 155px;',
                 },
                 { name: 'amountBookOfOrderVAT', field: 'amountBookOfOrderVAT', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
+                { name: 'event', field: 'event', label: '', align: 'left' },
                 { name: '_id', field: '_id', label: '', align: 'left' },
                 { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
             ]"
@@ -173,6 +174,7 @@
                         <span>{{ "已开发票" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
+                    <q-th class="text-left">事件</q-th>
                     <q-th class="text-left">操作</q-th>
                     <q-th class="text-left">
                         <q-input
@@ -213,7 +215,6 @@
                     <q-td key="code" :props="props">
                         <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
                         <span>{{ props.row.code }}</span>
-                        <q-badge floating v-if="props.row.isNotTax"> 不含税</q-badge>
                     </q-td>
                     <q-td key="contactId" :props="props" class="text-body1">
                         <span v-if="props.row.joinContact?.name" class="ellipsis">{{ props.row.joinContact.name }}</span>
@@ -254,6 +255,11 @@
                     <q-td key="amountBookOfOrderVAT" class="text-right text-grey" :props="props" :class="{ 'text-through': props.row.accounterId }">
                         {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
+                    <q-td key="event" :props="props">
+                        <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">已开发票</q-badge>
+                        <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
+                    </q-td>
+
                     <q-td key="_id" :props="props" style="padding: 0px 8px">
                         <q-btn
                             push
