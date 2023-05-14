@@ -73,8 +73,9 @@
                             filled
                             use-input
                             emit-value
+                            clearable
                             option-label="name"
-                            placeholder="搜索客户"
+                            :placeholder="`搜索${MAP_ENUM_CONTACT.get(ContactStore.search.type)?.text}`"
                             :options="contactSelecting"
                             :color="OrderStore.search.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
                             :loading="ContactStore.loadding"
@@ -222,7 +223,7 @@ import { onMounted, ref, computed } from "vue";
 import { cloneDeep, debounce } from "lodash";
 
 import { MongodbSort, getPage } from "qqlx-cdk";
-import { ENUM_ORDER, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, Contact, Order, MAP_ENUM_ORDER } from "qqlx-core";
+import { ENUM_ORDER, ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, Contact, Order, MAP_ENUM_ORDER, ENUM_CONTACT, MAP_ENUM_CONTACT } from "qqlx-core";
 
 import pickerRange from "./picker-range.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
@@ -304,6 +305,10 @@ onMounted(async () => {
     OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;
     OrderStore.get(1, false, true);
+
+    if (OrderStore.search.type === ENUM_ORDER.SALES) ContactStore.search.type = ENUM_CONTACT.SALES;
+    else if (OrderStore.search.type === ENUM_ORDER.PURCHASE) ContactStore.search.type = ENUM_CONTACT.PURCHASE;
+    console.log(OrderStore.search.type, ContactStore.search.type);
 });
 </script>
 

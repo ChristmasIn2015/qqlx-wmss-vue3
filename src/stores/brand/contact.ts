@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { cloneDeep, debounce } from "lodash";
 
 import { getMongodbBase, getPage } from "qqlx-cdk";
-import { ENUM_CORP, PATH_BRAND_CONTACT } from "qqlx-core";
+import { ENUM_CONTACT, ENUM_CORP, PATH_BRAND_CONTACT } from "qqlx-core";
 
 import type { Page } from "qqlx-cdk";
 import type {
@@ -24,10 +24,11 @@ const NotifyStore = useNotifyStore();
 function getSchema(): Contact {
     return {
         corpId: "",
-        isDisabled: false,
+        type: ENUM_CONTACT.SALES,
         name: "",
         address: "",
         remark: "",
+        isDisabled: false,
         ...getMongodbBase(),
     };
 }
@@ -64,6 +65,7 @@ export const useContactStore = defineStore("Contact", {
         async get10() {
             const schema = this.getSchema();
             schema.name = this.search.name;
+            schema.type = this.search.type;
 
             const dto: getContactDto = { page: getPage(10), search: schema };
             const res: getContactRes = await request.get(PATH_BRAND_CONTACT, { dto });
@@ -74,7 +76,12 @@ export const useContactStore = defineStore("Contact", {
             try {
                 const excels = cloneDeep(this.listExcel);
                 while (excels.length > 0) {
-                    const dto: postContactDto = { excels: excels.splice(0, 80) };
+                    const dto: postContactDto = {
+                        excels: excels.splice(0, 80).map((e) => {
+                            e.type = this.search.type;
+                            return e;
+                        }),
+                    };
                     const res: postContactRes = await request.post(PATH_BRAND_CONTACT, { dto });
                 }
 
@@ -120,9 +127,9 @@ export const useContactStore = defineStore("Contact", {
             return schema;
         },
         setEditor(entity?: Contact) {
-            const schema = entity ? cloneDeep(entity) : this.getSchema();
-            this.editor = schema;
-            this.search = schema;
+            const schema = entity ? entity : this.getSchema();
+            this.editor = cloneDeep(schema);
+            this.search = cloneDeep(schema);
         },
     },
 });

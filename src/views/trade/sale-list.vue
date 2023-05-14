@@ -256,8 +256,19 @@
                         {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td key="event" :props="props">
-                        <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">已开发票</q-badge>
-                        <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
+                        <div class="row items-center no-wrap">
+                            <q-badge
+                                v-if="props.row.joinCluePrint"
+                                color="negative"
+                                class="q-mr-sm"
+                                @click="$router.push(`/wmss/system/clue?content=${props.row.code}`)"
+                            >
+                                {{ props.row.joinCluePrint }}
+                                <q-tooltip class="text-body1">打印次数</q-tooltip>
+                            </q-badge>
+                            <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">已开发票</q-badge>
+                            <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
+                        </div>
                     </q-td>
 
                     <q-td key="_id" :props="props" style="padding: 0px 8px">
@@ -948,7 +959,8 @@ const orderPrinting = ref(OrderStore.getSchema() as OrderJoined);
 const print = async () => {
     const dom = document.getElementById("order");
     callPrinter(dom as HTMLElement);
-    printLog();
+    await printLog();
+    OrderStore.get();
 };
 const printLog = () => ClueStore.post(orderPrinting.value); // async
 const { ClipboardItem } = window;

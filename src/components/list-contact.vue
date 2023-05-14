@@ -6,18 +6,54 @@
         :rows-per-page-options="[ContactStore.page.pageSize]"
         :rows="ContactStore.list"
         :columns="[
-            { name: 'name', field: 'name', label: '客户名称', align: 'left', style: 'font-size: 16px; width: 300px; max-width: 300px;' },
+            { name: 'name', field: 'name', label: '名称', align: 'left', style: 'font-size: 16px; width: 300px; max-width: 300px;' },
             { name: 'remark', field: 'remark', label: '备注', align: 'left', style: 'font-size: 16px; width: 150px;' },
             { name: 'address', field: 'address', label: '联系方式', align: 'left', style: 'font-size: 16px; width: 150px; max-width: 150px;' },
             {
                 name: 'timeCreateString',
                 field: 'timeCreateString',
                 align: 'left',
-                label: '创建时间',
+                label: '类型',
                 style: 'font-size: 16px; width: 270px; max-width: 270px; padding: 0 8px;',
             },
         ]"
     >
+        <template v-slot:header-cell-timeCreateString="props">
+            <q-th key="timeCreateString" :props="props">
+                <q-btn padding="xs" flat color="negative">
+                    <span>{{ MAP_ENUM_CONTACT.get(ContactStore.search.type)?.text }}</span>
+                    <q-icon name="expand_more"></q-icon>
+                    <q-menu>
+                        <q-list>
+                            <q-item
+                                clickable
+                                v-close-popup
+                                @click="
+                                    () => {
+                                        ContactStore.search.type = ENUM_CONTACT.SALES;
+                                        ContactStore.get(1);
+                                    }
+                                "
+                            >
+                                <q-item-section>客户</q-item-section>
+                            </q-item>
+                            <q-item
+                                clickable
+                                v-close-popup
+                                @click="
+                                    () => {
+                                        ContactStore.search.type = ENUM_CONTACT.PURCHASE;
+                                        ContactStore.get(1);
+                                    }
+                                "
+                            >
+                                <q-item-section>供应商</q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-menu>
+                </q-btn>
+            </q-th>
+        </template>
         <template v-slot:top="props">
             <div class="col q-mb-md">
                 <q-input
@@ -75,13 +111,13 @@
                         </q-menu>
                     </q-btn>
                 </span>
-                <q-btn class="q-ml-sm" push square label="继续添加" @click="() => ContactStore.listExcel.push(ContactStore.getSchema())" />
+                <q-btn class="q-ml-sm" push square color="negative" label="继续添加" @click="() => ContactStore.listExcel.push(ContactStore.getSchema())" />
             </div>
         </template>
         <template v-slot:top-row>
             <q-tr v-for="(schema, index) in ContactStore.listExcel">
                 <q-td>
-                    <q-input square filled v-model="schema.name" dense clearable color="primary" placeholder="请输入客户名称" />
+                    <q-input square filled v-model="schema.name" dense clearable color="primary" placeholder="请输入名称" />
                 </q-td>
                 <q-td>
                     <q-input square filled v-model="schema.remark" dense clearable color="primary" placeholder="请输入备注" />
@@ -90,7 +126,11 @@
                     <q-input square filled v-model="schema.address" dense clearable color="primary" placeholder="请输入联系方式" />
                 </q-td>
                 <q-td>
-                    <q-btn icon="close" dense class="text-negative" flat @click="() => ContactStore.listExcel.splice(index, 1)"> </q-btn>
+                    <div class="row items-center">
+                        <span class="q-pl-xs">保存为 {{ MAP_ENUM_CONTACT.get(ContactStore.search.type)?.text }}</span>
+                        <q-space></q-space>
+                        <q-btn icon="close" dense class="text-negative" flat @click="() => ContactStore.listExcel.splice(index, 1)"> </q-btn>
+                    </div>
                 </q-td>
             </q-tr>
         </template>
@@ -101,7 +141,9 @@
                 <q-td key="address" :props="props" class="ellipsis"> {{ props.row.address }} </q-td>
                 <q-td key="timeCreateString" :props="props">
                     <div class="row items-center">
-                        <span>{{ props.row.timeCreateString }}</span>
+                        <span>
+                            <q-chip color="primary" dense class="text-white" square>{{ MAP_ENUM_CONTACT.get(props.row.type)?.text }}</q-chip>
+                        </span>
                         <q-space></q-space>
                         <q-btn dense icon="more_horiz" class="q-ml-sm" flat>
                             <q-menu anchor="top left">
@@ -152,12 +194,12 @@
     <q-dialog v-model="dialogPatch">
         <q-card class="w-400">
             <q-toolbar class="bg-primary text-white">
-                <q-toolbar-title>修改客户</q-toolbar-title>
+                <q-toolbar-title>修改</q-toolbar-title>
                 <q-btn dense flat icon="close" v-close-popup></q-btn>
             </q-toolbar>
 
             <q-card-section>
-                <q-input class="q-mb-sm" filled label="客户名称" v-model="ContactStore.editor.name" color="primary">
+                <q-input class="q-mb-sm" filled label="名称" v-model="ContactStore.editor.name" color="primary">
                     <template v-slot:before>
                         <q-icon name="person" />
                     </template>
@@ -172,6 +214,23 @@
                         <q-icon name="" />
                     </template>
                 </q-input>
+                <q-select
+                    v-model="ContactStore.editor.type"
+                    filled
+                    map-options
+                    emit-value
+                    option-value="value"
+                    :options="
+                        [...MAP_ENUM_CONTACT].map((e) => ({
+                            label: e[1].text,
+                            value: e[1].value,
+                        }))
+                    "
+                >
+                    <template v-slot:before>
+                        <q-icon name="" />
+                    </template>
+                </q-select>
             </q-card-section>
 
             <q-card-actions>
@@ -193,8 +252,9 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from "vue";
-import * as XLSX from "xlsx";
 import { cloneDeep, debounce } from "lodash";
+import { MAP_ENUM_CONTACT, ENUM_CONTACT } from "qqlx-core";
+import * as XLSX from "xlsx";
 
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";

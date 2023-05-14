@@ -61,16 +61,22 @@ import * as XLSX from "xlsx";
 import { MongodbSort } from "qqlx-cdk";
 import { cloneDeep, debounce } from "lodash";
 import { onMounted, watch, ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
 import { ENUM_LAYOUT_CABINET } from "qqlx-core";
 
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useClueStore } from "@/stores/wmss/clue";
 
+const route = useRoute();
 const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
 
 // action
 onMounted(async () => {
+    // 根据路由进行搜索
+    const { content } = route.query;
+    content && (ClueStore.search.content = content as string);
     await ClueStore.get(1);
 });
 </script>
