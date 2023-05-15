@@ -146,9 +146,24 @@
                             <q-icon name="close"></q-icon>
                         </q-btn>
                     </q-th>
-                    <q-th class="text-right cursor-pointer" :class="{ 'text-negative': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
-                        <span> 订单金额 </span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    <q-th
+                        class="text-right cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
+                        style="position: relative"
+                        @click="OrderStore.sort('amount')"
+                    >
+                        <span class="row items-end no-wrap">
+                            <span class="q-mx-sm">合计</span>
+                            <span class="text-bold text-negative text-body1" style="margin-bottom: -2px">
+                                {{ (OrderStore.amountTotal / 100).toLocaleString("zh", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                            </span>
+                            <q-icon
+                                class="text-body2 q-ml-xs"
+                                style="margin-bottom: 2px"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
+                            <q-tooltip class="text-body1" v-model="AmountTooltip" :offset="[0, -80]">订单金额</q-tooltip>
+                        </span>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
@@ -567,9 +582,7 @@
                     @update:model-value="(value) => OrderStore.get(value)"
                 />
                 <q-space></q-space>
-                <span>共 {{ OrderStore.total }} 项，合计</span>
-                <span class="text-body1 text-weight-bold text-negative q-mx-sm"> {{ (OrderStore.amountTotal / 100).toFixed(2) }} </span>
-                <span>元</span>
+                <span>共 {{ OrderStore.total }} 项</span>
             </template>
         </q-table>
 
@@ -867,6 +880,7 @@ import { useClueStore } from "@/stores/wmss/clue";
 const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
 const WarehouseStore = useWarehouseStore();
+const AmountTooltip = ref(true);
 
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
