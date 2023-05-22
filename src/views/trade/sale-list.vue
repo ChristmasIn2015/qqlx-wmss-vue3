@@ -630,29 +630,7 @@
     <q-dialog v-model="printDialog">
         <div class="row no-wrap" id="order-container">
             <q-card class="w-350" id="order-config">
-                <q-card-section class="text-h6 text-bold">打印设置</q-card-section>
-                <q-separator></q-separator>
-                <q-card-section>
-                    <div class="text-body1 q-mb-sm q-ml-xs text-bold">销售信息</div>
-                    <div>
-                        <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
-                    </div>
-                    <div class="text-body1 q-my-sm q-ml-xs text-bold">其他信息</div>
-                    <div>
-                        <q-checkbox v-model="OrderStore.columnKeyOriginShow" label="产地"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnKeyFeatShow" label="材质"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnKeyCodeShow" label="捆包号"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnKeyWarehouseShow" label="仓库"></q-checkbox>
-                        <q-checkbox v-model="OrderStore.columnKeyHouseShow" label="货位号"></q-checkbox>
-                    </div>
-                </q-card-section>
+                <q-card-section class="text-h6 text-bold"> 打印设置 </q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
                     <div class="text-body1 q-mb-md q-ml-xs text-bold">公司别称</div>
@@ -696,6 +674,44 @@
                             ></q-btn>
                         </template>
                     </q-input>
+                </q-card-section>
+                <q-separator></q-separator>
+                <q-card-section>
+                    <div class="text-body1 q-mb-sm q-ml-xs text-bold row items-center">
+                        销售信息
+                        <q-space></q-space>
+                        <q-btn :icon="infoColumnBase ? 'visibility' : 'visibility_off'" padding="xs" fab flat @click="infoColumnBase = !infoColumnBase"></q-btn>
+                    </div>
+                    <div v-show="infoColumnBase">
+                        <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
+                    </div>
+                    <div class="text-body1 q-my-sm q-ml-xs text-bold row items-center">
+                        其他信息
+                        <q-space></q-space>
+                        <q-btn :icon="infoColumnMore ? 'visibility' : 'visibility_off'" padding="xs" fab flat @click="infoColumnMore = !infoColumnMore"></q-btn>
+                    </div>
+                    <div v-show="infoColumnMore">
+                        <q-checkbox v-model="OrderStore.columnKeyOriginShow" label="产地"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyFeatShow" label="材质"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyCodeShow" label="捆包号"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyWarehouseShow" label="仓库"></q-checkbox>
+                        <q-checkbox v-model="OrderStore.columnKeyHouseShow" label="货位号"></q-checkbox>
+                    </div>
+                    <div class="text-body1 q-my-sm q-ml-xs text-bold row items-center">
+                        金额信息
+                        <q-space></q-space>
+                        <q-btn :icon="infoAmount ? 'visibility' : 'visibility_off'" padding="xs" fab flat @click="infoAmount = !infoAmount"></q-btn>
+                    </div>
+                    <div v-show="infoAmount">
+                        <q-checkbox v-model="rowAmountShow" label="金额合计"></q-checkbox>
+                    </div>
                 </q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
@@ -793,7 +809,7 @@
                                 <td v-if="OrderStore.columnKeyHouseShow">{{ sku.keyHouse }}</td>
                             </tr>
                         </table>
-                        <div class="order-table-line row">
+                        <div class="order-table-line row" v-if="rowAmountShow">
                             <div class="col">{{ getChineseMoney(orderPrinting.amount) }}</div>
                             <div class="col">共计: {{ orderPrinting.amount.toFixed(2) }} 元</div>
                         </div>
@@ -1012,6 +1028,10 @@ const copy = async () => {
         }
     });
 };
+const infoColumnBase = ref(true);
+const infoColumnMore = ref(false);
+const infoAmount = ref(false);
+const rowAmountShow = ref(true);
 
 const UserStore = useUserStore();
 const setManager = async (order: OrderJoined, toClear = false) => {
