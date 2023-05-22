@@ -65,7 +65,8 @@ export const useContactStore = defineStore("Contact", {
         async get10() {
             const schema = this.getSchema();
             schema.name = this.search.name;
-            schema.type = this.search.type;
+            //@ts-ignore
+            schema.type = null;
 
             const dto: getContactDto = { page: getPage(10), search: schema };
             const res: getContactRes = await request.get(PATH_BRAND_CONTACT, { dto });

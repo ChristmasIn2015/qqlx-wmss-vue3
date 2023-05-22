@@ -82,7 +82,7 @@
         ]"
     >
         <template v-slot:top-row>
-            <q-tr v-for="(schema, index) in BookStore.listExcel" class="bg-teal">
+            <q-tr v-for="(schema, index) in BookStore.listExcel" class="bg-grey-5">
                 <q-td :style="NotifyStore.fontStyle">
                     <q-btn class="bg-white" square>
                         {{ schema.timeCreateString }}

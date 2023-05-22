@@ -71,7 +71,7 @@
             { name: 'code', field: 'code', label: '系统编号', align: 'left' },
             { name: 'keyCode', field: 'keyCode', label: '票号', align: 'left' },
             { name: 'keyHouse', field: 'keyHouse', label: '抬头', align: 'left' },
-            { name: 'keyOrigin', field: 'keyOrigin', label: '客户', align: 'left' },
+            { name: 'keyOrigin', field: 'keyOrigin', label: '供应商', align: 'left' },
             { name: 'type', field: 'type', label: '分类', align: 'left' },
             { name: 'amount', field: 'amount', label: '发票金额' },
             { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '有效金额' },
@@ -80,9 +80,9 @@
         ]"
     >
         <template v-slot:top-row>
-            <q-tr v-for="(schema, index) in BookStore.listExcel">
+            <q-tr v-for="(schema, index) in BookStore.listExcel" class="bg-grey-5">
                 <q-td :style="NotifyStore.fontStyle">
-                    <a class="text-body1 text-teal cursor-pointer text-underline">
+                    <q-btn class="bg-white" square>
                         {{ schema.timeCreateString }}
                         <q-menu>
                             <q-date
@@ -93,11 +93,21 @@
                                 @update:model-value="($event) => (schema.timeCreate = new Date($event).getTime())"
                             />
                         </q-menu>
-                    </a>
+                    </q-btn>
                 </q-td>
-                <q-td :style="NotifyStore.fontStyle" class="text-grey">自动生成</q-td>
+                <q-td :style="NotifyStore.fontStyle" class="text-white">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="发票号码" v-model="schema.keyCode" />
+                    <q-input
+                        dense
+                        square
+                        filled
+                        clearable
+                        color="primary"
+                        bg-color="white"
+                        input-class="text-body1"
+                        placeholder="发票号码"
+                        v-model="schema.keyCode"
+                    />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
                     <q-select
@@ -106,7 +116,8 @@
                         filled
                         emit-value
                         map-options
-                        color="purple"
+                        color="primary"
+                        bg-color="white"
                         placeholder="请选择抬头"
                         :options="(nowCorps as any)"
                         v-model="schema.keyHouse"
@@ -114,21 +125,50 @@
                     </q-select>
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="客户" v-model="schema.keyOrigin" />
+                    <q-input
+                        dense
+                        square
+                        filled
+                        clearable
+                        color="primary"
+                        bg-color="white"
+                        input-class="text-body1"
+                        placeholder="供应商"
+                        v-model="schema.keyOrigin"
+                    />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-badge class="q-mr-xs shadow-2" color="purple" rounded></q-badge>
-                    发票（销项）
+                    <q-badge class="q-mr-xs shadow-2" color="cyan" rounded></q-badge>
+                    <span class="text-white">发票（进项）</span>
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled color="teal" input-class="text-right text-body1" placeholder="请输入金额" v-model="schema.amount" />
+                    <q-input
+                        dense
+                        square
+                        filled
+                        color="primary"
+                        bg-color="white"
+                        input-class="text-right text-body1"
+                        placeholder="请输入金额"
+                        v-model="schema.amount"
+                    />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle" class="text-grey">自动计算</q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-input dense square filled clearable color="teal" input-class="text-body1" placeholder="请输入备注" v-model="schema.remark" />
+                    <q-input
+                        dense
+                        square
+                        filled
+                        clearable
+                        color="primary"
+                        bg-color="white"
+                        input-class="text-body1"
+                        placeholder="请输入备注"
+                        v-model="schema.remark"
+                    />
                 </q-td>
                 <q-td :style="NotifyStore.fontStyle">
-                    <q-btn icon="close" dense class="text-negative" flat @click="() => BookStore.listExcel.splice(index, 1)"> </q-btn>
+                    <q-btn icon="close" dense class="text-negative" bg-color="white" flat @click="() => BookStore.listExcel.splice(index, 1)"> </q-btn>
                 </q-td>
             </q-tr>
         </template>
@@ -151,7 +191,7 @@
                 <q-th key="keyCode" :props="props">
                     <q-input square filled dense clearable color="purple" placeholder="搜索票号" v-model="BookStore.search.keyCode" @blur="BookStore.get(1)" />
                 </q-th>
-                <q-th key="keyHouse" :props="props">
+                <q-th key="keyHouse" :props="props" :style="NotifyStore.cellStyle">
                     <q-select
                         dense
                         square
@@ -173,7 +213,7 @@
                         dense
                         clearable
                         color="purple"
-                        placeholder="搜索客户"
+                        placeholder="搜索供应商"
                         v-model="BookStore.search.keyOrigin"
                         @blur="BookStore.get(1)"
                     />
@@ -236,7 +276,7 @@
                 <q-td key="keyCode" :props="props" :style="NotifyStore.cellStyle">{{ props.row.keyCode }}</q-td>
                 <q-td key="keyHouse" :props="props" :style="NotifyStore.cellStyle" style="min-width: 188px">{{ props.row.keyHouse }}</q-td>
                 <q-td key="keyOrigin" :props="props" :style="NotifyStore.cellStyle">{{ props.row.keyOrigin }}</q-td>
-                <q-td key="type" :style="NotifyStore.cellStyle" class="text-grey"> 销项 </q-td>
+                <q-td key="type" :style="NotifyStore.cellStyle" class="text-grey"> 进项 </q-td>
                 <q-td key="amount" :props="props" :style="NotifyStore.cellStyle" class="text-grey">
                     {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                 </q-td>
@@ -370,7 +410,7 @@ const filePickNext = async (file: File) => {
                 const schema = BookStore.getSchema({ type: BookStore.search.type, direction: BookStore.search.direction });
                 schema.keyHouse = String(row["@抬头"] || "");
                 schema.keyCode = String(row["@发票号码"] || "");
-                schema.keyOrigin = String(row["@客户名称"] || "");
+                schema.keyOrigin = String(row["@供应商名称"] || "");
                 schema.amount = Number(row["@金额"] || 0) || 0;
                 schema.remark = String(row["@备注"] || "");
 

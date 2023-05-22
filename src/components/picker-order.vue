@@ -18,7 +18,7 @@
                     ($event) => {
                         OrderStore.page.startTime = $event.startTime;
                         OrderStore.page.endTime = $event.endTime;
-                        OrderStore.get(1, false, true);
+                        OrderStore.get(1);
                     }
                 "
             />
@@ -29,7 +29,7 @@
         <q-table
             dense
             row-key="_id"
-            style="height: 380px"
+            style="height: 405px"
             :rows="OrderStore.list"
             :rows-per-page-options="[OrderStore.page.pageSize]"
             :columns="[
@@ -63,7 +63,7 @@
                             color="primary"
                             placeholder="搜索批次"
                             v-model="OrderStore.search.code"
-                            @blur="OrderStore.get(1, false, true)"
+                            @blur="OrderStore.get(1)"
                         />
                     </q-th>
                     <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">
@@ -85,7 +85,7 @@
                                 () => {
                                     OrderStore.search.contactId = contactPicked ? contactPicked._id : '';
                                     OrderStore.requireAccounterId = true;
-                                    OrderStore.get(1, false, true);
+                                    OrderStore.get(1);
                                 }
                             "
                         >
@@ -191,6 +191,32 @@
                     <q-td key="remark" :props="props"> {{ props.row.remark || "-" }} </q-td>
                 </q-tr>
             </template>
+
+            <template v-slot:bottom-row="props">
+                <q-tr class="bg-grey-4">
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td class="text-right">
+                        <span class="text-body1 text-bold text-negative">合计：</span>
+                    </q-td>
+                    <q-td class="text-right" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-bold" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
+                </q-tr>
+            </template>
+
             <template v-slot:bottom="props">
                 <q-pagination
                     size="17px"
@@ -202,12 +228,10 @@
                     v-model="OrderStore.page.page"
                     :max-pages="10"
                     :max="Math.ceil(OrderStore.total / OrderStore.page.pageSize)"
-                    @update:model-value="(value) => OrderStore.get(value, false, true)"
+                    @update:model-value="(value) => OrderStore.get(value)"
                 />
                 <q-space></q-space>
-                <span>共 {{ OrderStore.total }} 项，合计</span>
-                <span class="text-body1 text-weight-bold text-negative q-mx-sm"> {{ OrderStore.amountTotal.toFixed(2) }} </span>
-                <span>元</span>
+                <span>共 {{ OrderStore.total }} 项</span>
             </template>
         </q-table>
 
@@ -304,7 +328,7 @@ onMounted(async () => {
     OrderStore.search.isNotTax = true;
     OrderStore.search.contactId = "";
     OrderStore.requireAccounterId = true;
-    OrderStore.get(1, false, true);
+    OrderStore.get(1);
 
     if (OrderStore.search.type === ENUM_ORDER.SALES) ContactStore.search.type = ENUM_CONTACT.SALES;
     else if (OrderStore.search.type === ENUM_ORDER.PURCHASE) ContactStore.search.type = ENUM_CONTACT.PURCHASE;

@@ -10,6 +10,8 @@ import type {
     postOrderRes,
     getOrderDto,
     getOrderRes,
+    getOrderGroupDto,
+    getOrderGroupRes,
     putOrderDto,
     putOrderRes,
     deleteOrderDto,
@@ -69,7 +71,13 @@ export const useOrderStore = defineStore("Order", {
         page: getPage(15),
         timeQuasarPicked: { from: `${new Date().getFullYear()}/01/01`, to: new Date().toLocaleString().split(" ")[0] },
         total: 0,
-        amountTotal: 0,
+        group: {
+            amount: 0,
+            amountBookOfOrder: 0,
+            amountBookOfOrderRest: 0,
+            amountBookOfOrderVAT: 0,
+            amountBookOfOrderVATRest: 0,
+        },
 
         // 是否可以复核、结清
         requireManagerId: false,
@@ -96,7 +104,7 @@ export const useOrderStore = defineStore("Order", {
     }),
     actions: {
         /** @viewcatch */
-        async get(page?: number, joinSku: boolean = false, simple: boolean = false) {
+        async get(page?: number) {
             try {
                 if (page && page > 0) this.page.page = page;
                 this.loadding = true;
@@ -113,11 +121,27 @@ export const useOrderStore = defineStore("Order", {
                 const res: getOrderRes = await request.get(PATH_ORDER, { dto });
                 this.list = res.list;
                 this.total = res.total;
-                this.amountTotal = res.group?.amount as number;
+
+                // group
+                this.getOrderGroup(dto); // async
             } catch (error) {
                 NotifyStore.fail((error as Error).message);
             } finally {
                 this.loadding = false;
+            }
+        },
+        async getOrderGroup(dto: getOrderGroupDto) {
+            try {
+                const group: getOrderGroupRes = await request.get(PATH_ORDER + "/group", { dto });
+                this.group = group;
+            } catch (error) {
+                this.group = {
+                    amount: 0,
+                    amountBookOfOrder: 0,
+                    amountBookOfOrderRest: 0,
+                    amountBookOfOrderVAT: 0,
+                    amountBookOfOrderVATRest: 0,
+                };
             }
         },
         async geOrderWidthSku(): Promise<OrderJoined[]> {

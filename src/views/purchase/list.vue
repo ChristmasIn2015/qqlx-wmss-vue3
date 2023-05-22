@@ -537,6 +537,31 @@
                 </q-tr>
             </template>
 
+            <template v-slot:bottom-row="props">
+                <q-tr class="bg-grey-4">
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td class="text-right">
+                        <span class="text-body1 text-bold text-negative">合计：</span>
+                    </q-td>
+                    <q-td class="text-right" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-bold" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
+                </q-tr>
+            </template>
+
             <template v-slot:bottom="props">
                 <q-pagination
                     size="17px"
@@ -551,9 +576,7 @@
                     @update:model-value="(value) => OrderStore.get(value)"
                 />
                 <q-space></q-space>
-                <span>共 {{ OrderStore.total }} 项，合计</span>
-                <span class="text-body1 text-weight-bold text-negative q-mx-sm"> {{ (OrderStore.amountTotal / 100).toFixed(2) }} </span>
-                <span>元</span>
+                <span>共 {{ OrderStore.total }} 项</span>
             </template>
         </q-table>
 

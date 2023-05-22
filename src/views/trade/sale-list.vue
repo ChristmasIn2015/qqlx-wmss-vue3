@@ -152,18 +152,8 @@
                         style="position: relative"
                         @click="OrderStore.sort('amount')"
                     >
-                        <span class="row items-end no-wrap">
-                            <span class="q-mx-sm">合计</span>
-                            <span class="text-bold text-negative text-body1" style="margin-bottom: -2px">
-                                {{ (OrderStore.amountTotal / 100).toLocaleString("zh", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-                            </span>
-                            <q-icon
-                                class="text-body2 q-ml-xs"
-                                style="margin-bottom: 2px"
-                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-                            ></q-icon>
-                            <q-tooltip class="text-body1" v-model="AmountTooltip" :offset="[0, -80]">订单金额</q-tooltip>
-                        </span>
+                        <span>订单金额</span>
+                        <q-icon class="text-body2 q-ml-xs" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th
                         class="text-right cursor-pointer"
@@ -565,6 +555,31 @@
                             </div>
                         </div>
                     </q-td>
+                </q-tr>
+            </template>
+
+            <template v-slot:bottom-row="props">
+                <q-tr class="bg-grey-4">
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td class="text-right">
+                        <span class="text-body1 text-bold text-negative">合计：</span>
+                    </q-td>
+                    <q-td class="text-right" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-bold" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
+                        {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                    </q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
+                    <q-td></q-td>
                 </q-tr>
             </template>
 

@@ -18,7 +18,7 @@
                 :rows="OrderStore.listPicked"
                 :columns="[
                     { name: 'code', field: 'code', label: '订单信息', align: 'left' },
-                    { name: 'contactId', field: 'contactId', label: '客户', align: 'left' },
+                    { name: 'contactId', field: 'contactId', label: '供应商', align: 'left' },
                     { name: 'amount', field: 'amount', label: '订单金额' },
                     { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '开票金额' },
                     { name: 'remark', field: 'remark', label: '订单备注', align: 'left' },
@@ -122,7 +122,7 @@
                         v-model="BookStore.editor.keyOrigin"
                     >
                         <template v-slot:before>
-                            <span class="text-body1">客户</span>
+                            <span class="text-body1">供应商</span>
                         </template>
                     </q-input>
                     <q-input
