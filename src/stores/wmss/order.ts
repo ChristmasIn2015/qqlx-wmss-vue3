@@ -50,6 +50,7 @@ function getSchema(): Order {
         remark: "",
         isDisabled: false,
         isNotTax: false,
+        timeContract: 0,
 
         amountBookOfOrder: 0,
         amountBookOfOrderRest: 0,
