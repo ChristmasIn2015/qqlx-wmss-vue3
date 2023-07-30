@@ -109,7 +109,7 @@
                         :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
                         @click="OrderStore.sort('timeCreate')"
                     >
-                        <span>时间 </span>
+                        <span>开单时间 </span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
@@ -215,7 +215,7 @@
                     "
                 >
                     <q-td key="timeCreateString" :props="props">
-                        {{ props.row.timeCreateString }}
+                        <span>{{ props.row.timeCreateString }}</span>
                     </q-td>
                     <q-td key="code" :props="props">
                         <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
@@ -343,8 +343,18 @@
                                         <q-card-section>
                                             <div class="text-h6 text-weight-bold">订单信息</div>
                                             <div class="row text-body1">
+                                                <span class="col-3 text-grey">开单时间</span>
+                                                <span class="col-9 text-grey text-right text-weight-bold">{{ props.row.timeCreateString }}</span>
+                                            </div>
+                                            <div class="row text-body1">
                                                 <span class="col-3 text-grey">开单人</span>
-                                                <span class="col-9 text-right text-weight-bold">{{ props.row.joinCreator?.nickname }}</span>
+                                                <span class="col-9 text-grey text-right text-weight-bold">{{ props.row.joinCreator?.nickname }}</span>
+                                            </div>
+
+                                            <div class="q-mb-sm"></div>
+                                            <div class="row text-body1">
+                                                <span class="col-3 text-grey">合同时间</span>
+                                                <span class="col-9 text-right text-weight-bold ellipsis">{{ props.row.timeContractString }}</span>
                                             </div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">客户信息</span>
@@ -761,7 +771,7 @@
                             <div class="col text-right">公司联系方式：{{ CorpStore.picked?.contact || "尚未录入" }}</div>
                         </div>
                         <div class="row">
-                            <div class="col">开单日期：{{ orderPrinting.timeCreateString }}</div>
+                            <div class="col">合同日期：{{ orderPrinting.timeContractString }}</div>
                             <div class="col text-center">开单人：{{ orderPrinting.joinCreator?.nickname }}</div>
                             <div class="col text-right">No. {{ orderPrinting.code }}</div>
                         </div>

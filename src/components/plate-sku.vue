@@ -9,6 +9,7 @@
                 :disable="['poundsFinal', '_id'].includes(column.name)"
                 color="primary"
                 class="q-mr-sm"
+                @update:model-value="SkuStore.setColumnsVisable()"
             />
         </q-card-section>
     </q-card>

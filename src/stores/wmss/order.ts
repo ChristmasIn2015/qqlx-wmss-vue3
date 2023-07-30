@@ -119,7 +119,10 @@ export const useOrderStore = defineStore("Order", {
                     joinSku: ![ENUM_ORDER.PURCHASE, ENUM_ORDER.SALES].includes(this.search.type),
                 };
                 const res: getOrderRes = await request.get(PATH_ORDER, { dto });
-                this.list = res.list;
+                this.list = res.list.map((order) => {
+                    order.timeContractString = new Date(order.timeContract).toLocaleString();
+                    return order;
+                });
                 this.total = res.total;
 
                 // group
