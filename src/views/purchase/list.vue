@@ -320,10 +320,18 @@
                                 <div>
                                     <q-card square class="q-mb-sm">
                                         <q-card-section>
-                                            <div class="text-h6 text-weight-bold">订单信息</div>
-                                            <div class="row text-body1">
-                                                <span class="col-3 text-grey">开单人</span>
-                                                <span class="col-9 text-right text-weight-bold">{{ props.row.joinCreator?.nickname }}</span>
+                                            <div class="text-h6 text-weight-bold">单据（采购）</div>
+                                            <div class="row text-body1 text-grey q-mt-sm">
+                                                <span class="col-3">开单时间</span>
+                                                <span class="col-9 text-right ellipsis">{{ props.row.timeCreateString }}</span>
+                                            </div>
+                                            <div class="row text-body1 text-grey">
+                                                <span class="col-3">开单人</span>
+                                                <span class="col-9 text-right">{{ props.row.joinCreator?.nickname }}</span>
+                                            </div>
+                                            <div class="row text-body1 q-mt-sm">
+                                                <span class="col-3 text-grey">合同时间</span>
+                                                <span class="col-9 text-right text-weight-bold ellipsis">{{ props.row.timeContractString }}</span>
                                             </div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">客户信息</span>

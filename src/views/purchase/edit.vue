@@ -13,6 +13,9 @@
 
     <div class="q-py-md row">
         <q-space></q-space>
+        <span>
+            <picker-date title="合同时间：" :time="OrderStore.editor.timeContract" @change="(value) => (OrderStore.editor.timeContract = value)"> </picker-date>
+        </span>
         <q-btn class="q-ml-sm" push square color="primary" @click="contactDialog = true">{{ contactPicked._id ? contactPicked.name : "选择供应商" }} </q-btn>
         <q-btn v-if="contactPicked._id" class="q-ml-sm" square push color="negative" :loading="OrderStore.loadding" @click="putOrder()">
             修改 {{ OrderStore.editor.code }}
@@ -42,6 +45,7 @@ import { ENUM_ORDER, MAP_ENUM_ORDER } from "qqlx-core";
 import pickerCabinetUnit from "@/components/picker-cabinet-unit.vue";
 import containerSku from "@/components/container-sku.vue";
 import listContact from "@/components/list-contact.vue";
+import pickerDate from "@/components/picker-date.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useCorpStore } from "@/stores/brand/corp";
 import { useSkuStore } from "@/stores/wmss/sku";

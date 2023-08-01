@@ -16,8 +16,7 @@
         <span>
             <picker-date title="合同时间：" :time="OrderStore.editor.timeContract" @change="(value) => (OrderStore.editor.timeContract = value)"> </picker-date>
             <q-tooltip class="text-body1">
-                <div>订单打印时，将会在左上角，显示合同时间</div>
-                <div>创建时间：{{ OrderStore.editor.timeCreateString }}</div>
+                <div>单据打印时，将会在左上角，显示 "合同时间"</div>
             </q-tooltip>
         </span>
         <q-btn class="q-ml-sm" color="primary" push square @click="contactDialog = true">

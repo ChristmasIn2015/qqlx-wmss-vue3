@@ -341,7 +341,9 @@
                                 <div>
                                     <q-card square class="q-mb-sm">
                                         <q-card-section>
-                                            <div class="text-h6 text-weight-bold">订单信息</div>
+                                            <div class="text-h6 text-weight-bold">单据（销售）</div>
+
+                                            <div class="q-mb-sm"></div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">开单时间</span>
                                                 <span class="col-9 text-grey text-right text-weight-bold">{{ props.row.timeCreateString }}</span>
