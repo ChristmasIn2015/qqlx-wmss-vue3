@@ -334,7 +334,6 @@ export const useSkuStore = defineStore("Sku", {
 
         /** local */
         setColumnsVisable() {
-            console.log(this.columnsVisiable.join(";"));
             localStorage.setItem("qqlx-sku-columns", this.columnsVisiable.join(";"));
         },
     },

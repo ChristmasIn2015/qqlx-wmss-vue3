@@ -49,17 +49,33 @@
         <q-space></q-space>
         <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')"> 销售明细 </q-btn>
 
-        <picker-range
-            :start-time="OrderStore.page.startTime"
-            :end-time="OrderStore.page.endTime"
-            @change="
-                ($event) => {
-                    OrderStore.page.startTime = $event.startTime;
-                    OrderStore.page.endTime = $event.endTime;
-                    OrderStore.get(1);
-                }
-            "
-        />
+        <div>
+            <picker-range
+                :start-time="OrderStore.page.startTime"
+                :end-time="OrderStore.page.endTime"
+                @change="
+                    ($event) => {
+                        OrderStore.page.startTime = $event.startTime;
+                        OrderStore.page.endTime = $event.endTime;
+                        OrderStore.get(1);
+                    }
+                "
+            >
+            </picker-range>
+            <q-tooltip class="text-body1">
+                <div>点击开始筛选（根据单据的创建时间）</div>
+                <div></div>
+            </q-tooltip>
+        </div>
+
+        <q-btn color="white" text-color="black" icon="visibility" class="q-ml-sm">
+            <q-menu>
+                <q-card class="w-500">
+                    <plate-order />
+                </q-card>
+            </q-menu>
+        </q-btn>
+
         <q-btn color="white" text-color="black" icon="more_vert" class="q-ml-sm">
             <q-menu class="text-body1">
                 <q-item clickable @click="$router.push('/wmss/system/clue')">
@@ -78,39 +94,30 @@
 
     <q-card>
         <q-table
-            dense
-            row-key="_id"
             style="min-height: 630px"
+            row-key="_id"
+            dense
             :rows="OrderStore.list"
             :rows-per-page-options="[0]"
-            :columns="[
-                { name: 'timeCreateString', field: 'timeCreateString', label: '', align: 'left', style: NotifyStore.cellStyle },
-                { name: 'code', field: 'code', label: '', align: 'left', style: NotifyStore.cellStyle },
-                { name: 'contactId', field: 'contactId', label: '', align: 'left', style: NotifyStore.cellStyle },
-                { name: 'amount', field: 'amount', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
-                { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
-                {
-                    name: 'amountBookOfOrderRest',
-                    field: 'amountBookOfOrderRest',
-                    label: '',
-                    align: 'left',
-                    style: NotifyStore.fontStyle + ';width: 155px;',
-                },
-                { name: 'amountBookOfOrderVAT', field: 'amountBookOfOrderVAT', label: '', style: NotifyStore.fontStyle + ';width: 155px;' },
-                { name: 'event', field: 'event', label: '', align: 'left' },
-                { name: '_id', field: '_id', label: '', align: 'left' },
-                { name: 'remark', field: 'remark', label: '', align: 'left', style: NotifyStore.cellStyle },
-            ]"
+            :columns="OrderStore.columns"
+            :visible-columns="OrderStore.columnsVisiable"
         >
             <template v-slot:header="props">
+                <div class="q-pt-sm"></div>
                 <q-tr>
-                    <q-th
-                        class="text-left cursor-pointer"
-                        :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
-                        @click="OrderStore.sort('timeCreate')"
-                    >
-                        <span>开单时间 </span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                    <q-th key="timeContractString" :props="props" class="text-left" :class="{ 'text-negative': OrderStore.sortKey === 'timeContract' }">
+                        <div>
+                            <q-btn flat small class="q-px-xs" @click="OrderStore.sort('timeContract')">
+                                <span class="q-pr-xs">合同时间</span>
+                                <q-icon size="medium" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                            </q-btn>
+                        </div>
+                    </q-th>
+                    <q-th key="timeCreateString" :props="props" class="text-left" :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }">
+                        <q-btn flat small class="q-px-xs" @click="OrderStore.sort('timeCreate')">
+                            <span class="q-pr-xs">开单时间</span>
+                            <q-icon size="medium" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        </q-btn>
                     </q-th>
                     <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
                         <q-input
@@ -126,62 +133,111 @@
                         />
                     </q-th>
                     <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">
-                        <q-btn class="q-px-sm" flat square color="negative" style="margin-left: -6px" @click="contactDialog = true">
-                            {{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
-                        </q-btn>
-                        <q-btn
-                            v-if="contactPicked._id"
-                            flat
-                            square
-                            padding="xs"
-                            color="negative"
-                            @click="
-                                () => {
-                                    contactPicked = ContactStore.getSchema();
-                                    OrderStore.search.contactId = '';
-                                    OrderStore.get(1);
-                                }
-                            "
-                        >
-                            <q-icon name="close"></q-icon>
-                        </q-btn>
+                        <div>
+                            <q-btn class="q-px-sm" flat square color="negative" style="margin-left: -6px" @click="contactDialog = true">
+                                {{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
+                            </q-btn>
+                            <q-btn
+                                v-if="contactPicked._id"
+                                flat
+                                square
+                                padding="xs"
+                                color="negative"
+                                @click="
+                                    () => {
+                                        contactPicked = ContactStore.getSchema();
+                                        OrderStore.search.contactId = '';
+                                        OrderStore.get(1);
+                                    }
+                                "
+                            >
+                                <q-icon name="close"></q-icon>
+                            </q-btn>
+                        </div>
                     </q-th>
                     <q-th
-                        class="text-right cursor-pointer"
+                        key="amount"
+                        :props="props"
+                        class="text-right relative cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
-                        style="position: relative"
                         @click="OrderStore.sort('amount')"
                     >
-                        <span>订单金额</span>
-                        <q-icon class="text-body2 q-ml-xs" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        <div class="row items-center no-wrap">
+                            <q-space></q-space>
+                            <q-icon v-if="OrderStore.sortKey === 'amount'" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                            <q-space></q-space>
+                            <div>
+                                <div>{{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
+
+                                <span>{{ "单据金额" }}</span>
+                            </div>
+                        </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrder"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
                         @click="OrderStore.sort('amountBookOfOrder')"
                     >
-                        <span>{{ "已收款" }}</span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        <div class="row items-center no-wrap text-grey">
+                            <q-space></q-space>
+                            <q-icon
+                                v-if="OrderStore.sortKey === 'amountBookOfOrder'"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
+                            <q-space></q-space>
+                            <div>
+                                <div>{{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
+
+                                <span>{{ "已收款" }}</span>
+                            </div>
+                        </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrderRest"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
                         @click="OrderStore.sort('amountBookOfOrderRest')"
                     >
-                        <span>{{ "还应收款" }}</span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        <div class="row items-center no-wrap">
+                            <q-space></q-space>
+                            <q-icon
+                                v-if="OrderStore.sortKey === 'amountBookOfOrderRest'"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
+                            <q-space></q-space>
+                            <div>
+                                <div>{{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
+
+                                <span>{{ "还应收款" }}</span>
+                            </div>
+                        </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrderVAT"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
                         @click="OrderStore.sort('amountBookOfOrderVAT')"
                     >
-                        <span>{{ "已开发票" }}</span>
-                        <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
+                        <div class="row items-center no-wrap">
+                            <q-space></q-space>
+                            <q-icon
+                                v-if="OrderStore.sortKey === 'amountBookOfOrderVAT'"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
+                            <q-space></q-space>
+                            <div class="q-pr-sm">
+                                <div>{{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
+                                <span>{{ "已开发票" }}</span>
+                            </div>
+                        </div>
                     </q-th>
-                    <q-th class="text-left">事件</q-th>
-                    <q-th class="text-left">操作</q-th>
-                    <q-th class="text-left">
+                    <q-th class="text-left" key="event" :props="props">事件</q-th>
+                    <q-th class="text-left" key="_id" :props="props">操作</q-th>
+                    <q-th class="text-left" key="remark" :props="props">
                         <q-input
                             square
                             filled
@@ -214,8 +270,11 @@
                         }
                     "
                 >
+                    <q-td key="timeContractString" :props="props">
+                        {{ props.row.timeContractString }}
+                    </q-td>
                     <q-td key="timeCreateString" :props="props">
-                        <span>{{ props.row.timeCreateString }}</span>
+                        {{ props.row.timeCreateString }}
                     </q-td>
                     <q-td key="code" :props="props">
                         <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm"> </q-badge>
@@ -346,7 +405,9 @@
                                             <div class="q-mb-sm"></div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">开单时间</span>
-                                                <span class="col-9 text-grey text-right text-weight-bold">{{ props.row.timeCreateString }}</span>
+                                                <span class="col-9 text-grey text-right text-weight-bold">
+                                                    {{ props.row.timeCreateString }}
+                                                </span>
                                             </div>
                                             <div class="row text-body1">
                                                 <span class="col-3 text-grey">开单人</span>
@@ -567,31 +628,6 @@
                             </div>
                         </div>
                     </q-td>
-                </q-tr>
-            </template>
-
-            <template v-slot:bottom-row="props">
-                <q-tr class="bg-grey-4">
-                    <q-td></q-td>
-                    <q-td></q-td>
-                    <q-td class="text-right">
-                        <span class="text-body1 text-bold text-negative">合计：</span>
-                    </q-td>
-                    <q-td class="text-right" :style="NotifyStore.fontStyle">
-                        {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-                    </q-td>
-                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
-                        {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-                    </q-td>
-                    <q-td class="text-right text-bold" :style="NotifyStore.fontStyle">
-                        {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-                    </q-td>
-                    <q-td class="text-right text-grey" :style="NotifyStore.fontStyle">
-                        {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-                    </q-td>
-                    <q-td></q-td>
-                    <q-td></q-td>
-                    <q-td></q-td>
                 </q-tr>
             </template>
 
@@ -910,6 +946,7 @@ import listSku from "@/components/list-sku.vue";
 import dialogIntro from "@/components/dialog-intro.vue";
 import listContact from "@/components/list-contact.vue";
 import pickerRange from "@/components/picker-range.vue";
+import plateOrder from "@/components/plate-order.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useUserStore } from "@/stores/user/user";
 import { useCorpStore } from "@/stores/brand/corp";
@@ -925,6 +962,7 @@ const ClueStore = useClueStore();
 const WarehouseStore = useWarehouseStore();
 const AmountTooltip = ref(true);
 
+const columnsVisiable = computed(() => OrderStore.columnsVisiable);
 const OrderStore = useOrderStore();
 const orderDialog = ref(false);
 const downloadOrderList = async () => {

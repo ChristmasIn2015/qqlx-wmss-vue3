@@ -60,6 +60,61 @@ function getSchema(): Order {
     };
 }
 
+const columns = [
+    { name: "timeContractString", field: "timeContractString", label: "合同时间", align: "left", style: NotifyStore.cellStyle },
+    { name: "timeCreateString", field: "timeCreateString", label: "创建时间", align: "left", style: NotifyStore.cellStyle },
+    { name: "code", field: "code", label: "批次", align: "left", style: NotifyStore.cellStyle },
+    { name: "contactId", field: "contactId", label: "客户/供应商", align: "left", style: NotifyStore.cellStyle },
+    { name: "amount", field: "amount", label: "单据金额", style: NotifyStore.fontStyle + ";width: 155px;" },
+    { name: "amountBookOfOrder", field: "amountBookOfOrder", label: "货款", style: NotifyStore.fontStyle + ";width: 155px;" },
+    {
+        name: "amountBookOfOrderRest",
+        field: "amountBookOfOrderRest",
+        label: "剩余货款",
+        align: "left",
+        style: NotifyStore.fontStyle + ";width: 155px;",
+    },
+    { name: "amountBookOfOrderVAT", field: "amountBookOfOrderVAT", label: "发票", style: NotifyStore.fontStyle + ";width: 155px;" },
+    { name: "event", field: "event", label: "事件", align: "left" },
+    { name: "_id", field: "_id", label: "操作", align: "left" },
+    { name: "remark", field: "remark", label: "备注", align: "left", style: NotifyStore.cellStyle },
+];
+function getColumnsVisable() {
+    const columns_local: string[] = [];
+    const cache_key = "qqlx-order-columns";
+    const cache = localStorage.getItem(cache_key);
+
+    if (!cache) {
+        const caches = [
+            "timeContractString",
+            "timeCreateString",
+            "code",
+            "contactId",
+            "amount",
+            "amountBookOfOrder",
+            "amountBookOfOrderRest",
+            "amountBookOfOrderVAT",
+            "event",
+            "_id",
+            "remark",
+        ].join(";");
+        localStorage.setItem(cache_key, caches.toString());
+    }
+
+    localStorage
+        .getItem(cache_key)
+        ?.toString()
+        .split(";")
+        .map((column_name) => {
+            const isMatch = columns.find((e) => e.name === column_name);
+            if (isMatch) columns_local.push(column_name);
+        });
+
+    console.log(columns_local);
+    return columns_local;
+}
+getColumnsVisable();
+
 export const useOrderStore = defineStore("Order", {
     state: () => ({
         search: getSchema() as Order,
@@ -102,6 +157,9 @@ export const useOrderStore = defineStore("Order", {
         columnKeyCodeShow: false,
         columnKeyWarehouseShow: false,
         columnKeyHouseShow: false,
+
+        columns: columns,
+        columnsVisiable: getColumnsVisable(),
     }),
     actions: {
         /** @viewcatch */
@@ -257,6 +315,11 @@ export const useOrderStore = defineStore("Order", {
             this.requireAccounterId = false;
             this.sortKey = "timeCreate";
             this.sortValue = MongodbSort.DES;
+        },
+
+        /** local */
+        setColumnsVisable() {
+            localStorage.setItem("qqlx-order-columns", this.columnsVisiable.join(";"));
         },
     },
 });
