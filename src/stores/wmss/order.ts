@@ -110,7 +110,6 @@ function getColumnsVisable() {
             if (isMatch) columns_local.push(column_name);
         });
 
-    console.log(columns_local);
     return columns_local;
 }
 getColumnsVisable();

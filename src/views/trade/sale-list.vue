@@ -162,15 +162,14 @@
                         :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
                         @click="OrderStore.sort('amount')"
                     >
-                        <div class="row items-center no-wrap">
+                        <div class="row items-center no-wrap text-body2">
                             <q-space></q-space>
-                            <q-icon v-if="OrderStore.sortKey === 'amount'" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
-                            <q-space></q-space>
-                            <div>
-                                <div>{{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
-                                <span>{{ "单据金额" }}</span>
-                            </div>
+                            <div>{{ "单据金额" }}</div>
+                            <q-icon
+                                class="q-ml-sm"
+                                v-if="OrderStore.sortKey === 'amount'"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
                         </div>
                     </q-th>
                     <q-th
@@ -180,18 +179,14 @@
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
                         @click="OrderStore.sort('amountBookOfOrder')"
                     >
-                        <div class="row items-center no-wrap text-grey">
+                        <div class="row items-center no-wrap text-grey text-body2">
                             <q-space></q-space>
+                            <div>{{ "已收款" }}</div>
                             <q-icon
+                                class="q-ml-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrder'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div>
-                                <div>{{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
-                                <span>{{ "已收款" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th
@@ -201,18 +196,14 @@
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
                         @click="OrderStore.sort('amountBookOfOrderRest')"
                     >
-                        <div class="row items-center no-wrap">
+                        <div class="row items-center no-wrap text-body2">
                             <q-space></q-space>
+                            <div>{{ "还应收款" }}</div>
                             <q-icon
+                                class="q-ml-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrderRest'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div>
-                                <div>{{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
-                                <span>{{ "还应收款" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th
@@ -222,17 +213,14 @@
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
                         @click="OrderStore.sort('amountBookOfOrderVAT')"
                     >
-                        <div class="row items-center no-wrap">
+                        <div class="row items-center no-wrap text-body2">
                             <q-space></q-space>
+                            <div>{{ "已开发票" }}</div>
                             <q-icon
+                                class="q-pl-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrderVAT'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div class="q-pr-sm">
-                                <div>{{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-                                <span>{{ "已开发票" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th class="text-left" key="event" :props="props">事件</q-th>
@@ -529,7 +517,7 @@
                                                         class="shadow-2 q-mr-sm"
                                                     >
                                                     </q-badge
-                                                    >开出发票
+                                                    >已开出发票：
                                                 </div>
                                                 <div
                                                     class="row q-mt-xs"
@@ -646,6 +634,50 @@
                 />
                 <q-space></q-space>
                 <span>共 {{ OrderStore.total }} 项</span>
+            </template>
+
+            <template v-slot:bottom-row="props">
+                <q-tr class="bg-grey-11">
+                    <q-td v-for="column in props.cols" class="text-right">
+                        <div v-if="column.name === 'amount'" class="text-body1 q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-negative">
+                                <span>合计：</span>
+                                <q-space></q-space>
+                                <span>金额</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrder'" class="text-body1 text-grey q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>已收</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrderRest'" class="text-body1 q-py-sm">
+                            <div class="text-weight-bold">
+                                {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>应收</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrderVAT'" class="text-body1 text-grey q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>发票</span>
+                            </div>
+                        </div>
+                    </q-td>
+                </q-tr>
             </template>
         </q-table>
 
@@ -961,6 +993,10 @@ const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
 const WarehouseStore = useWarehouseStore();
 const AmountTooltip = ref(true);
+
+const test = (v) => {
+    console.log(v);
+};
 
 const columnsVisiable = computed(() => OrderStore.columnsVisiable);
 const OrderStore = useOrderStore();

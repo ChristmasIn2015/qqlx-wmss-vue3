@@ -1,7 +1,7 @@
 <template>
     <div class="full-height color-back-main row justify-center items-center">
         <div class="text-white column q-mr-xl q-pt-xs" style="max-width: 600px; height: 430px">
-            <div class="text-h2 text-weight-bold">欢迎使用，钢材办公室</div>
+            <div class="text-h2 text-weight-bold">欢迎使用，黑石（钢材）销售系统</div>
             <div class="q-pt-sm"></div>
             <div class="text-h5">QingQuan Warehouse Management System</div>
 

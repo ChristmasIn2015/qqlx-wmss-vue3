@@ -85,7 +85,7 @@ export const useCorpStore = defineStore("Corp", {
             try {
                 if (!corp) return;
                 this.picked = cloneDeep(corp);
-                document.title = this.picked.name;
+                document.title = this.picked.name + " @黑石（钢材）销售系统";
                 localStorage.setItem("qqlx-corp-id", this.picked._id);
                 NotifyStore.success(`正在使用 @${this.picked.name}`);
 

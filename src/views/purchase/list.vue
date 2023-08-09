@@ -156,13 +156,15 @@
                     <q-th class="text-right cursor-pointer" :class="{ 'text-negative': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
                         <div class="row items-center no-wrap">
                             <q-space></q-space>
-                            <q-icon v-if="OrderStore.sortKey === 'amount'" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                             <q-space></q-space>
                             <div>
-                                <div>{{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
                                 <span>{{ "单据金额" }}</span>
                             </div>
+                            <q-icon
+                                class="q-ml-sm"
+                                v-if="OrderStore.sortKey === 'amount'"
+                                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
+                            ></q-icon>
                         </div>
                     </q-th>
                     <q-th
@@ -172,16 +174,15 @@
                     >
                         <div class="row items-center no-wrap text-grey relative">
                             <q-space></q-space>
+                            <q-space></q-space>
+                            <div>
+                                <span>{{ "已付款" }}</span>
+                            </div>
                             <q-icon
+                                class="q-ml-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrder'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div>
-                                <div>{{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
-                                <span>{{ "已付款" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th
@@ -191,16 +192,15 @@
                     >
                         <div class="row items-center no-wrap">
                             <q-space></q-space>
+                            <q-space></q-space>
+                            <div>
+                                <span>{{ "还应付款" }}</span>
+                            </div>
                             <q-icon
+                                class="q-ml-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrderRest'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div>
-                                <div>{{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-
-                                <span>{{ "还应付款" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th
@@ -210,15 +210,14 @@
                     >
                         <div class="row items-center no-wrap">
                             <q-space></q-space>
+                            <div>
+                                <span>{{ "已收发票" }}</span>
+                            </div>
                             <q-icon
+                                class="q-ml-sm"
                                 v-if="OrderStore.sortKey === 'amountBookOfOrderVAT'"
                                 :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
                             ></q-icon>
-                            <q-space></q-space>
-                            <div class="q-pr-sm">
-                                <div>{{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}</div>
-                                <span>{{ "已收发票" }}</span>
-                            </div>
                         </div>
                     </q-th>
                     <q-th class="text-left">事件</q-th>
@@ -609,6 +608,50 @@
                 />
                 <q-space></q-space>
                 <span>共 {{ OrderStore.total }} 项</span>
+            </template>
+
+            <template v-slot:bottom-row="props">
+                <q-tr class="bg-grey-11">
+                    <q-td v-for="column in props.cols" class="text-right">
+                        <div v-if="column.name === 'amount'" class="text-body1 q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-negative">
+                                <span>合计：</span>
+                                <q-space></q-space>
+                                <span>金额</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrder'" class="text-body1 text-grey q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>已付</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrderRest'" class="text-body1 q-py-sm">
+                            <div class="text-weight-bold">
+                                {{ OrderStore.group.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>应付</span>
+                            </div>
+                        </div>
+                        <div v-if="column.name === 'amountBookOfOrderVAT'" class="text-body1 text-grey q-py-sm">
+                            <div>
+                                {{ OrderStore.group.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                            </div>
+                            <div class="row text-">
+                                <q-space></q-space>
+                                <span>发票</span>
+                            </div>
+                        </div>
+                    </q-td>
+                </q-tr>
             </template>
         </q-table>
 

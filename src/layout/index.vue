@@ -2,7 +2,12 @@
     <q-layout container view="lHh Lpr lff">
         <q-drawer side="left" :width="180" show-if-above class="select-none hide-scrollbar shadow-15">
             <div class="text-weight-bold text-h5 q-pl-md q-py-md text-primary cursor-pointer" @click="goHome()">
-                <div>钢材办公室</div>
+                <div>
+                    <span style="position: relative; margin-left: -2px" class="q-pr-md q-pt-xs">
+                        黑石系统
+                        <!-- <q-badge floating color="negative">销售</q-badge> -->
+                    </span>
+                </div>
                 <div class="text-caption">钢材行业专用@{{ version }}</div>
             </div>
 
@@ -73,8 +78,16 @@
                 </div>
 
                 <!-- 主页面 -->
-                <div class="q-px-lg q-py-xl">
+                <div class="q-px-lg q-pt-xl">
                     <router-view />
+                </div>
+
+                <div class="q-px-lg q-pt-xl q-pb-xl text-grey text-center row justify-center items-center">
+                    <div class="bg-primary"></div>
+                    <div class="text-center">
+                        <div class="text-bold q-pb-xs">黑石（钢材）销售系统</div>
+                        <div>清泉流响 · 软件信息有限责任公司</div>
+                    </div>
                 </div>
             </q-page>
         </q-page-container>

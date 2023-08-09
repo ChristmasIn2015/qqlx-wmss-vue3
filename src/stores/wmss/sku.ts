@@ -221,7 +221,6 @@ export const useSkuStore = defineStore("Sku", {
             else return { text: "异常", color: "grey" };
         },
         setSkuPounds(sku: SkuJoined) {
-            console.log(sku.formula);
             sku.pounds = this.getNormPounds(sku.norm, sku.count, sku.formula);
         },
         getNormPounds(norm: string, count: number, formula: ENUM_POUNDS_FORMULA): number {
