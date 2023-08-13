@@ -421,7 +421,9 @@ const match = {
 };
 onMounted(() => {
     BookStore.setEditor(BookStore.getSchema(match));
-    BookStore.search = BookStore.getSchema(match);
+    BookStore.search.type = match.type;
+    BookStore.search.direction = match.direction;
+    console.log(123);
     BookStore.page.pageSize = 20;
     BookStore.listExcel = [];
 

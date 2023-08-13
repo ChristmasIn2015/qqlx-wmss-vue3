@@ -865,7 +865,11 @@ onMounted(() => {
     SkuStore.setEditor();
     // 清空清单
     OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.PURCHASE));
-    OrderStore.search.contactId = "";
+    // OrderStore.search.contactId = "";
+    if (OrderStore.search.contactId) {
+        contactPicked.value._id = OrderStore.search.contactId || "";
+        contactPicked.value.name = "已选择";
+    }
     OrderStore.page = getPage(20);
     // 根据路由进行搜索
     const { code } = route.query;
