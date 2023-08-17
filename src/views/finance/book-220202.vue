@@ -410,7 +410,7 @@ const filePickNext = async (file: File) => {
                 const schema = BookStore.getSchema({ type: BookStore.search.type, direction: BookStore.search.direction });
                 schema.keyHouse = String(row["@抬头"] || "");
                 schema.keyCode = String(row["@发票号码"] || "");
-                schema.keyOrigin = String(row["@供应商名称"] || "");
+                schema.keyOrigin = String(row["@客户名称"] || "");
                 schema.amount = Number(row["@金额"] || 0) || 0;
                 schema.remark = String(row["@备注"] || "");
 

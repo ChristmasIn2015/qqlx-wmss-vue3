@@ -70,6 +70,8 @@ const router = useRouter();
 const putOrder = async () => {
     OrderStore.editor.contactId = contactPicked.value._id;
     const code = await OrderStore.put(OrderStore.editor, SkuStore.listPicked);
+
+    OrderStore.search.contactId = contactPicked.value._id;
     router.push(`/wmss/trade/sale-list?code=${code}`);
 };
 
