@@ -23,13 +23,12 @@
                 <q-icon name="filter_alt"></q-icon>
                 <q-menu>
                     <q-card class="column q-pr-lg q-pl-sm q-py-sm">
-                        <q-toggle disable v-model="isNotTax" label="仅查看含税的订单" @update:model-value="() => render()" />
-                        <q-toggle v-model="requireAccounterId" label="仅查看未结清的订单" @update:model-value="() => render()" />
+                        <q-toggle :disable="isInvoice" v-model="isNotTax" label="去掉不含税的订单" @update:model-value="() => render()" />
+                        <q-toggle v-model="requireAccounterId" label="去掉结清的订单" @update:model-value="() => render()" />
                         <q-separator class="q-mt-md q-mb-md"></q-separator>
                         <div class="text-grey">
-                            您正在查看所有
-                            <q-badge class="q-mx-xs" v-if="requireAccounterId">未结清</q-badge>
-                            <q-badge class="q-mx-xs" v-if="isNotTax">含税</q-badge>的订单
+                            <div v-if="requireAccounterId">当前您无法选择<q-badge class="q-mx-xs">未结清</q-badge>的订单</div>
+                            <div v-if="isNotTax">当前您无法选择<q-badge class="q-mx-xs">不含税</q-badge>的订单</div>
                         </div>
                     </q-card>
                 </q-menu>
