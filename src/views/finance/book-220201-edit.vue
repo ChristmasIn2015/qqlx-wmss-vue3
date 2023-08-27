@@ -19,7 +19,7 @@
                 class="full-height"
                 :columns="[
                     { name: 'code', field: 'code', label: '订单信息', align: 'left' },
-                    { name: 'contactId', field: 'contactId', label: '客户', align: 'left' },
+                    { name: 'contactId', field: 'contactId', label: '供应商', align: 'left' },
                     { name: 'amount', field: 'amount', label: '订单金额' },
                     { name: 'amountBookOfOrder', field: 'amountBookOfOrder', label: '付款确认' },
                     { name: 'remark', field: 'remark', label: '订单备注', align: 'left' },
@@ -54,7 +54,7 @@
                                 input-class="text-body1 text-right"
                                 placeholder="请输入金额"
                                 v-model="props.row.amountBookOfOrder"
-                                color="pink-6"
+                                color="blue"
                             >
                                 <template v-slot:append>
                                     <span class="text-body1">元</span>
@@ -79,42 +79,65 @@
                         <div class="col-8 text-right text-">{{ BookStore.editor.code }}</div>
                     </div>
                     <div class="row">
-                        <div class="col">银行</div>
-                        <div class="col-8 text-right text-">{{ BookStore.editor.keyHouse }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col">金额</div>
-                        <div class="col-8 text-right text-">
-                            {{ BookStore.editor.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">时间</div>
-                        <div class="col-8 text-right text-">{{ BookStore.editor.timeCreateString }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col">付款人</div>
+                        <div class="col">收款单位</div>
                         <div class="col-8 text-right text-teal text-bold">{{ BookStore.editor.keyOrigin }}</div>
                     </div>
                 </q-card-section>
                 <q-separator></q-separator>
                 <q-card-section class="text-grey text-body1">
                     <div class="row">
+                        <div class="col">付款时间</div>
+                        <div class="col-8 text-right text-">{{ BookStore.editor.timeCreateString }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">付款主体</div>
+                        <div class="col-8 text-right text-">-</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">付款银行</div>
+                        <div class="col-8 text-right text-">{{ BookStore.editor.keyHouse }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">付款金额</div>
+                        <div class="col-8 text-right text-">
+                            {{ BookStore.editor.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">备注</div>
+                        <div class="col-8 text-right text-">
+                            {{ BookStore.editor.remark }}
+                        </div>
+                    </div>
+
+                    <div class="q-mt-sm">财务负责人已经打出采购货款，到供应商的指定银行账户。至此，我们需要您确认这笔货款，是用于哪些采购单据的商品交易。</div>
+                </q-card-section>
+                <q-separator></q-separator>
+                <q-card-section class="text-grey text-body1">
+                    <div class="row">
                         <div class="col">
                             <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
-                            正在确认
+                            确认单据
+                        </div>
+                        <div class="col-8 text-right text-body1">{{ OrderStore.listPicked.length }} 张</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <q-badge class="q-mr-xs shadow-2" color="teal" rounded></q-badge>
+                            确认金额
                         </div>
                         <div class="col-8 text-right text-body1">
-                            <span>{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }} </span>
+                            <span class="text-blue text-bold">{{ nowAmount.toLocaleString("zh", { minimumFractionDigits: 2 }) }} </span>
                             /
-                            <span class="text-teal text-bold">
+                            <span class="">
                                 {{ BookStore.editor.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                             </span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">确认率</div>
-                        <div class="col-8 text-right text-body1 text-">{{ ((nowAmount * 100) / BookStore.editor.amount).toFixed(2) }}%</div>
+                    <div class="text-center q-mt-md">
+                        <q-circular-progress show-value :min="0" :max="100" :value="nowAmountProgress" size="100px" color="teal" track-color="grey-3">
+                            {{ nowAmountProgress }}%
+                        </q-circular-progress>
                     </div>
                 </q-card-section>
                 <q-space></q-space>
@@ -163,6 +186,10 @@ const put = async () => {
 const nowAmount = computed(() => {
     let amount = 0;
     OrderStore.listPicked.map((e) => (amount += Number(e.amountBookOfOrder)));
-    return Number(parseInt((amount * 100).toString()) / 100);
+    return amount;
+});
+const nowAmountProgress = computed(() => {
+    const origin = (nowAmount.value * 100) / BookStore.editor.amount;
+    return Math.ceil(origin * 100) / 100;
 });
 </script>
