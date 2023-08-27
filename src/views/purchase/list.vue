@@ -153,7 +153,13 @@
                             <q-icon name="close"></q-icon>
                         </q-btn>
                     </q-th>
-                    <q-th class="text-right cursor-pointer" :class="{ 'text-negative': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
+                    <q-th
+                        key="amount"
+                        :props="props"
+                        class="text-right cursor-pointer"
+                        :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
+                        @click="OrderStore.sort('amount')"
+                    >
                         <div class="row items-center no-wrap">
                             <q-space></q-space>
                             <q-space></q-space>
@@ -168,6 +174,8 @@
                         </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrder"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
                         @click="OrderStore.sort('amountBookOfOrder')"
@@ -186,6 +194,8 @@
                         </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrderRest"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
                         @click="OrderStore.sort('amountBookOfOrderRest')"
@@ -204,6 +214,8 @@
                         </div>
                     </q-th>
                     <q-th
+                        key="amountBookOfOrderVAT"
+                        :props="props"
                         class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
                         @click="OrderStore.sort('amountBookOfOrderVAT')"
@@ -220,9 +232,9 @@
                             ></q-icon>
                         </div>
                     </q-th>
-                    <q-th class="text-left">事件</q-th>
-                    <q-th class="text-left">操作</q-th>
-                    <q-th class="text-left">
+                    <q-th key="event" :props="props" class="text-left">事件</q-th>
+                    <q-th key="_id" :props="props" class="text-left">操作</q-th>
+                    <q-th key="remark" :props="props" class="text-left">
                         <q-input
                             square
                             filled
