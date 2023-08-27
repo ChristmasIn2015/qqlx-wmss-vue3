@@ -4,9 +4,6 @@
             <div class="text-h5 text-primary text-weight-bold row items-center">
                 <span>{{ MAP_ENUM_ORDER.get(vue_props.type)?.text }}</span>
             </div>
-            <div class="text-option text-grey row">
-                <span>仅为您展示 1.含税 2.未结清 的订单</span>
-            </div>
         </div>
 
         <div class="col row items-end">
@@ -22,6 +19,21 @@
                     }
                 "
             />
+            <q-btn square class="q-px-sm bg-white q-ml-sm">
+                <q-icon name="filter_alt"></q-icon>
+                <q-menu>
+                    <q-card class="column q-pr-lg q-pl-sm q-py-sm">
+                        <q-toggle disable v-model="isNotTax" label="仅查看含税的订单" @update:model-value="() => render()" />
+                        <q-toggle v-model="requireAccounterId" label="仅查看未结清的订单" @update:model-value="() => render()" />
+                        <q-separator class="q-mt-md q-mb-md"></q-separator>
+                        <div class="text-grey">
+                            您正在查看所有
+                            <q-badge class="q-mx-xs" v-if="requireAccounterId">未结清</q-badge>
+                            <q-badge class="q-mx-xs" v-if="isNotTax">含税</q-badge>的订单
+                        </div>
+                    </q-card>
+                </q-menu>
+            </q-btn>
         </div>
     </div>
 
@@ -179,8 +191,10 @@
                         <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
                     </q-td>
                     <q-td key="_id" :props="props">
+                        <span v-if="props.row.accounterId" class="text-grey">已结清</span>
+                        <span v-else-if="props.row.isNotTax" class="text-grey">-</span>
                         <span
-                            v-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
+                            v-else-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
                             class="cursor-pointer text-body1 text-bold text-negative"
                             @click="pick(props.row)"
                         >
@@ -271,6 +285,9 @@ const searchContact = (val: any, update: Function) => {
     });
 };
 
+const isNotTax = ref(true);
+const requireAccounterId = ref(true);
+
 const OrderStore = useOrderStore();
 const BookStore = useBookStore();
 const pick = (order: Order) => {
@@ -319,20 +336,32 @@ const vue_props = defineProps({
         default: false,
     },
 });
-onMounted(async () => {
+const render = async () => {
     const edit = BookStore.editor;
     if (!edit._id) router.replace("/wmss/finance/book");
 
     OrderStore.setEditor(OrderStore.getSchema(vue_props.type));
     OrderStore.page = getPage(8);
-    OrderStore.search.isNotTax = true;
-    OrderStore.search.contactId = "";
-    OrderStore.requireAccounterId = true;
+    OrderStore.search.isNotTax = isNotTax.value;
+    OrderStore.requireAccounterId = requireAccounterId.value;
     OrderStore.get(1);
 
     if (OrderStore.search.type === ENUM_ORDER.SALES) ContactStore.search.type = ENUM_CONTACT.SALES;
     else if (OrderStore.search.type === ENUM_ORDER.PURCHASE) ContactStore.search.type = ENUM_CONTACT.PURCHASE;
     console.log(OrderStore.search.type, ContactStore.search.type);
+};
+onMounted(async () => {
+    const keyword = String(BookStore.editor.keyOrigin).replace(/上海|浙江|江苏|集团|钢材|材料|金属|物资|供应链|商贸|贸易|实业|有限|公司/g, "");
+    const info = await ContactStore.get10(keyword);
+    if (info.total <= 2 && info.total > 0) {
+        const result = info?.list[0];
+        contactPicked.value = cloneDeep(result);
+        OrderStore.search.contactId = result?._id || "";
+    } else {
+        OrderStore.search.contactId = "";
+    }
+
+    render();
 });
 </script>
 

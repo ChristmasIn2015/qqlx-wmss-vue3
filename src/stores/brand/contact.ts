@@ -62,9 +62,9 @@ export const useContactStore = defineStore("Contact", {
                 this.loadding = false;
             }
         },
-        async get10() {
+        async get10(name?: string) {
             const schema = this.getSchema();
-            schema.name = this.search.name;
+            schema.name = name || this.search.name;
             //@ts-ignore
             schema.type = null;
 
