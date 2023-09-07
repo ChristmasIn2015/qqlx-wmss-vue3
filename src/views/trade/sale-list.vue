@@ -1060,6 +1060,7 @@ const setOrderInfo = async (order: OrderJoined) => {
         order.joinManager = info.joinManager;
         order.joinChildOrder = info.joinChildOrder;
         order.joinParentOrder = info.joinParentOrder;
+        order.amount = info.amount;
     } catch (error) {
         NotifyStore.fail(`网络异常, 请重新试试`);
     } finally {
