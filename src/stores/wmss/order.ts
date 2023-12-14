@@ -32,7 +32,7 @@ const NotifyStore = useNotifyStore();
 const AnalysisStore = useAnalysisStore();
 const SkuStore = useSkuStore();
 
-function getSchema(): Order {
+function getSchema (): Order {
     return {
         corpId: "",
 
@@ -79,7 +79,7 @@ const columns = [
     { name: "_id", field: "_id", label: "操作", align: "left" },
     { name: "remark", field: "remark", label: "备注", align: "left", style: NotifyStore.cellStyle },
 ];
-function getColumnsVisable() {
+function getColumnsVisable () {
     const columns_local: string[] = [];
     const cache_key = "qqlx-order-columns";
     const cache = localStorage.getItem(cache_key);
@@ -162,7 +162,7 @@ export const useOrderStore = defineStore("Order", {
     }),
     actions: {
         /** @viewcatch */
-        async get(page?: number) {
+        async get (page?: number) {
             try {
                 if (page && page > 0) this.page.page = page;
                 this.loadding = true;
@@ -191,7 +191,7 @@ export const useOrderStore = defineStore("Order", {
                 this.loadding = false;
             }
         },
-        async getOrderGroup(dto: getOrderGroupDto) {
+        async getOrderGroup (dto: getOrderGroupDto) {
             try {
                 const group: getOrderGroupRes = await request.get(PATH_ORDER + "/group", { dto });
                 this.group = group;
@@ -205,11 +205,11 @@ export const useOrderStore = defineStore("Order", {
                 };
             }
         },
-        async geOrderWidthSku(): Promise<OrderJoined[]> {
+        async geOrderWidthSku (): Promise<OrderJoined[]> {
             const page = cloneDeep(this.page);
             page.page = 1;
             page.pageSize = this.total;
-            if (page.endTime - page.startTime > 86400000 * 90) throw new Error(`最多选择90天`);
+            if (page.endTime - page.startTime > 86400000 * 400) throw new Error(`最多选择400天`);
 
             this.loadding = true;
             const dto: getOrderDto = {
@@ -224,7 +224,7 @@ export const useOrderStore = defineStore("Order", {
             const res: getOrderRes = await request.get(PATH_ORDER, { dto });
             return res.list;
         },
-        sort(sortKey: string, joinSku: boolean = false) {
+        sort (sortKey: string, joinSku: boolean = false) {
             if (sortKey) {
                 this.sortKey = sortKey;
             } else {
@@ -234,7 +234,7 @@ export const useOrderStore = defineStore("Order", {
             this.get(1, joinSku); // async
         },
         /** @viewcatch */
-        async post(skuList?: Sku[]): Promise<{ _id: string; code: string }> {
+        async post (skuList?: Sku[]): Promise<{ _id: string; code: string }> {
             const info = {
                 _id: "",
                 code: "",
@@ -260,7 +260,7 @@ export const useOrderStore = defineStore("Order", {
             }
         },
         /** @viewcatch */
-        async put(entity?: OrderJoined, skuList?: Sku[]) {
+        async put (entity?: OrderJoined, skuList?: Sku[]) {
             let code = "";
             try {
                 this.loadding = true;
@@ -279,7 +279,7 @@ export const useOrderStore = defineStore("Order", {
             }
         },
         /** @viewcatch */
-        async delete(orderId: string) {
+        async delete (orderId: string) {
             try {
                 this.loadding = true;
                 const dto: deleteOrderDto = { orderId };
@@ -293,17 +293,17 @@ export const useOrderStore = defineStore("Order", {
                 this.loadding = false;
             }
         },
-        async getSku(order: Order) {
+        async getSku (order: Order) {
             const dto: getOrderInfoDto = { orderId: order._id };
             const res: getOrderInfoRes = await request.get(PATH_ORDER + "/info", { dto });
             return res;
         },
-        getSchema(type: ENUM_ORDER = ENUM_ORDER.NONE) {
+        getSchema (type: ENUM_ORDER = ENUM_ORDER.NONE) {
             const schema: Order = getSchema();
             schema.type = type;
             return schema;
         },
-        setEditor(entity?: Order) {
+        setEditor (entity?: Order) {
             const schema = entity ? cloneDeep(entity) : this.getSchema();
             this.editor = schema;
             this.search.type = schema.type;
@@ -317,7 +317,7 @@ export const useOrderStore = defineStore("Order", {
         },
 
         /** local */
-        setColumnsVisable() {
+        setColumnsVisable () {
             localStorage.setItem("qqlx-order-columns", this.columnsVisiable.join(";"));
         },
     },
