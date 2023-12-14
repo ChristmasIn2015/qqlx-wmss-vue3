@@ -209,20 +209,42 @@ export const useOrderStore = defineStore("Order", {
             const page = cloneDeep(this.page);
             page.page = 1;
             page.pageSize = this.total;
-            if (page.endTime - page.startTime > 86400000 * 400) throw new Error(`最多选择400天`);
+
+            const list = []
+            const MAX = 86400000 * 10
+            const count = parseInt(String((page.endTime - page.startTime) / MAX))
+            Array(count).fill(null).map((_, index) => list.push({
+                startTime: page.endTime - (1 + index) * MAX,
+                endTime: page.endTime - index * MAX
+            }))
+            list.push({
+                startTime: page.startTime,
+                endTime: page.endTime - count * MAX
+            })
 
             this.loadding = true;
-            const dto: getOrderDto = {
-                page: page,
-                search: this.search,
-                requireManagerId: this.requireManagerId,
-                requireAccounterId: this.requireAccounterId,
-                sortKey: this.sortKey,
-                sortValue: this.sortValue,
-                joinSku: true,
-            };
-            const res: getOrderRes = await request.get(PATH_ORDER, { dto });
-            return res.list;
+            const result = []
+            for (const _ of list) {
+                const dto: getOrderDto = {
+                    page: { ...page, ..._ },
+                    search: this.search,
+                    requireManagerId: this.requireManagerId,
+                    requireAccounterId: this.requireAccounterId,
+                    sortKey: this.sortKey,
+                    sortValue: this.sortValue,
+                    joinSku: true,
+                };
+                const res: getOrderRes = await request.get(PATH_ORDER, { dto });
+                result.push(...res.list)
+            }
+            // let _startTime = page.startTime
+            // const endTime = page.endTime
+            // while(endTime - _startTime > gap) {
+            //     list.push({startTime:_startTime, endTime: endTime })
+            // }
+            // if (page.endTime - page.startTime > 86400000 * 400) throw new Error(`最多选择400天`);
+
+            return result;
         },
         sort (sortKey: string, joinSku: boolean = false) {
             if (sortKey) {
