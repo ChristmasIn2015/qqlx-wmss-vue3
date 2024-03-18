@@ -360,7 +360,13 @@
                             :color="props.row.accounterId ? 'standard' : 'teal'"
                             :text-color="props.row.accounterId ? 'grey' : 'white'"
                             @click.stop="setAccounter(props.row)"
-                        />
+                        >
+                            <q-tooltip class="text-body1">
+                                <div>结清意味着您已知晓：</div>
+                                <div>1.此订单已经收到所有款项</div>
+                                <div>2.此订单销售发票已经开出</div>
+                            </q-tooltip>
+                        </q-btn>
                     </q-td>
                     <q-td key="remark" :props="props">
                         <span
@@ -457,25 +463,7 @@
                                     </q-card>
                                     <q-card square class="q-mb-sm">
                                         <q-card-section>
-                                            <div class="text-h6 text-weight-bold">财务信息</div>
-                                            <div class="row text-body1 q-mt-xs">
-                                                <span class="col text-grey">
-                                                    <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
-                                                    >结清确认
-                                                </span>
-                                                <span class="col text-right text-weight-bold"
-                                                    >{{ props.row.joinAccounter?.nickname || "无" }}
-
-                                                    <a
-                                                        v-if="props.row.accounterId"
-                                                        class="cursor-pointer text-negative text-underline"
-                                                        @click.stop="setAccounter(props.row, true)"
-                                                    >
-                                                        取消
-                                                    </a>
-                                                </span>
-                                            </div>
-                                            <div class="text-body1 text-grey q-mt-xs" v-if="props.row.joinBookOfOrder">
+                                            <div class="text-body1 text-grey" v-if="props.row.joinBookOfOrder">
                                                 <div>
                                                     <q-badge
                                                         rounded
@@ -492,6 +480,7 @@
                                                     v-for="BO in props.row.joinBookOfOrder.filter(
                                                     (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK && e.bookDirection === ENUM_BOOK_DIRECTION.DAI
                                                 )"
+                                                    :key="BO._id"
                                                 >
                                                     <span class="col-8 text-grey" style="white-space: break-spaces"
                                                         >{{ BO.joinBook?.keyOrigin || "客户异常" }}
@@ -505,9 +494,25 @@
                                                 </div>
                                             </div>
                                         </q-card-section>
+                                        <q-card-actions>
+                                            <q-btn
+                                                class="q-ml-auto"
+                                                :disabled="!!props.row.accounterId"
+                                                @click="
+                                                    () => {
+                                                        pickQrderQuickBooking(props.row);
+                                                        quickBookModal = true;
+                                                    }
+                                                "
+                                            >
+                                                快速收款
+                                            </q-btn>
+                                        </q-card-actions>
                                         <q-separator />
+                                    </q-card>
+                                    <q-card square class="q-mb-sm">
                                         <q-card-section>
-                                            <div class="text-body1 text-grey q-mt-xs" v-if="props.row.joinBookOfOrder">
+                                            <div class="text-body1 text-grey" v-if="props.row.joinBookOfOrder">
                                                 <div>
                                                     <q-badge
                                                         rounded
@@ -524,6 +529,7 @@
                                                     v-for="BO in props.row.joinBookOfOrder.filter(
                                                     (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK_VAT && e.bookDirection === ENUM_BOOK_DIRECTION.JIE
                                                 )"
+                                                    :key="BO._id"
                                                 >
                                                     <span class="col-8 text-grey" style="white-space: break-spaces"
                                                         >{{ BO.joinBook?.keyOrigin || "客户异常" }}
@@ -535,6 +541,31 @@
                                                         {{ BO.amount.toFixed(2) }} 元
                                                     </span>
                                                 </div>
+                                            </div>
+                                        </q-card-section>
+                                    </q-card>
+                                    <q-card square class="q-mb-sm">
+                                        <q-card-section>
+                                            <div class="text-h6 text-weight-bold">财务审核</div>
+                                            <div class="text-grey q-mb-sm" style="text-wrap: unset; white-space: initial">
+                                                结清：您已确认此订单已经收到所有款项，同时也知晓销售发票已经开出。
+                                            </div>
+                                            <div class="row text-body1 q-mt-xs">
+                                                <span class="col text-grey">
+                                                    <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm"> </q-badge
+                                                    >结清确认
+                                                </span>
+                                                <span class="col text-right text-weight-bold"
+                                                    >{{ props.row.joinAccounter?.nickname || "无" }}
+
+                                                    <a
+                                                        v-if="props.row.accounterId"
+                                                        class="cursor-pointer text-negative text-underline"
+                                                        @click.stop="setAccounter(props.row, true)"
+                                                    >
+                                                        取消
+                                                    </a>
+                                                </span>
                                             </div>
                                         </q-card-section>
                                     </q-card>
@@ -951,7 +982,7 @@
                     @click="
                         async () => {
                             await OrderStore.put();
-                            await OrderStore.get(1);
+                            await OrderStore.get();
                         }
                     "
                 >
@@ -960,12 +991,64 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
+
+    <q-dialog v-model="quickBookModal">
+        <q-card class="w-400">
+            <q-toolbar class="bg-primary text-white">
+                <q-toolbar-title>
+                    <q-badge rounded color="teal" class="shadow-2 q-mr-sm"> </q-badge>
+                    {{ orderQuickBooking.joinContact?.name || "..." }}
+                </q-toolbar-title>
+                <q-btn dense flat icon="close" v-close-popup></q-btn>
+            </q-toolbar>
+
+            <q-list class="q-mt-md">
+                <q-item class="q-py-none">
+                    <q-item-section>
+                        <q-item-label>剩余应收款：{{ orderQuickBooking.amountBookOfOrderRest }}</q-item-label>
+                        <q-item-label caption lines="2">订单金额：{{ orderQuickBooking.amount }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                        <q-item-label
+                            >收款进度：{{
+                                (((orderQuickBooking.amount - orderQuickBooking.amountBookOfOrderRest) / orderQuickBooking.amount) * 100).toFixed(2)
+                            }}%</q-item-label
+                        >
+                    </q-item-section>
+                </q-item>
+            </q-list>
+
+            <q-card-section>
+                <q-input filled label="本次收款金额" v-model="orderQuickBooking.amountBookOfOrderRest" color="primary" class="q-mb-md" />
+            </q-card-section>
+
+            <q-card-actions>
+                <q-space></q-space>
+                <q-btn
+                    color="primary"
+                    :disable="orderQuickBooking.amountBookOfOrderRest <= 1"
+                    @click="
+                        async () => {
+                            await createOrderBookQuick112201();
+                            await OrderStore.get(1);
+                        }
+                    "
+                >
+                    确定
+                </q-btn>
+            </q-card-actions>
+
+            <q-inner-loading :showing="OrderStore.loadding">
+                <q-spinner-gears size="50px" color="primary" />
+            </q-inner-loading>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import { getChineseMoney, getPage, MongodbSort } from "qqlx-cdk";
 import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, nextTick } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { callPrinter } from "call-printer";
 import * as XLSX from "xlsx";
@@ -988,15 +1071,12 @@ import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
 import { useConfigStore } from "@/stores/brand/config";
 import { useClueStore } from "@/stores/wmss/clue";
+import { useBookStore } from "@/stores/wmss/book";
 
 const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
 const WarehouseStore = useWarehouseStore();
 const AmountTooltip = ref(true);
-
-const test = (v) => {
-    console.log(v);
-};
 
 const columnsVisiable = computed(() => OrderStore.columnsVisiable);
 const OrderStore = useOrderStore();
@@ -1161,6 +1241,47 @@ const setTax = async (order: OrderJoined) => {
     await OrderStore.get();
     const target = OrderStore.list.find((e) => e._id === entity._id);
     await setOrderInfo(target as OrderJoined);
+};
+
+// 快速收款
+const BookStore = useBookStore();
+const orderQuickBooking = ref(OrderStore.getSchema() as OrderJoined);
+const quickBookModal = ref(false);
+const pickQrderQuickBooking = (e: OrderJoined) => (orderQuickBooking.value = cloneDeep(e));
+const createOrderBookQuick112201 = async () => {
+    try {
+        BookStore.setEditor(
+            BookStore.getSchema({
+                type: ENUM_BOOK_TYPE.YSZK,
+                direction: ENUM_BOOK_DIRECTION.DAI,
+            })
+        );
+        BookStore.editor = {
+            ...BookStore.editor,
+            ...{
+                amount: orderQuickBooking.value.amountBookOfOrderRest,
+                keyOrigin: orderQuickBooking.value.joinContact?.name || "未知",
+                keyHouse: "待补充",
+                remark: "自动生成",
+            },
+        };
+        const books = await BookStore.post(BookStore.editor);
+        await BookStore.put(books[0], [
+            {
+                ...orderQuickBooking.value,
+                ...{ amount: orderQuickBooking.value.amountBookOfOrderRest },
+            },
+        ]);
+        quickBookModal.value = false;
+
+        await OrderStore.get();
+        setTimeout(async () => {
+            const target = OrderStore.list.find((e) => e._id === orderQuickBooking.value._id);
+            await setOrderInfo(target as OrderJoined);
+        }, 755);
+    } catch (error) {
+        NotifyStore.fail((error as Error).message);
+    }
 };
 
 const route = useRoute();

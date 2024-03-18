@@ -57,6 +57,17 @@
                 label="继续添加"
                 @click="() => BookStore.listExcel.push(BookStore.getSchema())"
             />
+
+            <!-- <q-btn color="white" text-color="black" icon="more_vert" class="q-ml-sm">
+                <q-menu class="text-body1">
+                    <q-item clickable @click="QuickBookModal = true">
+                        <q-item-section>
+                            <div><q-icon name="subject" class="q-mr-xs" size="22px"></q-icon>快速收款</div>
+                        </q-item-section>
+                    </q-item>
+                </q-menu>
+            </q-btn>
+            <dialog-book-quick :dialog="QuickBookModal" @close="QuickBookModal = false"></dialog-book-quick> -->
         </div>
         <div class="text-option text-primary q-my-sm"></div>
     </div>
@@ -337,6 +348,7 @@ import { ENUM_BOOK_TYPE, ENUM_BOOK_DIRECTION, BookJoined, Order, OrderJoined } f
 
 import dialogIntro from "@/components/dialog-intro.vue";
 import pickerRange from "@/components/picker-range.vue";
+import dialogBookQuick from "@/components/dialog-book-quick.vue";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useBookStore } from "@/stores/wmss/book";
 import { useOrderStore } from "@/stores/wmss/order";
@@ -414,6 +426,8 @@ const toEdit = (book: BookJoined) => {
     OrderStore.listPicked = cloneDeep(orders);
     router.push("/wmss/finance/book-112201-edit");
 };
+
+const QuickBookModal = ref(false);
 
 const match = {
     type: ENUM_BOOK_TYPE.YSZK,
