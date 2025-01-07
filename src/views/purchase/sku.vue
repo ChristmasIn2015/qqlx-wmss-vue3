@@ -335,6 +335,7 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useAreaStore } from "@/stores/brand/area";
+import { getPage2 } from "@/lib/time";
 
 const NotifyStore = useNotifyStore();
 const columns = ref([
@@ -376,7 +377,7 @@ const contactPicked = ref(ContactStore.getSchema());
 
 const route = useRoute();
 onMounted(() => {
-    SkuStore.page = getPage(20);
+    SkuStore.page = getPage2(20);
     SkuStore.sortKey = "timeCreate";
     SkuStore.listPicked = [];
     SkuStore.setEditor(ENUM_ORDER.NONE);

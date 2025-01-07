@@ -8,22 +8,18 @@
 
         <div class="col row items-end">
             <q-space></q-space>
-            <picker-range
-                :start-time="OrderStore.page.startTime"
-                :end-time="OrderStore.page.endTime"
-                @change="
-                    ($event) => {
-                        OrderStore.page.startTime = $event.startTime;
-                        OrderStore.page.endTime = $event.endTime;
-                        OrderStore.get(1);
-                    }
-                "
-            />
+            <picker-range :start-time="OrderStore.page.startTime" :end-time="OrderStore.page.endTime" @change="($event) => {
+                    OrderStore.page.startTime = $event.startTime;
+                    OrderStore.page.endTime = $event.endTime;
+                    OrderStore.get(1);
+                }
+                " />
             <q-btn square class="q-px-sm bg-white q-ml-sm">
                 <q-icon name="filter_alt"></q-icon>
                 <q-menu>
                     <q-card class="column q-pr-lg q-pl-sm q-py-sm">
-                        <q-toggle :disable="isInvoice" v-model="isNotTax" label="去掉不含税的订单" @update:model-value="() => render()" />
+                        <q-toggle :disable="isInvoice" v-model="isNotTax" label="去掉不含税的订单"
+                            @update:model-value="() => render()" />
                         <q-toggle v-model="requireAccounterId" label="去掉结清的订单" @update:model-value="() => render()" />
                         <q-separator class="q-mt-md q-mb-md"></q-separator>
                         <div class="text-grey">
@@ -37,13 +33,8 @@
     </div>
 
     <q-card>
-        <q-table
-            dense
-            row-key="_id"
-            style="height: 405px"
-            :rows="OrderStore.list"
-            :rows-per-page-options="[OrderStore.page.pageSize]"
-            :columns="[
+        <q-table dense row-key="_id" style="height: 405px" :rows="OrderStore.list"
+            :rows-per-page-options="[OrderStore.page.pageSize]" :columns="[
                 { name: 'timeCreateString', field: 'timeCreateString', label: '时间', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'code', field: 'code', label: '批次', align: 'left', style: NotifyStore.cellStyle },
                 { name: 'contactId', field: 'contactId', label: '客户名称', align: 'left', style: NotifyStore.cellStyle },
@@ -53,53 +44,31 @@
                 { name: 'event', field: 'event', label: '事件', align: 'left' },
                 { name: '_id', field: '_id', label: '操作', align: 'left' },
                 { name: 'remark', field: 'remark', label: '备注', align: 'left', style: NotifyStore.cellStyle },
-            ]"
-        >
+            ]">
             <template v-slot:header="props">
                 <q-tr>
-                    <q-th
-                        class="text-left cursor-pointer"
+                    <q-th class="text-left cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
-                        @click="OrderStore.sort('timeCreate', true)"
-                    >
+                        @click="OrderStore.sort('timeCreate', true)">
                         <span>时间 </span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
-                        <q-input
-                            square
-                            filled
-                            dense
-                            clearable
-                            color="primary"
-                            placeholder="搜索批次"
-                            v-model="OrderStore.search.code"
-                            @blur="OrderStore.get(1)"
-                        />
+                        <q-input square filled dense clearable color="primary" placeholder="搜索批次"
+                            v-model="OrderStore.search.code" @blur="OrderStore.get(1)" />
                     </q-th>
                     <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">
-                        <q-select
-                            dense
-                            square
-                            filled
-                            use-input
-                            emit-value
-                            clearable
-                            option-label="name"
+                        <q-select dense square filled use-input emit-value clearable option-label="name"
                             :placeholder="`搜索${MAP_ENUM_CONTACT.get(ContactStore.search.type)?.text}`"
                             :options="contactSelecting"
                             :color="OrderStore.search.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
-                            :loading="ContactStore.loadding"
-                            v-model="contactPicked"
-                            @filter="searchContact"
-                            @update:model-value="
-                                () => {
+                            :loading="ContactStore.loadding" v-model="contactPicked" @filter="searchContact"
+                            @update:model-value="() => {
                                     OrderStore.search.contactId = contactPicked ? contactPicked._id : '';
                                     OrderStore.requireAccounterId = true;
                                     OrderStore.get(1);
                                 }
-                            "
-                        >
+                                ">
                             <template v-slot:no-option>
                                 <q-item>
                                     <q-item-section class="text-grey"> 暂无结果 </q-item-section>
@@ -107,28 +76,24 @@
                             </template>
                         </q-select>
                     </q-th>
-                    <q-th
-                        class="text-right cursor-pointer"
+                    <q-th class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
-                        @click="OrderStore.sort('amount', true)"
-                    >
+                        @click="OrderStore.sort('amount', true)">
                         <span>金额 </span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
-                    <q-th
-                        class="text-right cursor-pointer"
+                    <q-th class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder') }"
-                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder', true)"
-                    >
-                        <span v-if="vue_props.type === ENUM_ORDER.SALES">{{ vue_props.isInvoice ? "已开发票" : "已收款" }}</span>
-                        <span v-else-if="vue_props.type === ENUM_ORDER.PURCHASE">{{ vue_props.isInvoice ? "已收发票" : "已付款" }}</span>
+                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVAT' : 'amountBookOfOrder', true)">
+                        <span v-if="vue_props.type === ENUM_ORDER.SALES">{{ vue_props.isInvoice ? "已开发票" : "已收款"
+                            }}</span>
+                        <span v-else-if="vue_props.type === ENUM_ORDER.PURCHASE">{{ vue_props.isInvoice ? "已收发票" : "已付款"
+                            }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
-                    <q-th
-                        class="text-right cursor-pointer"
+                    <q-th class="text-right cursor-pointer"
                         :class="{ 'text-negative': OrderStore.sortKey === (vue_props.isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest') }"
-                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest', true)"
-                    >
+                        @click="OrderStore.sort(vue_props.isInvoice ? 'amountBookOfOrderVATRest' : 'amountBookOfOrderRest', true)">
                         <span>{{ vue_props.isInvoice ? "可开票" : "还应确认" }}</span>
                         <q-icon :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
@@ -142,45 +107,40 @@
                 <q-tr>
                     <q-td key="timeCreateString" :props="props"> {{ props.row.timeCreateString }} </q-td>
                     <q-td key="code" :props="props">
-                        <q-badge class="q-mr-xs shadow-2" :color="type === ENUM_ORDER.SALES ? 'pink-6' : 'cyan'" rounded></q-badge>
+                        <q-badge class="q-mr-xs shadow-2" :color="type === ENUM_ORDER.SALES ? 'pink-6' : 'cyan'"
+                            rounded></q-badge>
                         {{ props.row.code }}
                     </q-td>
                     <q-td key="contactId" :props="props">
-                        <span v-if="props.row.joinContact?.name" class="ellipsis">{{ props.row.joinContact.name }}</span>
+                        <span v-if="props.row.joinContact?.name" class="ellipsis">{{ props.row.joinContact.name
+                            }}</span>
                         <span v-else class="text-grey">尚未选择客户</span>
                     </q-td>
-                    <q-td
-                        key="amount"
-                        :props="props"
-                        :class="{
-                            'text-through': props.row.accounterId,
-                            'text-grey': props.row.amount < 1 || props.row.accounterId,
-                        }"
-                    >
+                    <q-td key="amount" :props="props" :class="{
+                        'text-through': props.row.accounterId,
+                        'text-grey': props.row.amount < 1 || props.row.accounterId,
+                    }">
                         {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
                     </q-td>
                     <q-td key="amountBookOfOrder" :props="props" class="text-grey">
                         {{
-                            (vue_props.isInvoice ? props.row.amountBookOfOrderVAT : props.row.amountBookOfOrder).toLocaleString("zh", {
-                                minimumFractionDigits: 2,
-                            })
+                            (vue_props.isInvoice ? props.row.amountBookOfOrderVAT :
+                                props.row.amountBookOfOrder).toLocaleString("zh", {
+                                    minimumFractionDigits: 2,
+                                })
                         }}
                     </q-td>
-                    <q-td
-                        key="amountBookOfOrderRest"
-                        class="text-right"
-                        :props="props"
-                        :class="{
-                            'text-through': props.row.accounterId,
-                            'text-grey':
-                                (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
-                            'text-weight-bold': (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) >= 1,
-                        }"
-                    >
+                    <q-td key="amountBookOfOrderRest" class="text-right" :props="props" :class="{
+                        'text-through': props.row.accounterId,
+                        'text-grey':
+                            (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) < 1 || props.row.accounterId,
+                        'text-weight-bold': (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest) >= 1,
+                    }">
                         {{
-                            (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest : props.row.amountBookOfOrderRest).toLocaleString("zh", {
-                                minimumFractionDigits: 2,
-                            })
+                            (vue_props.isInvoice ? props.row.amountBookOfOrderVATRest :
+                                props.row.amountBookOfOrderRest).toLocaleString("zh", {
+                                    minimumFractionDigits: 2,
+                                })
                         }}
                     </q-td>
                     <q-td key="event" :props="props">
@@ -192,11 +152,8 @@
                     <q-td key="_id" :props="props">
                         <span v-if="props.row.accounterId" class="text-grey">已结清</span>
                         <span v-else-if="props.row.isNotTax" class="text-grey">-</span>
-                        <span
-                            v-else-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
-                            class="cursor-pointer text-body1 text-bold text-negative"
-                            @click="pick(props.row)"
-                        >
+                        <span v-else-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
+                            class="cursor-pointer text-body1 text-bold text-negative" @click="pick(props.row)">
                             选择
                         </span>
                         <span v-else class="text-body1 text-grey"> 已选择 </span>
@@ -231,18 +188,10 @@
             </template>
 
             <template v-slot:bottom="props">
-                <q-pagination
-                    size="17px"
-                    class="q-my-sm"
-                    color="white"
-                    text-color="black"
-                    active-color="primary"
-                    active-text-color="white"
-                    v-model="OrderStore.page.page"
-                    :max-pages="10"
+                <q-pagination size="17px" class="q-my-sm" color="white" text-color="black" active-color="primary"
+                    active-text-color="white" v-model="OrderStore.page.page" :max-pages="10"
                     :max="Math.ceil(OrderStore.total / OrderStore.page.pageSize)"
-                    @update:model-value="(value) => OrderStore.get(value)"
-                />
+                    @update:model-value="(value) => OrderStore.get(value)" />
                 <q-space></q-space>
                 <span>共 {{ OrderStore.total }} 项</span>
             </template>
@@ -267,6 +216,7 @@ import { useNotifyStore } from "@/stores/quasar/notify";
 import { useContactStore } from "@/stores/brand/contact";
 import { useOrderStore } from "@/stores/wmss/order";
 import { useBookStore } from "@/stores/wmss/book";
+import { getPage2 } from "@/lib/time";
 
 const NotifyStore = useNotifyStore();
 
@@ -340,7 +290,7 @@ const render = async () => {
     if (!edit._id) router.replace("/wmss/finance/book");
 
     OrderStore.setEditor(OrderStore.getSchema(vue_props.type));
-    OrderStore.page = getPage(8);
+    OrderStore.page = getPage2(8);
     OrderStore.search.isNotTax = isNotTax.value;
     OrderStore.requireAccounterId = requireAccounterId.value;
     OrderStore.get(1);

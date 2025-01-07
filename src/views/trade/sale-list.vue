@@ -7,62 +7,36 @@
     </div>
   </div>
   <div class="row q-mb-sm">
-    <q-btn
-      square
-      class="q-mr-sm"
-      label="最近删除"
-      :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
-      :text-color="OrderStore.search.isDisabled ? '' : 'black'"
-      @click="
-        () => {
+    <q-btn square class="q-mr-sm" label="最近删除" :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
+      :text-color="OrderStore.search.isDisabled ? '' : 'black'" @click="() => {
           OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
           OrderStore.get(1);
         }
-      "
-    />
-    <q-btn
-      square
-      class="q-mr-sm"
-      label="可出库"
-      :color="OrderStore.requireManagerId ? 'primary' : 'white'"
-      :text-color="OrderStore.requireManagerId ? '' : 'black'"
-      @click="
-        () => {
+        " />
+    <q-btn square class="q-mr-sm" label="可出库" :color="OrderStore.requireManagerId ? 'primary' : 'white'"
+      :text-color="OrderStore.requireManagerId ? '' : 'black'" @click="() => {
           OrderStore.requireManagerId = !OrderStore.requireManagerId;
           OrderStore.get(1);
         }
-      "
-    />
-    <q-btn
-      square
-      class="q-mr-sm"
-      label="可结清"
-      :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
-      :text-color="OrderStore.requireAccounterId ? '' : 'black'"
-      @click="
-        () => {
+        " />
+    <q-btn square class="q-mr-sm" label="可结清" :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
+      :text-color="OrderStore.requireAccounterId ? '' : 'black'" @click="() => {
           OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
           OrderStore.get(1);
         }
-      "
-    />
+        " />
     <q-space></q-space>
     <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')">
       销售明细
     </q-btn>
 
     <div>
-      <picker-range
-        :start-time="OrderStore.page.startTime"
-        :end-time="OrderStore.page.endTime"
-        @change="
-          ($event) => {
-            OrderStore.page.startTime = $event.startTime;
-            OrderStore.page.endTime = $event.endTime;
-            OrderStore.get(1);
-          }
-        "
-      >
+      <picker-range :start-time="OrderStore.page.startTime" :end-time="OrderStore.page.endTime" @change="($event) => {
+          OrderStore.page.startTime = $event.startTime;
+          OrderStore.page.endTime = $event.endTime;
+          OrderStore.get(1);
+        }
+        ">
       </picker-range>
       <q-tooltip class="text-body1">
         <div>点击开始筛选（根据单据的创建时间）</div>
@@ -95,194 +69,107 @@
   </div>
 
   <q-card>
-    <q-table
-      style="min-height: 630px"
-      row-key="_id"
-      dense
-      :rows="OrderStore.list"
-      :rows-per-page-options="[0]"
-      :columns="OrderStore.columns"
-      :visible-columns="OrderStore.columnsVisiable"
-    >
+    <q-table style="min-height: 630px" row-key="_id" dense :rows="OrderStore.list" :rows-per-page-options="[0]"
+      :columns="OrderStore.columns" :visible-columns="OrderStore.columnsVisiable">
       <template v-slot:header="props">
         <div class="q-pt-sm"></div>
         <q-tr>
-          <q-th
-            key="timeContractString"
-            :props="props"
-            class="text-left"
-            :class="{ 'text-negative': OrderStore.sortKey === 'timeContract' }"
-          >
+          <q-th key="timeContractString" :props="props" class="text-left"
+            :class="{ 'text-negative': OrderStore.sortKey === 'timeContract' }">
             <div>
               <q-btn flat small class="q-px-xs" @click="OrderStore.sort('timeContract')">
                 <span class="q-pr-xs">合同时间</span>
-                <q-icon
-                  size="medium"
-                  :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-                ></q-icon>
+                <q-icon size="medium" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
               </q-btn>
             </div>
           </q-th>
-          <q-th
-            key="timeCreateString"
-            :props="props"
-            class="text-left"
-            :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }"
-          >
+          <q-th key="timeCreateString" :props="props" class="text-left"
+            :class="{ 'text-negative': OrderStore.sortKey === 'timeCreate' }">
             <q-btn flat small class="q-px-xs" @click="OrderStore.sort('timeCreate')">
               <span class="q-pr-xs">开单时间</span>
-              <q-icon
-                size="medium"
-                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-              ></q-icon>
+              <q-icon size="medium" :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
             </q-btn>
           </q-th>
           <q-th key="code" :props="props" :style="NotifyStore.cellStyle">
-            <q-input
-              square
-              filled
-              dense
-              clearable
-              color="primary"
-              placeholder="搜索批次"
-              style="margin-left: -6px"
-              v-model="OrderStore.search.code"
-              @blur="OrderStore.get(1)"
-            />
+            <q-input square filled dense clearable color="primary" placeholder="搜索批次" style="margin-left: -6px"
+              v-model="OrderStore.search.code" @blur="OrderStore.get(1)" />
           </q-th>
           <q-th key="contactId" :props="props" :style="NotifyStore.cellStyle">
             <div>
-              <q-btn
-                class="q-px-sm"
-                flat
-                square
-                color="negative"
-                style="margin-left: -6px"
-                @click="contactDialog = true"
-              >
+              <q-btn class="q-px-sm" flat square color="negative" style="margin-left: -6px"
+                @click="contactDialog = true">
                 {{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
               </q-btn>
-              <q-btn
-                v-if="contactPicked._id"
-                flat
-                square
-                padding="xs"
-                color="negative"
-                @click="
-                  () => {
-                    contactPicked = ContactStore.getSchema();
-                    OrderStore.search.contactId = '';
-                    OrderStore.get(1);
-                  }
-                "
-              >
+              <q-btn v-if="contactPicked._id" flat square padding="xs" color="negative" @click="() => {
+                  contactPicked = ContactStore.getSchema();
+                  OrderStore.search.contactId = '';
+                  OrderStore.get(1);
+                }
+                ">
                 <q-icon name="close"></q-icon>
               </q-btn>
             </div>
           </q-th>
-          <q-th
-            key="amount"
-            :props="props"
-            class="text-right relative cursor-pointer"
-            :class="{ 'text-negative': OrderStore.sortKey === 'amount' }"
-            @click="OrderStore.sort('amount')"
-          >
+          <q-th key="amount" :props="props" class="text-right relative cursor-pointer"
+            :class="{ 'text-negative': OrderStore.sortKey === 'amount' }" @click="OrderStore.sort('amount')">
             <div class="row items-center no-wrap text-body2">
               <q-space></q-space>
               <div>{{ "单据金额" }}</div>
-              <q-icon
-                class="q-ml-sm"
-                v-if="OrderStore.sortKey === 'amount'"
-                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-              ></q-icon>
+              <q-icon class="q-ml-sm" v-if="OrderStore.sortKey === 'amount'"
+                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
             </div>
           </q-th>
-          <q-th
-            key="amountBookOfOrder"
-            :props="props"
-            class="text-right cursor-pointer"
+          <q-th key="amountBookOfOrder" :props="props" class="text-right cursor-pointer"
             :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrder' }"
-            @click="OrderStore.sort('amountBookOfOrder')"
-          >
+            @click="OrderStore.sort('amountBookOfOrder')">
             <div class="row items-center no-wrap text-grey text-body2">
               <q-space></q-space>
               <div>{{ "已收款" }}</div>
-              <q-icon
-                class="q-ml-sm"
-                v-if="OrderStore.sortKey === 'amountBookOfOrder'"
-                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-              ></q-icon>
+              <q-icon class="q-ml-sm" v-if="OrderStore.sortKey === 'amountBookOfOrder'"
+                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
             </div>
           </q-th>
-          <q-th
-            key="amountBookOfOrderRest"
-            :props="props"
-            class="text-right cursor-pointer"
+          <q-th key="amountBookOfOrderRest" :props="props" class="text-right cursor-pointer"
             :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderRest' }"
-            @click="OrderStore.sort('amountBookOfOrderRest')"
-          >
+            @click="OrderStore.sort('amountBookOfOrderRest')">
             <div class="row items-center no-wrap text-body2">
               <q-space></q-space>
               <div>{{ "还应收款" }}</div>
-              <q-icon
-                class="q-ml-sm"
-                v-if="OrderStore.sortKey === 'amountBookOfOrderRest'"
-                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-              ></q-icon>
+              <q-icon class="q-ml-sm" v-if="OrderStore.sortKey === 'amountBookOfOrderRest'"
+                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
             </div>
           </q-th>
-          <q-th
-            key="amountBookOfOrderVAT"
-            :props="props"
-            class="text-right cursor-pointer"
+          <q-th key="amountBookOfOrderVAT" :props="props" class="text-right cursor-pointer"
             :class="{ 'text-negative': OrderStore.sortKey === 'amountBookOfOrderVAT' }"
-            @click="OrderStore.sort('amountBookOfOrderVAT')"
-          >
+            @click="OrderStore.sort('amountBookOfOrderVAT')">
             <div class="row items-center no-wrap text-body2">
               <q-space></q-space>
               <div>{{ "已开发票" }}</div>
-              <q-icon
-                class="q-pl-sm"
-                v-if="OrderStore.sortKey === 'amountBookOfOrderVAT'"
-                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"
-              ></q-icon>
+              <q-icon class="q-pl-sm" v-if="OrderStore.sortKey === 'amountBookOfOrderVAT'"
+                :name="OrderStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
             </div>
           </q-th>
           <q-th class="text-left" key="event" :props="props">事件</q-th>
           <q-th class="text-left" key="_id" :props="props">操作</q-th>
           <q-th class="text-left" key="remark" :props="props">
-            <q-input
-              square
-              filled
-              dense
-              clearable
-              color="primary"
-              placeholder="搜索备注"
-              style="margin-left: -6px"
-              v-model="OrderStore.search.remark"
-              @blur="OrderStore.get(1)"
-            />
+            <q-input square filled dense clearable color="primary" placeholder="搜索备注" style="margin-left: -6px"
+              v-model="OrderStore.search.remark" @blur="OrderStore.get(1)" />
           </q-th>
         </q-tr>
       </template>
 
       <template v-slot:body="props">
-        <q-tr
-          class="cursor-pointer"
-          :class="{ 'bg-grey-4': props.expand }"
-          @click.stop="
-            async () => {
-              if (props.expand === false) {
-                OrderStore.loadding = true;
-                await setOrderInfo(props.row);
-                props.expand = true;
-                OrderStore.loadding = false;
-              } else {
-                props.expand = false;
-              }
+        <q-tr class="cursor-pointer" :class="{ 'bg-grey-4': props.expand }" @click.stop="async () => {
+            if (props.expand === false) {
+              OrderStore.loadding = true;
+              await setOrderInfo(props.row);
+              props.expand = true;
+              OrderStore.loadding = false;
+            } else {
+              props.expand = false;
             }
-          "
-        >
+          }
+          ">
           <q-td key="timeContractString" :props="props">
             {{ props.row.timeContractString }}
           </q-td>
@@ -290,116 +177,63 @@
             {{ props.row.timeCreateString }}
           </q-td>
           <q-td key="code" :props="props">
-            <q-badge
-              rounded
-              :color="props.row.isDisabled ? 'grey' : 'pink-6'"
-              class="shadow-2 q-mr-sm"
-            >
+            <q-badge rounded :color="props.row.isDisabled ? 'grey' : 'pink-6'" class="shadow-2 q-mr-sm">
             </q-badge>
             <span>{{ props.row.code }}</span>
           </q-td>
           <q-td key="contactId" :props="props" class="text-body1">
             <span v-if="props.row.joinContact?.name" class="ellipsis">{{
               props.row.joinContact.name
-            }}</span>
+              }}</span>
             <span v-else class="text-grey">无</span>
           </q-td>
-          <q-td
-            key="amount"
-            :props="props"
-            :class="{
-              'text-through': props.row.accounterId,
-              'text-grey': props.row.amount < 1 || props.row.accounterId,
-            }"
-          >
+          <q-td key="amount" :props="props" :class="{
+            'text-through': props.row.accounterId,
+            'text-grey': props.row.amount < 1 || props.row.accounterId,
+          }">
             {{ props.row.amount.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
           </q-td>
-          <q-td
-            key="amountBookOfOrder"
-            class="text-grey"
-            :props="props"
-            :class="{
-              'text-through': props.row.accounterId,
-            }"
-          >
+          <q-td key="amountBookOfOrder" class="text-grey" :props="props" :class="{
+            'text-through': props.row.accounterId,
+          }">
             {{ props.row.amountBookOfOrder.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
           </q-td>
-          <q-td
-            key="amountBookOfOrderRest"
-            class="text-right"
-            :props="props"
-            :class="{
-              'text-through': props.row.accounterId,
-              'text-grey': props.row.amountBookOfOrderRest < 1 || props.row.accounterId,
-              'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
-            }"
-          >
+          <q-td key="amountBookOfOrderRest" class="text-right" :props="props" :class="{
+            'text-through': props.row.accounterId,
+            'text-grey': props.row.amountBookOfOrderRest < 1 || props.row.accounterId,
+            'text-weight-bold': props.row.amountBookOfOrderRest >= 1,
+          }">
             {{ props.row.amountBookOfOrderRest.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
           </q-td>
-          <q-td
-            key="amountBookOfOrderVAT"
-            class="text-right text-grey"
-            :props="props"
-            :class="{ 'text-through': props.row.accounterId }"
-          >
+          <q-td key="amountBookOfOrderVAT" class="text-right text-grey" :props="props"
+            :class="{ 'text-through': props.row.accounterId }">
             {{ props.row.amountBookOfOrderVAT.toLocaleString("zh", { minimumFractionDigits: 2 }) }}
           </q-td>
           <q-td key="event" :props="props">
             <div class="row items-center no-wrap">
-              <q-badge
-                v-if="props.row.joinCluePrint"
-                color="negative"
-                class="q-mr-sm"
-                @click="$router.push(`/wmss/system/clue?content=${props.row.code}`)"
-              >
+              <q-badge v-if="props.row.joinCluePrint" color="negative" class="q-mr-sm"
+                @click="$router.push(`/wmss/system/clue?content=${props.row.code}`)">
                 {{ props.row.joinCluePrint }}
                 <q-tooltip class="text-body1">打印次数</q-tooltip>
               </q-badge>
-              <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm"
-                >已开发票</q-badge
-              >
+              <q-badge v-if="props.row.amountBookOfOrderVAT > 0" color="purple" class="q-mr-sm">已开发票</q-badge>
               <q-badge v-if="props.row.isNotTax"> 不含税</q-badge>
             </div>
           </q-td>
 
           <q-td key="_id" :props="props" style="padding: 0px 8px">
-            <q-btn
-              push
-              dense
-              square
-              label="打印"
-              class="q-mr-xs"
-              color="negative"
-              @click.stop="
-                async () => {
-                  await setOrderInfo(props.row);
-                  orderPrinting = props.row;
-                  printDialog = true;
-                }
-              "
-            />
-            <q-btn
-              push
-              dense
-              square
-              label="出库"
-              class="q-mr-xs"
-              :disable="!!props.row.managerId"
+            <q-btn push dense square label="打印" class="q-mr-xs" color="negative" @click.stop="async () => {
+                await setOrderInfo(props.row);
+                orderPrinting = props.row;
+                printDialog = true;
+              }
+              " />
+            <q-btn push dense square label="出库" class="q-mr-xs" :disable="!!props.row.managerId"
               :color="!!props.row.managerId ? 'standard' : 'primary'"
-              :text-color="!!props.row.managerId ? 'grey' : 'white'"
-              @click.stop="setManager(props.row)"
-            />
-            <q-btn
-              push
-              dense
-              square
-              label="结清"
-              class="q-mr-xs"
-              :disable="!!props.row.accounterId"
+              :text-color="!!props.row.managerId ? 'grey' : 'white'" @click.stop="setManager(props.row)" />
+            <q-btn push dense square label="结清" class="q-mr-xs" :disable="!!props.row.accounterId"
               :color="props.row.accounterId ? 'standard' : 'teal'"
-              :text-color="props.row.accounterId ? 'grey' : 'white'"
-              @click.stop="setAccounter(props.row)"
-            >
+              :text-color="props.row.accounterId ? 'grey' : 'white'" @click.stop="setAccounter(props.row)">
               <q-tooltip class="text-body1">
                 <div>结清意味着您已知晓：</div>
                 <div>1.此订单已经收到所有款项</div>
@@ -408,16 +242,11 @@
             </q-btn>
           </q-td>
           <q-td key="remark" :props="props">
-            <span
-              class="cursor-pointer"
-              :class="props.row.remark ? 'text-primary' : 'text-grey'"
-              @click="
-                () => {
-                  OrderStore.setEditor(props.row);
-                  orderDialog = true;
-                }
-              "
-            >
+            <span class="cursor-pointer" :class="props.row.remark ? 'text-primary' : 'text-grey'" @click="() => {
+                OrderStore.setEditor(props.row);
+                orderDialog = true;
+              }
+              ">
               {{ props.row.remark || "点击修改" }}
             </span>
           </q-td>
@@ -446,7 +275,7 @@
                         <span class="col-3 text-grey">开单人</span>
                         <span class="col-9 text-grey text-right text-weight-bold">{{
                           props.row.joinCreator?.nickname
-                        }}</span>
+                          }}</span>
                       </div>
 
                       <div class="q-mb-sm"></div>
@@ -454,67 +283,46 @@
                         <span class="col-3 text-grey">合同时间</span>
                         <span class="col-9 text-right text-weight-bold ellipsis">{{
                           props.row.timeContractString
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="row text-body1">
                         <span class="col-3 text-grey">客户信息</span>
                         <span class="col-9 text-right text-weight-bold ellipsis">{{
                           props.row.joinContact?.name || "无"
-                        }}</span>
+                          }}</span>
                       </div>
                     </q-card-section>
                     <q-card-actions>
-                      <q-btn
-                        :class="{ 'text-negative': props.row.isNotTax }"
-                        @click="setTax(props.row)"
-                      >
+                      <q-btn :class="{ 'text-negative': props.row.isNotTax }" @click="setTax(props.row)">
                         {{ props.row.isNotTax ? "不含税" : "含税" }}
                       </q-btn>
                       <q-space></q-space>
-                      <q-btn
-                        class="q-ml-sm"
-                        text-color="negative"
-                        :disabled="
-                          !!props.row.managerId ||
-                          !!props.row.accounterId ||
-                          props.row.joinChildOrder?.length > 0
-                        "
-                        @click="
-                          async () => {
+                      <q-btn class="q-ml-sm" text-color="negative" :disabled="!!props.row.managerId ||
+                        !!props.row.accounterId ||
+                        props.row.joinChildOrder?.length > 0
+                        " @click="async () => {
                             await OrderStore.delete(props.row._id);
                             OrderStore.get(1, true);
                           }
-                        "
-                      >
+                          ">
                         {{ props.row.isDisabled ? "恢复" : "删除" }}
                       </q-btn>
-                      <q-btn
-                        v-if="!props.row.isDisabled"
-                        :disabled="
-                          !!props.row.managerId ||
-                          !!props.row.accounterId ||
-                          props.row.joinChildOrder?.length > 0
-                        "
-                        class="q-ml-sm"
-                        text-color="primary"
-                        @click="
-                          () => {
+                      <q-btn v-if="!props.row.isDisabled" :disabled="!!props.row.managerId ||
+                        !!props.row.accounterId ||
+                        props.row.joinChildOrder?.length > 0
+                        " class="q-ml-sm" text-color="primary" @click="() => {
                             OrderStore.setEditor(props.row);
                             SkuStore.listPicked = cloneDeep(props.row.joinSku);
                             $router.push('/wmss/trade/sale-edit');
                           }
-                        "
-                      >
+                          ">
                         编辑
                       </q-btn>
-                      <q-tooltip
-                        v-if="
-                          !!props.row.managerId ||
-                          !!props.row.accounterId ||
-                          props.row.joinChildOrder?.length > 0
-                        "
-                        class="text-body1"
-                      >
+                      <q-tooltip v-if="
+                        !!props.row.managerId ||
+                        !!props.row.accounterId ||
+                        props.row.joinChildOrder?.length > 0
+                      " class="text-body1">
                         <div v-if="!!props.row.managerId">* 检查到出库人签字，无法修改</div>
                         <div v-if="props.row.joinChildOrder?.length > 0">
                           * 检查到出库单，无法修改
@@ -527,48 +335,32 @@
                     <q-card-section>
                       <div class="text-body1 text-grey" v-if="props.row.joinBookOfOrder">
                         <div>
-                          <q-badge
-                            rounded
-                            :color="props.row.joinBookOfOrder.filter(
-                                                    (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK && e.bookDirection === ENUM_BOOK_DIRECTION.DAI
-                                                ).length ? 'teal' : 'grey'"
-                            class="shadow-2 q-mr-sm"
-                          >
-                          </q-badge
-                          >收到货款
+                          <q-badge rounded :color="props.row.joinBookOfOrder.filter(
+                            (e: BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK && e.bookDirection === ENUM_BOOK_DIRECTION.DAI
+                          ).length ? 'teal' : 'grey'" class="shadow-2 q-mr-sm">
+                          </q-badge>收到货款
                         </div>
-                        <div
-                          class="row q-mt-xs"
-                          v-for="BO in props.row.joinBookOfOrder.filter(
-                                                    (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK && e.bookDirection === ENUM_BOOK_DIRECTION.DAI
-                                                )"
-                          :key="BO._id"
-                        >
-                          <span class="col-8 text-grey" style="white-space: break-spaces"
-                            >{{ BO.joinBook?.keyOrigin || "客户异常" }}
+                        <div class="row q-mt-xs" v-for="BO in props.row.joinBookOfOrder.filter(
+                          (e: BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK && e.bookDirection === ENUM_BOOK_DIRECTION.DAI
+                        )" :key="BO._id">
+                          <span class="col-8 text-grey" style="white-space: break-spaces">{{ BO.joinBook?.keyOrigin ||
+                            "客户异常" }}
                           </span>
-                          <span
-                            class="col-4 text-right text-teal text-weight-bold text-underline cursor-pointer"
+                          <span class="col-4 text-right text-teal text-weight-bold text-underline cursor-pointer"
                             @click="
                               $router.push(`/wmss/trade/book-112201?code=${BO.joinBook?.code}`)
-                            "
-                          >
+                              ">
                             {{ BO.amount.toFixed(2) }} 元
                           </span>
                         </div>
                       </div>
                     </q-card-section>
                     <q-card-actions>
-                      <q-btn
-                        class="q-ml-auto"
-                        :disabled="!!props.row.accounterId"
-                        @click="
-                          () => {
-                            pickQrderQuickBooking(props.row);
-                            quickBookModal = true;
-                          }
-                        "
-                      >
+                      <q-btn class="q-ml-auto" :disabled="!!props.row.accounterId" @click="() => {
+                          pickQrderQuickBooking(props.row);
+                          quickBookModal = true;
+                        }
+                        ">
                         快速收款
                       </q-btn>
                     </q-card-actions>
@@ -578,32 +370,21 @@
                     <q-card-section>
                       <div class="text-body1 text-grey" v-if="props.row.joinBookOfOrder">
                         <div>
-                          <q-badge
-                            rounded
-                            :color="props.row.joinBookOfOrder.filter(
-                                                    (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK_VAT && e.bookDirection === ENUM_BOOK_DIRECTION.JIE
-                                                ).length ? 'purple' : 'grey'"
-                            class="shadow-2 q-mr-sm"
-                          >
-                          </q-badge
-                          >已开出发票：
+                          <q-badge rounded :color="props.row.joinBookOfOrder.filter(
+                            (e: BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK_VAT && e.bookDirection === ENUM_BOOK_DIRECTION.JIE
+                          ).length ? 'purple' : 'grey'" class="shadow-2 q-mr-sm">
+                          </q-badge>已开出发票：
                         </div>
-                        <div
-                          class="row q-mt-xs"
-                          v-for="BO in props.row.joinBookOfOrder.filter(
-                                                    (e:BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK_VAT && e.bookDirection === ENUM_BOOK_DIRECTION.JIE
-                                                )"
-                          :key="BO._id"
-                        >
-                          <span class="col-8 text-grey" style="white-space: break-spaces"
-                            >{{ BO.joinBook?.keyOrigin || "客户异常" }}
+                        <div class="row q-mt-xs" v-for="BO in props.row.joinBookOfOrder.filter(
+                          (e: BookOfOrder) => e.bookType === ENUM_BOOK_TYPE.YSZK_VAT && e.bookDirection === ENUM_BOOK_DIRECTION.JIE
+                        )" :key="BO._id">
+                          <span class="col-8 text-grey" style="white-space: break-spaces">{{ BO.joinBook?.keyOrigin ||
+                            "客户异常" }}
                           </span>
-                          <span
-                            class="col-4 text-right text-purple text-weight-bold text-underline cursor-pointer"
+                          <span class="col-4 text-right text-purple text-weight-bold text-underline cursor-pointer"
                             @click="
                               $router.push(`/wmss/trade/book-112202?code=${BO.joinBook?.code}`)
-                            "
-                          >
+                              ">
                             {{ BO.amount.toFixed(2) }} 元
                           </span>
                         </div>
@@ -618,22 +399,13 @@
                       </div>
                       <div class="row text-body1 q-mt-xs">
                         <span class="col text-grey">
-                          <q-badge
-                            rounded
-                            :color="props.row.accounterId ? 'teal' : 'grey'"
-                            class="shadow-2 q-mr-sm"
-                          >
-                          </q-badge
-                          >结清确认
+                          <q-badge rounded :color="props.row.accounterId ? 'teal' : 'grey'" class="shadow-2 q-mr-sm">
+                          </q-badge>结清确认
                         </span>
-                        <span class="col text-right text-weight-bold"
-                          >{{ props.row.joinAccounter?.nickname || "无" }}
+                        <span class="col text-right text-weight-bold">{{ props.row.joinAccounter?.nickname || "无" }}
 
-                          <a
-                            v-if="props.row.accounterId"
-                            class="cursor-pointer text-negative text-underline"
-                            @click.stop="setAccounter(props.row, true)"
-                          >
+                          <a v-if="props.row.accounterId" class="cursor-pointer text-negative text-underline"
+                            @click.stop="setAccounter(props.row, true)">
                             取消
                           </a>
                         </span>
@@ -645,63 +417,38 @@
                       <div class="text-h6 text-weight-bold">仓库信息</div>
                       <div class="row text-body1">
                         <span class="col-6 text-grey">
-                          <q-badge
-                            rounded
-                            :color="props.row.managerId ? 'primary' : 'grey'"
-                            class="shadow-2 q-mr-sm"
-                          >
-                          </q-badge
-                          >出库人
+                          <q-badge rounded :color="props.row.managerId ? 'primary' : 'grey'" class="shadow-2 q-mr-sm">
+                          </q-badge>出库人
                         </span>
                         <span class="col-6 text-right text-weight-bold">
                           {{ props.row.joinManager?.nickname || "无" }}
-                          <a
-                            v-if="props.row.managerId"
-                            class="cursor-pointer text-negative text-underline"
-                            @click="setManager(props.row, true)"
-                          >
+                          <a v-if="props.row.managerId" class="cursor-pointer text-negative text-underline"
+                            @click="setManager(props.row, true)">
                             取消
-                          </a></span
-                        >
+                          </a></span>
                       </div>
                       <div class="row text-body1 q-mt-xs">
-                        <span class="col text-grey"
-                          ><q-badge
-                            rounded
-                            :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'"
-                            class="shadow-2 q-mr-sm"
-                          >
-                          </q-badge
-                          >出库单
+                        <span class="col text-grey"><q-badge rounded
+                            :color="props.row.joinChildOrder?.length > 0 ? 'primary' : 'grey'" class="shadow-2 q-mr-sm">
+                          </q-badge>出库单
 
                           <span v-if="props.row.joinChildOrder?.length > 0">
-                            <a
-                              v-if="props.row.managerId"
-                              class="cursor-pointer text-grey text-underline"
-                            >
+                            <a v-if="props.row.managerId" class="cursor-pointer text-grey text-underline">
                               删除
                               <q-tooltip class="text-body1">请先取消出库人的签字</q-tooltip>
                             </a>
-                            <a
-                              v-else
-                              class="cursor-pointer text-negative text-underline"
-                              @click="
-                                async () => {
-                                  await OrderStore.delete(props.row.joinChildOrder[0]._id);
-                                  setOrderInfo(props.row);
-                                }
-                              "
-                            >
+                            <a v-else class="cursor-pointer text-negative text-underline" @click="async () => {
+                                await OrderStore.delete(props.row.joinChildOrder[0]._id);
+                                setOrderInfo(props.row);
+                              }
+                              ">
                               删除
                             </a>
                           </span>
                         </span>
                         <span class="col text-right text-weight-bold">
-                          <a
-                            v-if="props.row.joinChildOrder?.length > 0"
-                            class="cursor-pointer text-negative text-underline"
-                            @click="
-                              async () => {
+                          <a v-if="props.row.joinChildOrder?.length > 0"
+                            class="cursor-pointer text-negative text-underline" @click="async () => {
                                 OrderStore.loadding = true;
                                 await setOrderInfo(props.row.joinChildOrder[0]);
                                 SkuStore.dialogSku(props.row.joinChildOrder[0].joinSku, {
@@ -710,8 +457,7 @@
                                 });
                                 OrderStore.loadding = false;
                               }
-                            "
-                          >
+                              ">
                             查看
                           </a>
                           <span v-else class="text-bold">无</span>
@@ -733,18 +479,10 @@
       </template>
 
       <template v-slot:bottom="props">
-        <q-pagination
-          size="16px"
-          color="white"
-          class="q-my-sm"
-          text-color="black"
-          active-color="primary"
-          active-text-color="white"
-          v-model="OrderStore.page.page"
-          :max-pages="10"
+        <q-pagination size="16px" color="white" class="q-my-sm" text-color="black" active-color="primary"
+          active-text-color="white" v-model="OrderStore.page.page" :max-pages="10"
           :max="Math.ceil(OrderStore.total / OrderStore.page.pageSize)"
-          @update:model-value="(value) => OrderStore.get(value)"
-        />
+          @update:model-value="(value) => OrderStore.get(value)" />
         <q-space></q-space>
         <span>共 {{ OrderStore.total }} 项</span>
       </template>
@@ -819,16 +557,13 @@
       </q-toolbar>
       <q-separator class="q-mb-md" />
 
-      <list-contact
-        @pick="
-          (value) => {
-            OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
-            contactPicked = value;
-            OrderStore.search.contactId = value._id;
-            OrderStore.get(1);
-          }
-        "
-      ></list-contact>
+      <list-contact @pick="(value) => {
+          OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
+          contactPicked = value;
+          OrderStore.search.contactId = value._id;
+          OrderStore.get(1);
+        }
+        "></list-contact>
     </q-card>
   </q-dialog>
 
@@ -839,44 +574,19 @@
         <q-separator></q-separator>
         <q-card-section>
           <div class="text-body1 q-mb-md q-ml-xs text-bold">公司别称</div>
-          <q-input
-            filled
-            clearable
-            color="primary"
-            class="q-mb-sm"
-            label="请输入公司别称"
-            v-model="title.text"
-            v-for="(title, index) in ConfigStore.titles"
-            @blur="ConfigStore.post()"
-          >
+          <q-input filled clearable color="primary" class="q-mb-sm" label="请输入公司别称" v-model="title.text"
+            v-for="(title, index) in ConfigStore.titles" @blur="ConfigStore.post()">
             <template v-slot:after>
-              <q-btn
-                v-if="index === 0"
-                fab
-                outline
-                padding="sm"
-                icon="add"
-                color="primary"
-                @click="
-                  () => {
-                    ConfigStore.titles.push({ text: '公司别称' });
-                    ConfigStore.post();
-                  }
-                "
-              ></q-btn>
-              <q-btn
-                v-else
-                fab
-                padding="sm"
-                icon="remove"
-                color="negative"
-                @click="
-                  () => {
-                    ConfigStore.titles.splice(index, 1);
-                    ConfigStore.post();
-                  }
-                "
-              ></q-btn>
+              <q-btn v-if="index === 0" fab outline padding="sm" icon="add" color="primary" @click="() => {
+                  ConfigStore.titles.push({ text: '公司别称' });
+                  ConfigStore.post();
+                }
+                "></q-btn>
+              <q-btn v-else fab padding="sm" icon="remove" color="negative" @click="() => {
+                  ConfigStore.titles.splice(index, 1);
+                  ConfigStore.post();
+                }
+                "></q-btn>
             </template>
           </q-input>
         </q-card-section>
@@ -885,13 +595,8 @@
           <div class="text-body1 q-mb-sm q-ml-xs text-bold row items-center">
             销售信息
             <q-space></q-space>
-            <q-btn
-              :icon="infoColumnBase ? 'visibility' : 'visibility_off'"
-              padding="xs"
-              fab
-              flat
-              @click="infoColumnBase = !infoColumnBase"
-            ></q-btn>
+            <q-btn :icon="infoColumnBase ? 'visibility' : 'visibility_off'" padding="xs" fab flat
+              @click="infoColumnBase = !infoColumnBase"></q-btn>
           </div>
           <div v-show="infoColumnBase">
             <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
@@ -899,23 +604,15 @@
             <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
-            <q-checkbox
-              v-model="OrderStore.columnPriceReverseShow"
-              label="单价（从售价逆推算）"
-            ></q-checkbox>
+            <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnRemarkShow" label="备注"></q-checkbox>
           </div>
           <div class="text-body1 q-my-sm q-ml-xs text-bold row items-center">
             其他信息
             <q-space></q-space>
-            <q-btn
-              :icon="infoColumnMore ? 'visibility' : 'visibility_off'"
-              padding="xs"
-              fab
-              flat
-              @click="infoColumnMore = !infoColumnMore"
-            ></q-btn>
+            <q-btn :icon="infoColumnMore ? 'visibility' : 'visibility_off'" padding="xs" fab flat
+              @click="infoColumnMore = !infoColumnMore"></q-btn>
           </div>
           <div v-show="infoColumnMore">
             <q-checkbox v-model="OrderStore.columnKeyOriginShow" label="产地"></q-checkbox>
@@ -927,13 +624,8 @@
           <div class="text-body1 q-my-sm q-ml-xs text-bold row items-center">
             金额信息
             <q-space></q-space>
-            <q-btn
-              :icon="infoAmount ? 'visibility' : 'visibility_off'"
-              padding="xs"
-              fab
-              flat
-              @click="infoAmount = !infoAmount"
-            ></q-btn>
+            <q-btn :icon="infoAmount ? 'visibility' : 'visibility_off'" padding="xs" fab flat
+              @click="infoAmount = !infoAmount"></q-btn>
           </div>
           <div v-show="infoAmount">
             <q-checkbox v-model="rowAmountShow" label="金额合计"></q-checkbox>
@@ -944,10 +636,8 @@
           <div class="text-body1 q-mb-md q-ml-xs text-bold row">
             <span>提货仓库</span>
           </div>
-          <div
-            class="q-mb-sm row items-center"
-            v-for="house in WarehouseStore.list.filter((e) => e.isDisabled === false)"
-          >
+          <div class="q-mb-sm row items-center"
+            v-for="house in WarehouseStore.list.filter((e) => e.isDisabled === false)">
             <q-card class="col-10">
               <q-item class="col">
                 <q-item-section>
@@ -957,15 +647,10 @@
               </q-item>
             </q-card>
             <div class="col-2 text-right">
-              <q-btn
-                fab
-                padding="sm"
-                icon="check"
-                class="inset-shadow"
+              <q-btn fab padding="sm" icon="check" class="inset-shadow"
                 :text-color="WarehouseStore.picked._id === house._id ? '' : 'primary'"
                 :color="WarehouseStore.picked._id === house._id ? 'primary' : ''"
-                @click="WarehouseStore.pick(house)"
-              ></q-btn>
+                @click="WarehouseStore.pick(house)"></q-btn>
             </div>
           </div>
         </q-card-section>
@@ -1019,9 +704,7 @@
                 </td>
                 <td v-if="OrderStore.columnUnitShow">{{ sku.unit }}</td>
                 <td v-if="OrderStore.columnPoundsShow">
-                  <span v-show="sku.isPriceInPounds && sku.pounds > 0"
-                    >{{ sku.pounds.toFixed(3) }} 吨</span
-                  >
+                  <span v-show="sku.isPriceInPounds && sku.pounds > 0">{{ sku.pounds.toFixed(3) }} 吨</span>
                 </td>
                 <td v-if="OrderStore.columnPriceShow">
                   <span v-show="sku.name && sku.norm">{{ sku.price.toFixed(2) }}</span>
@@ -1039,7 +722,7 @@
                 <td v-if="OrderStore.columnPriceAllShow">
                   <span v-show="sku.name && sku.norm">{{
                     (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2)
-                  }}</span>
+                    }}</span>
                 </td>
                 <td v-if="OrderStore.columnRemarkShow">{{ sku.remark }}</td>
                 <td v-if="OrderStore.columnKeyOriginShow">{{ sku.keyOrigin }}</td>
@@ -1078,13 +761,7 @@
         <div class="row q-px-md q-pb-sm">
           <div class="col"></div>
           <div class="col text-right">
-            <q-btn
-              v-if="copyAllow"
-              class="q-ml-sm"
-              label="复制"
-              color="primary"
-              @click.stop="copy()"
-            />
+            <q-btn v-if="copyAllow" class="q-ml-sm" label="复制" color="primary" @click.stop="copy()" />
             <q-btn v-else label="复制" disable>
               <q-tooltip class="text-body1">此浏览器不支持复制功能</q-tooltip>
             </q-btn>
@@ -1107,29 +784,17 @@
       </q-toolbar>
 
       <q-card-section>
-        <q-input
-          filled
-          disable
-          label="订单编号"
-          v-model="OrderStore.editor.code"
-          color="primary"
-          class="q-mb-md"
-        />
+        <q-input filled disable label="订单编号" v-model="OrderStore.editor.code" color="primary" class="q-mb-md" />
         <q-input filled label="请输入备注" v-model="OrderStore.editor.remark" color="primary" />
       </q-card-section>
 
       <q-card-actions>
         <q-space></q-space>
-        <q-btn
-          color="primary"
-          v-close-popup
-          @click="
-            async () => {
-              await OrderStore.put();
-              await OrderStore.get();
-            }
-          "
-        >
+        <q-btn color="primary" v-close-popup @click="async () => {
+            await OrderStore.put();
+            await OrderStore.get();
+          }
+          ">
           保存
         </q-btn>
       </q-card-actions>
@@ -1153,41 +818,29 @@
             <q-item-label caption lines="2">订单金额：{{ orderQuickBooking.amount }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-item-label
-              >收款进度：{{
-                (
-                  ((orderQuickBooking.amount - orderQuickBooking.amountBookOfOrderRest) /
-                    orderQuickBooking.amount) *
-                  100
-                ).toFixed(2)
-              }}%</q-item-label
-            >
+            <q-item-label>收款进度：{{
+              (
+                ((orderQuickBooking.amount - orderQuickBooking.amountBookOfOrderRest) /
+                  orderQuickBooking.amount) *
+                100
+              ).toFixed(2)
+            }}%</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
 
       <q-card-section>
-        <q-input
-          filled
-          label="本次收款金额"
-          v-model="orderQuickBooking.amountBookOfOrderRest"
-          color="primary"
-          class="q-mb-md"
-        />
+        <q-input filled label="本次收款金额" v-model="orderQuickBooking.amountBookOfOrderRest" color="primary"
+          class="q-mb-md" />
       </q-card-section>
 
       <q-card-actions>
         <q-space></q-space>
-        <q-btn
-          color="primary"
-          :disable="orderQuickBooking.amountBookOfOrderRest <= 1"
-          @click="
-            async () => {
-              await createOrderBookQuick112201();
-              await OrderStore.get(1);
-            }
-          "
-        >
+        <q-btn color="primary" :disable="orderQuickBooking.amountBookOfOrderRest <= 1" @click="async () => {
+            await createOrderBookQuick112201();
+            await OrderStore.get(1);
+          }
+          ">
           确定
         </q-btn>
       </q-card-actions>
@@ -1233,6 +886,7 @@ import { useOrderStore } from "@/stores/wmss/order";
 import { useConfigStore } from "@/stores/brand/config";
 import { useClueStore } from "@/stores/wmss/clue";
 import { useBookStore } from "@/stores/wmss/book";
+import { getPage2 } from "@/lib/time";
 
 const NotifyStore = useNotifyStore();
 const ClueStore = useClueStore();
@@ -1483,7 +1137,7 @@ onMounted(() => {
     contactPicked.value._id = OrderStore.search.contactId || "";
     contactPicked.value.name = "已选择";
   }
-  OrderStore.page = getPage(20);
+  OrderStore.page = getPage2(20);
   // 根据路由进行搜索
   const { code } = route.query;
   code && (OrderStore.search.code = code as string);
@@ -1500,6 +1154,7 @@ onMounted(() => {
   min-width: 960px;
   max-width: 960px;
 }
+
 #order {
   color: black;
   font-size: 19px;
@@ -1508,36 +1163,43 @@ onMounted(() => {
   page-break-before: always;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
+
   table {
     border-collapse: separate;
     border-spacing: 0px 0px;
+
     tr {
-      > th {
+      >th {
         border-top: 1px solid black;
         border-right: 1px solid black;
+
         &:first-child {
           border-left: 1px solid black;
         }
       }
-      > td {
+
+      >td {
         height: 27px;
         min-height: 27px;
         line-height: 27px;
         text-align: center;
         border-top: 1px solid black;
         border-right: 1px solid black;
+
         &:first-child {
           border-left: 1px solid black;
         }
       }
     }
   }
+
   .order-table-line {
-    > div {
+    >div {
       min-height: 27px;
       text-align: center;
       border-top: 1px solid black;
       border-right: 1px solid black;
+
       &:first-child {
         border-left: 1px solid black;
       }
@@ -1548,16 +1210,20 @@ onMounted(() => {
     }
   }
 }
+
 #order-container {
   min-width: 1325px;
 }
+
 @media screen and (max-width: 1200px) {
   #order-container {
     min-width: 960px;
   }
+
   #order-config {
     display: none;
   }
+
   #order-space {
     display: none;
   }

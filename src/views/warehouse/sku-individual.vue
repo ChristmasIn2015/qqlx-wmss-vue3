@@ -414,6 +414,7 @@ import { useContactStore } from "@/stores/brand/contact";
 import { useNotifyStore } from "@/stores/quasar/notify";
 import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
+import { getPage2 } from "@/lib/time";
 
 const NotifyStore = useNotifyStore();
 const filePicking = ref(null);
@@ -516,7 +517,7 @@ onMounted(async () => {
     OrderStore.setEditor(OrderStore.getSchema({ $in: [ENUM_ORDER.GETIN, ENUM_ORDER.PROCESS] }));
     // OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.GETIN));
     OrderStore.search.contactId = "";
-    OrderStore.page = getPage(10);
+    OrderStore.page = getPage2(10);
     // 根据路由进行搜索
     const { code } = route.query;
     code && (OrderStore.search.code = code as string);

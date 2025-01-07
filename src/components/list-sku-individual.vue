@@ -1,145 +1,83 @@
 <template>
     <q-card class="q-mt-sm">
-        <q-table
-            dense
-            row-key="_id"
-            separator="cell"
-            style="min-height: 450px"
-            :columns="(SkuStore.columns as any)"
-            :visible-columns="SkuStore.columnsVisiable"
-            :rows="SkuStore.list"
-            :rows-per-page-options="[0]"
-        >
+        <q-table dense row-key="_id" separator="cell" style="min-height: 450px" :columns="(SkuStore.columns as any)"
+            :visible-columns="SkuStore.columnsVisiable" :rows="SkuStore.list" :rows-per-page-options="[0]">
             <template v-slot:header="props">
                 <q-tr>
-                    <q-th
-                        key="timeCreateString"
-                        class="cursor-pointer"
-                        style="text-align: left"
-                        :props="props"
+                    <q-th key="timeCreateString" class="cursor-pointer" style="text-align: left" :props="props"
                         :class="{ 'text-negative': SkuStore.sortKey === 'timeCreate' }"
-                        @click="SkuStore.sort('timeCreate')"
-                    >
+                        @click="SkuStore.sort('timeCreate')">
                         <span>时间 </span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th key="layout" :props="props">库存类型</q-th>
                     <q-th key="name" :props="props">
-                        <q-input square filled dense clearable color="primary" placeholder="搜索品名" v-model="SkuStore.search.name" @blur="SkuStore.get(1)" />
+                        <q-input square filled dense clearable color="primary" placeholder="搜索品名"
+                            v-model="SkuStore.search.name" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="norm" :props="props">
-                        <q-input square filled dense clearable color="primary" placeholder="搜索规格" v-model="SkuStore.search.norm" @blur="SkuStore.get(1)" />
+                        <q-input square filled dense clearable color="primary" placeholder="搜索规格"
+                            v-model="SkuStore.search.norm" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="formula" :props="props">来源</q-th>
-                    <q-th
-                        key="count"
-                        :props="props"
-                        class="cursor-pointer"
-                        :class="{ 'text-negative': SkuStore.sortKey === 'count' }"
-                        @click="SkuStore.sort('count')"
-                    >
+                    <q-th key="count" :props="props" class="cursor-pointer"
+                        :class="{ 'text-negative': SkuStore.sortKey === 'count' }" @click="SkuStore.sort('count')">
                         <span>数量</span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
-                    <q-th
-                        key="pounds"
-                        :props="props"
-                        class="cursor-pointer"
-                        :class="{ 'text-negative': SkuStore.sortKey === 'pounds' }"
-                        @click="SkuStore.sort('pounds')"
-                    >
+                    <q-th key="pounds" :props="props" class="cursor-pointer"
+                        :class="{ 'text-negative': SkuStore.sortKey === 'pounds' }" @click="SkuStore.sort('pounds')">
                         <span>初始重量</span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
-                    <q-th
-                        key="poundsFinal"
-                        :props="props"
-                        class="cursor-pointer"
+                    <q-th key="poundsFinal" :props="props" class="cursor-pointer"
                         :class="{ 'text-negative': SkuStore.sortKey === 'poundsFinal' }"
-                        @click="SkuStore.sort('poundsFinal')"
-                    >
+                        @click="SkuStore.sort('poundsFinal')">
                         <span>剩余重量</span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th key="keyOrigin" :props="props">
-                        <q-input square filled dense clearable color="primary" placeholder="产地" v-model="SkuStore.search.keyOrigin" @blur="SkuStore.get(1)" />
+                        <q-input square filled dense clearable color="primary" placeholder="产地"
+                            v-model="SkuStore.search.keyOrigin" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="keyFeat" :props="props">
-                        <q-input square filled dense clearable color="primary" placeholder="材质" v-model="SkuStore.search.keyFeat" @blur="SkuStore.get(1)" />
+                        <q-input square filled dense clearable color="primary" placeholder="材质"
+                            v-model="SkuStore.search.keyFeat" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="keyCode" :props="props">
-                        <q-input square filled dense clearable color="primary" placeholder="捆包号" v-model="SkuStore.search.keyCode" @blur="SkuStore.get(1)" />
+                        <q-input square filled dense clearable color="primary" placeholder="捆包号"
+                            v-model="SkuStore.search.keyCode" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="warehouseId" :props="props" style="min-width: 155px">
-                        <q-select
-                            dense
-                            square
-                            filled
-                            clearable
-                            emit-value
-                            map-options
-                            label="仓库"
-                            option-value="_id"
-                            option-label="name"
-                            placeholder="请选择仓库"
+                        <q-select dense square filled clearable emit-value map-options label="仓库" option-value="_id"
+                            option-label="name" placeholder="请选择仓库"
                             :options="WarehouseStore.list.filter((e) => e.isDisabled === false)"
-                            v-model="SkuStore.search.warehouseId"
-                            @update:model-value="SkuStore.get(1)"
-                        >
+                            v-model="SkuStore.search.warehouseId" @update:model-value="SkuStore.get(1)">
                         </q-select>
                     </q-th>
                     <q-th key="keyHouse" :props="props">
-                        <q-input
-                            square
-                            filled
-                            dense
-                            clearable
-                            color="primary"
-                            placeholder="货位号"
-                            v-model="SkuStore.search.keyHouse"
-                            @blur="SkuStore.get(1)"
-                        />
+                        <q-input square filled dense clearable color="primary" placeholder="货位号"
+                            v-model="SkuStore.search.keyHouse" @blur="SkuStore.get(1)" />
                     </q-th>
-                    <q-th
-                        key="price"
-                        :props="props"
-                        :class="{ 'text-negative': SkuStore.sortKey === 'price' }"
-                        class="cursor-pointer"
-                        @click="SkuStore.sort('price')"
-                    >
+                    <q-th key="price" :props="props" :class="{ 'text-negative': SkuStore.sortKey === 'price' }"
+                        class="cursor-pointer" @click="SkuStore.sort('price')">
                         <span>单价 </span>
                         <q-icon :name="SkuStore.sortValue == MongodbSort.DES ? 'south' : 'north'"></q-icon>
                     </q-th>
                     <q-th key="remark" :props="props">
-                        <q-input
-                            square
-                            filled
-                            dense
-                            clearable
-                            color="primary"
-                            placeholder="搜索备注"
-                            v-model="SkuStore.search.remark"
-                            @blur="SkuStore.get(1)"
-                        />
+                        <q-input square filled dense clearable color="primary" placeholder="搜索备注"
+                            v-model="SkuStore.search.remark" @blur="SkuStore.get(1)" />
                     </q-th>
                     <q-th key="orderContactId" :props="props">
                         <q-btn padding="xs" flat square color="primary" @click="contactDialog = true">
                             {{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
                         </q-btn>
-                        <q-btn
-                            v-show="contactPicked._id"
-                            padding="xs"
-                            flat
-                            square
-                            color="primary"
-                            @click="
-                                () => {
-                                    contactPicked = ContactStore.getSchema();
-                                    SkuStore.search.orderContactId = '';
-                                    SkuStore.get(1);
-                                }
-                            "
-                        >
+                        <q-btn v-show="contactPicked._id" padding="xs" flat square color="primary" @click="() => {
+                                contactPicked = ContactStore.getSchema();
+                                SkuStore.search.orderContactId = '';
+                                SkuStore.get(1);
+                            }
+                            ">
                             <q-icon name="close"></q-icon>
                         </q-btn>
                     </q-th>
@@ -158,9 +96,11 @@
             </template>
             <template v-slot:body="props">
                 <q-tr>
-                    <q-td key="timeCreateString" :props="props" style="text-align: left" class="text-grey"> {{ props.row.timeCreateString }} </q-td>
+                    <q-td key="timeCreateString" :props="props" style="text-align: left" class="text-grey"> {{
+                        props.row.timeCreateString }} </q-td>
                     <q-td key="layout" :props="props">
-                        <q-badge color="primary" v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">原材料</q-badge>
+                        <q-badge color="primary"
+                            v-if="props.row.layout === ENUM_LAYOUT_CABINET.INDIVIDUAL">原材料</q-badge>
                         <q-badge color="grey" v-else>普通</q-badge>
                     </q-td>
                     <q-td key="name" :props="props"> {{ props.row.name }} </q-td>
@@ -174,16 +114,13 @@
                         <span class="text-grey"> 1 个</span>
                     </q-td>
                     <q-td key="pounds" :props="props" class="text-grey"> {{ props.row.pounds.toFixed(3) }} 吨 </q-td>
-                    <q-td key="poundsFinal" :props="props" :class="props.row.poundsFinal < 1 ? 'text-grey' : 'text-negative'">
-                        <span
-                            class="cursor-pointer"
-                            @click="
-                                async () => {
-                                    skus_rela_order = await SkuStore.getSkuRelaOrder(props.row._id);
-                                    SkuStore.dialogSku(skus_rela_order, { title: `${props.row.name} ${props.row.norm}，库存日志`, more: true });
-                                }
-                            "
-                        >
+                    <q-td key="poundsFinal" :props="props"
+                        :class="props.row.poundsFinal < 1 ? 'text-grey' : 'text-negative'">
+                        <span class="cursor-pointer" @click="async () => {
+                                skus_rela_order = await SkuStore.getSkuRelaOrder(props.row._id);
+                                SkuStore.dialogSku(skus_rela_order, { title: `${props.row.name} ${props.row.norm}，库存日志`, more: true });
+                            }
+                            ">
                             {{ props.row.poundsFinal.toFixed(3) }} 吨
                         </span>
                     </q-td>
@@ -201,26 +138,18 @@
                     </q-td>
                     <q-td key="orderId" :props="props"> {{ props.row.joinOrder?.code }} </q-td>
                     <q-td key="_id" :props="props" style="padding: 0 4px">
-                        <q-btn v-if="props.row.isConfirmed" color="primary" v-close-popup flat padding="xs" @click="$emit('pick', cloneDeep(props.row))"
-                            >{{ vue_props.label }}
+                        <q-btn v-if="props.row.isConfirmed" color="primary" v-close-popup flat padding="xs"
+                            @click="$emit('pick', cloneDeep(props.row))">{{ vue_props.label }}
                         </q-btn>
                     </q-td>
                 </q-tr>
             </template>
 
             <template v-slot:bottom="props">
-                <q-pagination
-                    size="16px"
-                    color="white"
-                    class="q-my-sm"
-                    text-color="black"
-                    active-color="primary"
-                    active-text-color="white"
-                    v-model="SkuStore.page.page"
-                    :max-pages="10"
+                <q-pagination size="16px" color="white" class="q-my-sm" text-color="black" active-color="primary"
+                    active-text-color="white" v-model="SkuStore.page.page" :max-pages="10"
                     :max="Math.ceil(SkuStore.total / SkuStore.page.pageSize)"
-                    @update:model-value="(value) => SkuStore.get(value)"
-                />
+                    @update:model-value="(value) => SkuStore.get(value)" />
                 <q-space></q-space>
                 <div class="q-pt-sm q-pb-xs">
                     <span>已加载 {{ SkuStore.list.length }} / {{ SkuStore.total }}</span>
@@ -241,15 +170,12 @@
             </q-toolbar>
             <q-separator class="q-mb-md" />
 
-            <list-contact
-                @pick="
-                    (value) => {
-                        contactPicked = value;
-                        SkuStore.search.orderContactId = value._id;
-                        SkuStore.get(1);
-                    }
-                "
-            ></list-contact>
+            <list-contact @pick="(value) => {
+                    contactPicked = value;
+                    SkuStore.search.orderContactId = value._id;
+                    SkuStore.get(1);
+                }
+                "></list-contact>
         </q-card>
     </q-dialog>
 </template>
@@ -272,6 +198,7 @@ import { useSkuStore } from "@/stores/wmss/sku";
 import { useOrderStore } from "@/stores/wmss/order";
 import { useAreaStore } from "@/stores/brand/area";
 import { useWarehouseStore } from "@/stores/brand/warehouse";
+import { getPage2 } from "@/lib/time";
 
 const NotifyStore = useNotifyStore();
 
@@ -286,7 +213,7 @@ const contactPicked = ref(ContactStore.getSchema());
 
 const route = useRoute();
 const init = () => {
-    SkuStore.page = getPage(10);
+    SkuStore.page = getPage2(10);
     SkuStore.sortKey = "poundsFinal";
     SkuStore.setEditor(ENUM_ORDER.NONE);
     SkuStore.search.isConfirmed = true;
