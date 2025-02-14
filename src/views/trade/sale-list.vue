@@ -9,21 +9,21 @@
   <div class="row q-mb-sm">
     <q-btn square class="q-mr-sm" label="最近删除" :color="OrderStore.search.isDisabled ? 'primary' : 'white'"
       :text-color="OrderStore.search.isDisabled ? '' : 'black'" @click="() => {
-          OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
-          OrderStore.get(1);
-        }
+        OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
+        OrderStore.get(1);
+      }
         " />
     <q-btn square class="q-mr-sm" label="可出库" :color="OrderStore.requireManagerId ? 'primary' : 'white'"
       :text-color="OrderStore.requireManagerId ? '' : 'black'" @click="() => {
-          OrderStore.requireManagerId = !OrderStore.requireManagerId;
-          OrderStore.get(1);
-        }
+        OrderStore.requireManagerId = !OrderStore.requireManagerId;
+        OrderStore.get(1);
+      }
         " />
     <q-btn square class="q-mr-sm" label="可结清" :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
       :text-color="OrderStore.requireAccounterId ? '' : 'black'" @click="() => {
-          OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
-          OrderStore.get(1);
-        }
+        OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
+        OrderStore.get(1);
+      }
         " />
     <q-space></q-space>
     <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')">
@@ -32,10 +32,10 @@
 
     <div>
       <picker-range :start-time="OrderStore.page.startTime" :end-time="OrderStore.page.endTime" @change="($event) => {
-          OrderStore.page.startTime = $event.startTime;
-          OrderStore.page.endTime = $event.endTime;
-          OrderStore.get(1);
-        }
+        OrderStore.page.startTime = $event.startTime;
+        OrderStore.page.endTime = $event.endTime;
+        OrderStore.get(1);
+      }
         ">
       </picker-range>
       <q-tooltip class="text-body1">
@@ -101,10 +101,10 @@
                 {{ contactPicked._id ? contactPicked.name : "点击筛选客户" }}
               </q-btn>
               <q-btn v-if="contactPicked._id" flat square padding="xs" color="negative" @click="() => {
-                  contactPicked = ContactStore.getSchema();
-                  OrderStore.search.contactId = '';
-                  OrderStore.get(1);
-                }
+                contactPicked = ContactStore.getSchema();
+                OrderStore.search.contactId = '';
+                OrderStore.get(1);
+              }
                 ">
                 <q-icon name="close"></q-icon>
               </q-btn>
@@ -160,15 +160,15 @@
 
       <template v-slot:body="props">
         <q-tr class="cursor-pointer" :class="{ 'bg-grey-4': props.expand }" @click.stop="async () => {
-            if (props.expand === false) {
-              OrderStore.loadding = true;
-              await setOrderInfo(props.row);
-              props.expand = true;
-              OrderStore.loadding = false;
-            } else {
-              props.expand = false;
-            }
+          if (props.expand === false) {
+            OrderStore.loadding = true;
+            await setOrderInfo(props.row);
+            props.expand = true;
+            OrderStore.loadding = false;
+          } else {
+            props.expand = false;
           }
+        }
           ">
           <q-td key="timeContractString" :props="props">
             {{ props.row.timeContractString }}
@@ -223,10 +223,10 @@
 
           <q-td key="_id" :props="props" style="padding: 0px 8px">
             <q-btn push dense square label="打印" class="q-mr-xs" color="negative" @click.stop="async () => {
-                await setOrderInfo(props.row);
-                orderPrinting = props.row;
-                printDialog = true;
-              }
+              await setOrderInfo(props.row);
+              orderPrinting = props.row;
+              printDialog = true;
+            }
               " />
             <q-btn push dense square label="出库" class="q-mr-xs" :disable="!!props.row.managerId"
               :color="!!props.row.managerId ? 'standard' : 'primary'"
@@ -243,9 +243,9 @@
           </q-td>
           <q-td key="remark" :props="props">
             <span class="cursor-pointer" :class="props.row.remark ? 'text-primary' : 'text-grey'" @click="() => {
-                OrderStore.setEditor(props.row);
-                orderDialog = true;
-              }
+              OrderStore.setEditor(props.row);
+              orderDialog = true;
+            }
               ">
               {{ props.row.remark || "点击修改" }}
             </span>
@@ -301,9 +301,9 @@
                         !!props.row.accounterId ||
                         props.row.joinChildOrder?.length > 0
                         " @click="async () => {
-                            await OrderStore.delete(props.row._id);
-                            OrderStore.get(1, true);
-                          }
+                          await OrderStore.delete(props.row._id);
+                          OrderStore.get(1, true);
+                        }
                           ">
                         {{ props.row.isDisabled ? "恢复" : "删除" }}
                       </q-btn>
@@ -311,10 +311,10 @@
                         !!props.row.accounterId ||
                         props.row.joinChildOrder?.length > 0
                         " class="q-ml-sm" text-color="primary" @click="() => {
-                            OrderStore.setEditor(props.row);
-                            SkuStore.listPicked = cloneDeep(props.row.joinSku);
-                            $router.push('/wmss/trade/sale-edit');
-                          }
+                          OrderStore.setEditor(props.row);
+                          SkuStore.listPicked = cloneDeep(props.row.joinSku);
+                          $router.push('/wmss/trade/sale-edit');
+                        }
                           ">
                         编辑
                       </q-btn>
@@ -357,9 +357,9 @@
                     </q-card-section>
                     <q-card-actions>
                       <q-btn class="q-ml-auto" :disabled="!!props.row.accounterId" @click="() => {
-                          pickQrderQuickBooking(props.row);
-                          quickBookModal = true;
-                        }
+                        pickQrderQuickBooking(props.row);
+                        quickBookModal = true;
+                      }
                         ">
                         快速收款
                       </q-btn>
@@ -438,9 +438,9 @@
                               <q-tooltip class="text-body1">请先取消出库人的签字</q-tooltip>
                             </a>
                             <a v-else class="cursor-pointer text-negative text-underline" @click="async () => {
-                                await OrderStore.delete(props.row.joinChildOrder[0]._id);
-                                setOrderInfo(props.row);
-                              }
+                              await OrderStore.delete(props.row.joinChildOrder[0]._id);
+                              setOrderInfo(props.row);
+                            }
                               ">
                               删除
                             </a>
@@ -449,14 +449,14 @@
                         <span class="col text-right text-weight-bold">
                           <a v-if="props.row.joinChildOrder?.length > 0"
                             class="cursor-pointer text-negative text-underline" @click="async () => {
-                                OrderStore.loadding = true;
-                                await setOrderInfo(props.row.joinChildOrder[0]);
-                                SkuStore.dialogSku(props.row.joinChildOrder[0].joinSku, {
-                                  title: '出库信息',
-                                  more: false,
-                                });
-                                OrderStore.loadding = false;
-                              }
+                              OrderStore.loadding = true;
+                              await setOrderInfo(props.row.joinChildOrder[0]);
+                              SkuStore.dialogSku(props.row.joinChildOrder[0].joinSku, {
+                                title: '出库信息',
+                                more: false,
+                              });
+                              OrderStore.loadding = false;
+                            }
                               ">
                             查看
                           </a>
@@ -558,11 +558,11 @@
       <q-separator class="q-mb-md" />
 
       <list-contact @pick="(value) => {
-          OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
-          contactPicked = value;
-          OrderStore.search.contactId = value._id;
-          OrderStore.get(1);
-        }
+        OrderStore.setEditor(OrderStore.getSchema(ENUM_ORDER.SALES));
+        contactPicked = value;
+        OrderStore.search.contactId = value._id;
+        OrderStore.get(1);
+      }
         "></list-contact>
     </q-card>
   </q-dialog>
@@ -578,14 +578,14 @@
             v-for="(title, index) in ConfigStore.titles" @blur="ConfigStore.post()">
             <template v-slot:after>
               <q-btn v-if="index === 0" fab outline padding="sm" icon="add" color="primary" @click="() => {
-                  ConfigStore.titles.push({ text: '公司别称' });
-                  ConfigStore.post();
-                }
+                ConfigStore.titles.push({ text: '公司别称' });
+                ConfigStore.post();
+              }
                 "></q-btn>
               <q-btn v-else fab padding="sm" icon="remove" color="negative" @click="() => {
-                  ConfigStore.titles.splice(index, 1);
-                  ConfigStore.post();
-                }
+                ConfigStore.titles.splice(index, 1);
+                ConfigStore.post();
+              }
                 "></q-btn>
             </template>
           </q-input>
@@ -734,7 +734,11 @@
             </table>
             <div class="order-table-line row" v-if="rowAmountShow">
               <div class="col">{{ getChineseMoney(orderPrinting.amount) }}</div>
-              <div class="col">共计: {{ orderPrinting.amount.toFixed(2) }} 元</div>
+              <div class="col">
+                <span>共计：</span>
+                <span v-if="orderPrintingTonsTotal > 0">{{ orderPrintingTonsTotal.toFixed(3) }} 吨，</span>
+                <span>{{ orderPrinting.amount.toFixed(2) }} 元</span>
+              </div>
             </div>
             <div class="order-table-line row">
               <div class="col q-pa-sm">单据说明</div>
@@ -791,9 +795,9 @@
       <q-card-actions>
         <q-space></q-space>
         <q-btn color="primary" v-close-popup @click="async () => {
-            await OrderStore.put();
-            await OrderStore.get();
-          }
+          await OrderStore.put();
+          await OrderStore.get();
+        }
           ">
           保存
         </q-btn>
@@ -837,9 +841,9 @@
       <q-card-actions>
         <q-space></q-space>
         <q-btn color="primary" :disable="orderQuickBooking.amountBookOfOrderRest <= 1" @click="async () => {
-            await createOrderBookQuick112201();
-            await OrderStore.get(1);
-          }
+          await createOrderBookQuick112201();
+          await OrderStore.get(1);
+        }
           ">
           确定
         </q-btn>
@@ -1006,6 +1010,12 @@ const skuPrinting = computed(() => {
 });
 const printDialog = ref(false);
 const orderPrinting = ref(OrderStore.getSchema() as OrderJoined);
+const orderPrintingTonsTotal = computed(() => {
+  return skuPrinting.value
+    .filter((e) => e.isPriceInPounds)
+    .reduce((a, b) => a + b.pounds, 0);
+});
+
 const print = async () => {
   const dom = document.getElementById("order");
   callPrinter(dom as HTMLElement);
