@@ -9,10 +9,10 @@
         <div class="col row items-end">
             <q-space></q-space>
             <picker-range :start-time="OrderStore.page.startTime" :end-time="OrderStore.page.endTime" @change="($event) => {
-                    OrderStore.page.startTime = $event.startTime;
-                    OrderStore.page.endTime = $event.endTime;
-                    OrderStore.get(1);
-                }
+                OrderStore.page.startTime = $event.startTime;
+                OrderStore.page.endTime = $event.endTime;
+                OrderStore.get(1);
+            }
                 " />
             <q-btn square class="q-px-sm bg-white q-ml-sm">
                 <q-icon name="filter_alt"></q-icon>
@@ -64,10 +64,10 @@
                             :color="OrderStore.search.type === ENUM_ORDER.SALES ? 'pink-6' : 'primary'"
                             :loading="ContactStore.loadding" v-model="contactPicked" @filter="searchContact"
                             @update:model-value="() => {
-                                    OrderStore.search.contactId = contactPicked ? contactPicked._id : '';
-                                    OrderStore.requireAccounterId = true;
-                                    OrderStore.get(1);
-                                }
+                                OrderStore.search.contactId = contactPicked ? contactPicked._id : '';
+                                OrderStore.requireAccounterId = true;
+                                OrderStore.get(1);
+                            }
                                 ">
                             <template v-slot:no-option>
                                 <q-item>
@@ -151,7 +151,7 @@
                     </q-td>
                     <q-td key="_id" :props="props">
                         <span v-if="props.row.accounterId" class="text-grey">已结清</span>
-                        <span v-else-if="props.row.isNotTax" class="text-grey">-</span>
+                        <!-- <span v-else-if="props.row.isNotTax" class="text-grey">-</span> -->
                         <span v-else-if="OrderStore.listPicked.find((e) => e._id === props.row._id) ? false : true"
                             class="cursor-pointer text-body1 text-bold text-negative" @click="pick(props.row)">
                             选择
