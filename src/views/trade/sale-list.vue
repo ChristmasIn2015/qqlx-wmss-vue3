@@ -12,19 +12,19 @@
         OrderStore.search.isDisabled = !OrderStore.search.isDisabled;
         OrderStore.get(1);
       }
-        " />
+      " />
     <q-btn square class="q-mr-sm" label="可出库" :color="OrderStore.requireManagerId ? 'primary' : 'white'"
       :text-color="OrderStore.requireManagerId ? '' : 'black'" @click="() => {
         OrderStore.requireManagerId = !OrderStore.requireManagerId;
         OrderStore.get(1);
       }
-        " />
+      " />
     <q-btn square class="q-mr-sm" label="可结清" :color="OrderStore.requireAccounterId ? 'primary' : 'white'"
       :text-color="OrderStore.requireAccounterId ? '' : 'black'" @click="() => {
         OrderStore.requireAccounterId = !OrderStore.requireAccounterId;
         OrderStore.get(1);
       }
-        " />
+      " />
     <q-space></q-space>
     <q-btn square class="q-ml-sm bg-white" @click="$router.push('/wmss/trade/sale-sku')">
       销售明细
@@ -36,7 +36,7 @@
         OrderStore.page.endTime = $event.endTime;
         OrderStore.get(1);
       }
-        ">
+      ">
       </picker-range>
       <q-tooltip class="text-body1">
         <div>点击开始筛选（根据单据的创建时间）</div>
@@ -105,7 +105,7 @@
                 OrderStore.search.contactId = '';
                 OrderStore.get(1);
               }
-                ">
+              ">
                 <q-icon name="close"></q-icon>
               </q-btn>
             </div>
@@ -169,7 +169,7 @@
             props.expand = false;
           }
         }
-          ">
+        ">
           <q-td key="timeContractString" :props="props">
             {{ props.row.timeContractString }}
           </q-td>
@@ -184,7 +184,7 @@
           <q-td key="contactId" :props="props" class="text-body1">
             <span v-if="props.row.joinContact?.name" class="ellipsis">{{
               props.row.joinContact.name
-              }}</span>
+            }}</span>
             <span v-else class="text-grey">无</span>
           </q-td>
           <q-td key="amount" :props="props" :class="{
@@ -227,7 +227,7 @@
               orderPrinting = props.row;
               printDialog = true;
             }
-              " />
+            " />
             <q-btn push dense square label="出库" class="q-mr-xs" :disable="!!props.row.managerId"
               :color="!!props.row.managerId ? 'standard' : 'primary'"
               :text-color="!!props.row.managerId ? 'grey' : 'white'" @click.stop="setManager(props.row)" />
@@ -246,7 +246,7 @@
               OrderStore.setEditor(props.row);
               orderDialog = true;
             }
-              ">
+            ">
               {{ props.row.remark || "点击修改" }}
             </span>
           </q-td>
@@ -275,7 +275,7 @@
                         <span class="col-3 text-grey">开单人</span>
                         <span class="col-9 text-grey text-right text-weight-bold">{{
                           props.row.joinCreator?.nickname
-                          }}</span>
+                        }}</span>
                       </div>
 
                       <div class="q-mb-sm"></div>
@@ -283,13 +283,13 @@
                         <span class="col-3 text-grey">合同时间</span>
                         <span class="col-9 text-right text-weight-bold ellipsis">{{
                           props.row.timeContractString
-                          }}</span>
+                        }}</span>
                       </div>
                       <div class="row text-body1">
                         <span class="col-3 text-grey">客户信息</span>
                         <span class="col-9 text-right text-weight-bold ellipsis">{{
                           props.row.joinContact?.name || "无"
-                          }}</span>
+                        }}</span>
                       </div>
                     </q-card-section>
                     <q-card-actions>
@@ -304,7 +304,7 @@
                           await OrderStore.delete(props.row._id);
                           OrderStore.get(1, true);
                         }
-                          ">
+                        ">
                         {{ props.row.isDisabled ? "恢复" : "删除" }}
                       </q-btn>
                       <q-btn v-if="!props.row.isDisabled" :disabled="!!props.row.managerId ||
@@ -315,7 +315,7 @@
                           SkuStore.listPicked = cloneDeep(props.row.joinSku);
                           $router.push('/wmss/trade/sale-edit');
                         }
-                          ">
+                        ">
                         编辑
                       </q-btn>
                       <q-tooltip v-if="
@@ -360,7 +360,7 @@
                         pickQrderQuickBooking(props.row);
                         quickBookModal = true;
                       }
-                        ">
+                      ">
                         快速收款
                       </q-btn>
                     </q-card-actions>
@@ -441,7 +441,7 @@
                               await OrderStore.delete(props.row.joinChildOrder[0]._id);
                               setOrderInfo(props.row);
                             }
-                              ">
+                            ">
                               删除
                             </a>
                           </span>
@@ -457,7 +457,7 @@
                               });
                               OrderStore.loadding = false;
                             }
-                              ">
+                            ">
                             查看
                           </a>
                           <span v-else class="text-bold">无</span>
@@ -563,7 +563,7 @@
         OrderStore.search.contactId = value._id;
         OrderStore.get(1);
       }
-        "></list-contact>
+      "></list-contact>
     </q-card>
   </q-dialog>
 
@@ -581,12 +581,12 @@
                 ConfigStore.titles.push({ text: '公司别称' });
                 ConfigStore.post();
               }
-                "></q-btn>
+              "></q-btn>
               <q-btn v-else fab padding="sm" icon="remove" color="negative" @click="() => {
                 ConfigStore.titles.splice(index, 1);
                 ConfigStore.post();
               }
-                "></q-btn>
+              "></q-btn>
             </template>
           </q-input>
         </q-card-section>
@@ -602,7 +602,7 @@
             <q-checkbox v-model="OrderStore.columnNameShow" label="品名规格"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnCountShow" label="数量"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnUnitShow" label="单位"></q-checkbox>
-            <q-checkbox v-model="OrderStore.columnPoundsShow" label="过磅称重"></q-checkbox>
+            <q-checkbox v-model="OrderStore.columnPoundsShow" label="重量"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPriceShow" label="单价"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPriceReverseShow" label="单价（从售价逆推算）"></q-checkbox>
             <q-checkbox v-model="OrderStore.columnPriceAllShow" label="售价"></q-checkbox>
@@ -686,7 +686,7 @@
                 <th v-if="OrderStore.columnNameShow">品名规格</th>
                 <th v-if="OrderStore.columnCountShow">数量</th>
                 <th v-if="OrderStore.columnUnitShow">单位</th>
-                <th v-if="OrderStore.columnPoundsShow">过磅称重</th>
+                <th v-if="OrderStore.columnPoundsShow">重量</th>
                 <th v-if="OrderStore.columnPriceShow">单价/元</th>
                 <th v-if="OrderStore.columnPriceReverseShow">* 单价/元</th>
                 <th v-if="OrderStore.columnPriceAllShow">售价/元</th>
@@ -722,7 +722,7 @@
                 <td v-if="OrderStore.columnPriceAllShow">
                   <span v-show="sku.name && sku.norm">{{
                     (sku.price * (sku.isPriceInPounds ? sku.pounds : sku.count)).toFixed(2)
-                    }}</span>
+                  }}</span>
                 </td>
                 <td v-if="OrderStore.columnRemarkShow">{{ sku.remark }}</td>
                 <td v-if="OrderStore.columnKeyOriginShow">{{ sku.keyOrigin }}</td>
@@ -798,7 +798,7 @@
           await OrderStore.put();
           await OrderStore.get();
         }
-          ">
+        ">
           保存
         </q-btn>
       </q-card-actions>
@@ -844,7 +844,7 @@
           await createOrderBookQuick112201();
           await OrderStore.get(1);
         }
-          ">
+        ">
           确定
         </q-btn>
       </q-card-actions>
