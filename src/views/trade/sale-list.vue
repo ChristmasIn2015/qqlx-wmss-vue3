@@ -799,11 +799,13 @@
             <q-checkbox v-model="OrderStore.columnKeyHouseShow" label="货位号"></q-checkbox>
           </div>
           <div class="text-body1 q-my-sm q-ml-xs text-bold row items-center">
-            金额信息
+            统计信息
             <q-space></q-space>
             <q-btn :icon="infoAmount ? 'visibility' : 'visibility_off'" padding="xs" fab flat @click="infoAmount = !infoAmount"></q-btn>
           </div>
           <div v-show="infoAmount">
+            <q-checkbox v-model="rowCountStatShow" label="数量统计"></q-checkbox>
+            <q-checkbox v-model="rowTonStatShow" label="重量统计"></q-checkbox>
             <q-checkbox v-model="rowAmountShow" label="金额合计"></q-checkbox>
           </div>
         </q-card-section>
@@ -907,8 +909,8 @@
               <div class="col">{{ getChineseMoney(orderPrinting.amount) }}</div>
               <div class="col">
                 <span>共计：</span>
-                <span>{{ orderPrintingCountsTotal }}</span>
-                <span v-if="orderPrintingTonsTotal > 0">{{ orderPrintingTonsTotal.toFixed(3) }} 吨，</span>
+                <span v-if="rowCountStatShow && OrderStore.columnCountShow">{{ orderPrintingCountsTotal }}</span>
+                <span v-if="rowTonStatShow && orderPrintingTonsTotal > 0">{{ orderPrintingTonsTotal.toFixed(3) }} 吨，</span>
                 <span>{{ orderPrinting.amount.toFixed(2) }} 元</span>
               </div>
             </div>
@@ -1160,7 +1162,7 @@ const orderPrinting = ref(OrderStore.getSchema() as OrderJoined);
 const orderPrintingCountsTotal = computed(() => {
   const unitMap = new Map<string, number>();
   skuPrinting.value.map((d) => {
-    const key = d.unit || "件";
+    const key = d.unit.replace(/\s+/g, "") || "件";
     const cache = unitMap.get(key);
     if (!cache) unitMap.set(key, 0);
 
@@ -1171,7 +1173,7 @@ const orderPrintingCountsTotal = computed(() => {
   const ls = Array.from(unitMap.entries())
     .filter((d) => d[1] > 0)
     .map((d) => `${d[1]}${d[0]}`);
-  return ls.join("/") + (ls.length > 0 ? "，" : "");
+  return ls.join("+") + (ls.length > 0 ? "，" : "");
 });
 const orderPrintingTonsTotal = computed(() => {
   return skuPrinting.value.filter((e) => e.isPriceInPounds).reduce((a, b) => a + b.pounds, 0);
@@ -1206,7 +1208,10 @@ const copy = async () => {
 };
 const infoColumnBase = ref(true);
 const infoColumnMore = ref(false);
-const infoAmount = ref(false);
+const infoAmount = ref(true);
+
+const rowCountStatShow = ref(true);
+const rowTonStatShow = ref(true);
 const rowAmountShow = ref(true);
 
 const UserStore = useUserStore();
