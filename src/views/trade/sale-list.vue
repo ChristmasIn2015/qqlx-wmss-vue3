@@ -1091,7 +1091,7 @@
       </q-toolbar>
       <q-card-section class="text-body1">
         <div class="q-mb-sm text-grey-8">监测到以下异常情况：</div>
-        <div v-for="message in beforeSetManagerMessageLs" :key="message"><q-badge rounded color="red-6" class="shadow-2 q-mr-sm"> </q-badge>{{ message }}</div>
+        <div v-for="message in beforeSetAccountMessageLs" :key="message"><q-badge rounded color="red-6" class="shadow-2 q-mr-sm"> </q-badge>{{ message }}</div>
       </q-card-section>
       <q-card-actions>
         <q-btn color="teal" v-close-popup @click="setAccounter(toRaw(orderCacheForSign as OrderJoined))">马上结清</q-btn>
