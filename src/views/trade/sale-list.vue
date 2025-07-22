@@ -339,7 +339,12 @@
               :disable="!!props.row.managerId"
               :color="!!props.row.managerId ? 'standard' : 'primary'"
               :text-color="!!props.row.managerId ? 'grey' : 'white'"
-              @click.stop="setManager(props.row)"
+              @click.stop="
+                async () => {
+                  const yes = await beforeSetManager(toRaw(props.row));
+                  if (yes) await setManager(toRaw(props.row));
+                }
+              "
             />
             <q-btn
               push
@@ -350,7 +355,12 @@
               :disable="!!props.row.accounterId"
               :color="props.row.accounterId ? 'standard' : 'teal'"
               :text-color="props.row.accounterId ? 'grey' : 'white'"
-              @click.stop="setAccounter(props.row)"
+              @click.stop="
+                async () => {
+                  const yes = await beforeSetAccount(toRaw(props.row));
+                  if (yes) await setAccounter(toRaw(props.row));
+                }
+              "
             >
               <q-tooltip class="text-body1">
                 <div>结清意味着您已知晓：</div>
@@ -541,7 +551,16 @@
                         <span class="col text-right text-weight-bold"
                           >{{ props.row.joinAccounter?.nickname || "无" }}
 
-                          <a v-if="props.row.accounterId" class="cursor-pointer text-negative text-underline" @click.stop="setAccounter(props.row, true)">
+                          <a
+                            v-if="props.row.accounterId"
+                            class="cursor-pointer text-negative text-underline"
+                            @click.stop="
+                              async () => {
+                                await setOrderInfo(toRaw(props.row));
+                                await setAccounter(toRaw(props.row), true);
+                              }
+                            "
+                          >
                             取消
                           </a>
                         </span>
@@ -557,7 +576,16 @@
                         </span>
                         <span class="col-6 text-right text-weight-bold">
                           {{ props.row.joinManager?.nickname || "无" }}
-                          <a v-if="props.row.managerId" class="cursor-pointer text-negative text-underline" @click="setManager(props.row, true)">
+                          <a
+                            v-if="props.row.managerId"
+                            class="cursor-pointer text-negative text-underline"
+                            @click="
+                              async () => {
+                                await setOrderInfo(toRaw(props.row));
+                                await setManager(toRaw(props.row), true);
+                              }
+                            "
+                          >
                             取消
                           </a></span
                         >
@@ -982,6 +1010,7 @@
     </q-card>
   </q-dialog>
 
+  <!-- 快速收款的弹窗 -->
   <q-dialog v-model="quickBookModal">
     <q-card class="w-400">
       <q-toolbar class="bg-primary text-white">
@@ -1033,12 +1062,50 @@
       </q-inner-loading>
     </q-card>
   </q-dialog>
+
+  <!-- 异常情况提示（1）过磅重量没有填写（2）单价没有填写 -->
+  <q-dialog v-model="beforeSetManagerModal">
+    <q-card class="w-400">
+      <q-toolbar class="bg-primary text-white">
+        <q-toolbar-title> 确实要继续 @订单发货 吗？ </q-toolbar-title>
+        <q-btn dense flat icon="close" v-close-popup></q-btn>
+      </q-toolbar>
+      <q-card-section class="text-body1">
+        <div class="q-mb-sm text-grey-8">监测到以下异常情况：</div>
+        <div v-for="message in beforeSetManagerMessageLs" :key="message"><q-badge rounded color="red-6" class="shadow-2 q-mr-sm"> </q-badge>{{ message }}</div>
+      </q-card-section>
+      <q-card-actions>
+        <q-btn color="primary" v-close-popup @click="setManager(toRaw(orderCacheForSign as OrderJoined))">马上出库</q-btn>
+        <q-space></q-space>
+        <q-btn v-close-popup>取消</q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <!-- 异常情况提示（1）过磅重量没有填写（2）单价没有填写 -->
+  <q-dialog v-model="beforeSetAccountModal">
+    <q-card class="w-400">
+      <q-toolbar class="bg-primary text-white">
+        <q-toolbar-title> 确实要继续 @结清订单 吗？ </q-toolbar-title>
+        <q-btn dense flat icon="close" v-close-popup></q-btn>
+      </q-toolbar>
+      <q-card-section class="text-body1">
+        <div class="q-mb-sm text-grey-8">监测到以下异常情况：</div>
+        <div v-for="message in beforeSetManagerMessageLs" :key="message"><q-badge rounded color="red-6" class="shadow-2 q-mr-sm"> </q-badge>{{ message }}</div>
+      </q-card-section>
+      <q-card-actions>
+        <q-btn color="teal" v-close-popup @click="setAccounter(toRaw(orderCacheForSign as OrderJoined))">马上结清</q-btn>
+        <q-space></q-space>
+        <q-btn v-close-popup>取消</q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import { getChineseMoney, getPage, MongodbSort } from "qqlx-cdk";
 import { useRouter, useRoute } from "vue-router";
-import { onMounted, ref, computed, nextTick } from "vue";
+import { onMounted, ref, computed, nextTick, toRaw } from "vue";
 import { cloneDeep, debounce } from "lodash";
 import { callPrinter } from "call-printer";
 import * as XLSX from "xlsx";
@@ -1215,8 +1282,34 @@ const rowTonStatShow = ref(true);
 const rowAmountShow = ref(true);
 
 const UserStore = useUserStore();
-const setManager = async (order: OrderJoined, toClear = false) => {
+
+const orderCacheForSign = ref<OrderJoined>();
+const beforeSetManagerModal = ref(false);
+const beforeSetManagerMessageLs = ref<string[]>([]);
+const beforeSetManager = async (order: OrderJoined) => {
+  beforeSetManagerModal.value = false;
+  beforeSetManagerMessageLs.value = [];
+  OrderStore.loadding = true;
   await setOrderInfo(order); // 保证必要数据
+
+  const entity = cloneDeep(order);
+  orderCacheForSign.value = cloneDeep(order);
+  for (const sku of entity.joinSku || []) {
+    const isErrorPounds = sku.isPriceInPounds && !sku.pounds;
+    const isErrorPrice = !sku.price;
+    if (isErrorPounds) beforeSetManagerMessageLs.value.push(`${sku.name}/${sku.norm} 没有填写过磅重量`);
+    if (isErrorPrice) beforeSetManagerMessageLs.value.push(`${sku.name}/${sku.norm} 没有填写单价`);
+  }
+
+  OrderStore.loadding = false;
+  if (beforeSetManagerMessageLs.value.length > 0) {
+    beforeSetManagerModal.value = true;
+    return false;
+  } else {
+    return true;
+  }
+};
+const setManager = async (order: OrderJoined, toClear = false) => {
   const entity = cloneDeep(order);
   entity.managerId = toClear ? "" : UserStore.userEditor.userId;
   await OrderStore.put(entity);
@@ -1235,6 +1328,32 @@ const setManager = async (order: OrderJoined, toClear = false) => {
   await OrderStore.get();
   const target = OrderStore.list.find((e) => e._id === entity._id);
   target && (await setOrderInfo(target as OrderJoined));
+};
+
+const beforeSetAccountModal = ref(false);
+const beforeSetAccountMessageLs = ref<string[]>([]);
+const beforeSetAccount = async (order: OrderJoined) => {
+  beforeSetAccountModal.value = false;
+  beforeSetAccountMessageLs.value = [];
+  OrderStore.loadding = true;
+  await setOrderInfo(order); // 保证必要数据
+
+  const entity = cloneDeep(order);
+  orderCacheForSign.value = cloneDeep(order);
+  for (const sku of entity.joinSku || []) {
+    const isErrorPounds = sku.isPriceInPounds && !sku.pounds;
+    const isErrorPrice = !sku.price;
+    if (isErrorPounds) beforeSetAccountMessageLs.value.push(`${sku.name}/${sku.norm} 没有填写过磅重量`);
+    if (isErrorPrice) beforeSetAccountMessageLs.value.push(`${sku.name}/${sku.norm} 没有填写单价`);
+  }
+
+  OrderStore.loadding = false;
+  if (beforeSetAccountMessageLs.value.length > 0) {
+    beforeSetAccountModal.value = true;
+    return false;
+  } else {
+    return true;
+  }
 };
 const setAccounter = async (order: OrderJoined, toClear = false) => {
   const entity = cloneDeep(order);
